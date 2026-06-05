@@ -27,6 +27,7 @@ interface User {
   company_name: string
   contact_name: string
   is_payment_registered: boolean
+  role: string
 }
 
 export default function DashboardPage() {
@@ -55,7 +56,7 @@ export default function DashboardPage() {
         .single()
       setUser(userData)
 
-      if (userData && !userData.is_payment_registered) {
+      if (userData && !userData.is_payment_registered && userData.role !== 'admin') {
         setShowPaymentModal(true)
       }
 
@@ -190,7 +191,7 @@ export default function DashboardPage() {
           <p className="text-xs text-[#ABABAB] mb-5">未使用分の翌月繰越は不可</p>
           <button
             onClick={() => {
-              if (!user?.is_payment_registered) { setShowPaymentModal(true); return }
+              if (!user?.is_payment_registered && user?.role !== 'admin') { setShowPaymentModal(true); return }
               if (remaining <= 0) { alert('今月の依頼上限に達しています'); return }
               setShowRequestForm(true)
             }}

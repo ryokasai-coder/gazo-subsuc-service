@@ -14,12 +14,12 @@ export async function POST(req: NextRequest) {
   // Check user
   const { data: userData } = await serviceClient
     .from('users')
-    .select('company_name, contact_name, is_payment_registered, is_active')
+    .select('company_name, contact_name, is_payment_registered, is_active, role')
     .eq('id', user.id)
     .single()
 
   if (!userData?.is_active) return NextResponse.json({ error: 'アカウントが無効です' }, { status: 403 })
-  if (!userData?.is_payment_registered) return NextResponse.json({ error: '決済登録が必要です' }, { status: 403 })
+  if (!userData?.is_payment_registered && userData?.role !== 'admin') return NextResponse.json({ error: '決済登録が必要です' }, { status: 403 })
 
   // Check usage limit
   const { data: usageData } = await serviceClient
