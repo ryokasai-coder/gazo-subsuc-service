@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase'
 
 export default function AdminLoginPage() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
+  const [loginId, setLoginId] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -16,11 +16,24 @@ export default function AdminLoginPage() {
     setLoading(true)
     setError('')
 
+    // login_idからメアドを取得
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ loginId }),
+    })
+    if (!res.ok) {
+      setError('IDまたはパスワードが正しくありません')
+      setLoading(false)
+      return
+    }
+    const { email } = await res.json()
+
     const supabase = createClient()
     const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password })
 
     if (authError) {
-      setError('ログインに失敗しました')
+      setError('IDまたはパスワードが正しくありません')
       setLoading(false)
       return
     }
@@ -59,12 +72,13 @@ export default function AdminLoginPage() {
           )}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-[#ABABAB] mb-1.5">メールアドレス</label>
+              <label className="block text-xs font-semibold text-[#ABABAB] mb-1.5">管理者ID</label>
               <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
+                type="text"
+                value={loginId}
+                onChange={e => setLoginId(e.target.value)}
                 required
+                placeholder="例：ADMIN-001"
                 className="w-full bg-white/10 border border-white/10 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#E60023]/40 focus:border-[#E60023]/60 transition-all placeholder-white/30"
               />
             </div>

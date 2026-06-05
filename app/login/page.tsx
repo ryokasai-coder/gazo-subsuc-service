@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase'
 
 export default function LoginPage() {
   const router = useRouter()
-  const [email, setEmail] = useState('')
+  const [loginId, setLoginId] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -17,11 +17,24 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
+    // login_idからメアドを取得
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ loginId }),
+    })
+    if (!res.ok) {
+      setError('お客様番号またはパスワードが正しくありません')
+      setLoading(false)
+      return
+    }
+    const { email } = await res.json()
+
     const supabase = createClient()
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
 
     if (authError) {
-      setError('メールアドレスまたはパスワードが正しくありません')
+      setError('お客様番号またはパスワードが正しくありません')
       setLoading(false)
       return
     }
@@ -59,13 +72,13 @@ export default function LoginPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-[#111111] mb-1.5">メールアドレス</label>
+                <label className="block text-xs font-semibold text-[#111111] mb-1.5">お客様番号</label>
                 <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  value={loginId}
+                  onChange={(e) => setLoginId(e.target.value)}
                   required
-                  placeholder="example@company.com"
+                  placeholder="例：C-0001"
                   className="w-full border border-[#EFEFEF] rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#E60023]/20 focus:border-[#E60023] transition-all bg-[#FAFAFA]"
                 />
               </div>
