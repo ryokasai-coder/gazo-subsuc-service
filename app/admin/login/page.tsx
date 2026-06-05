@@ -1,0 +1,93 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase'
+
+export default function AdminLoginPage() {
+  const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+
+    const supabase = createClient()
+    const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password })
+
+    if (authError) {
+      setError('ログインに失敗しました')
+      setLoading(false)
+      return
+    }
+
+    // Check admin role
+    const { data: userData } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', data.user.id)
+      .single()
+
+    if (userData?.role !== 'admin') {
+      await supabase.auth.signOut()
+      setError('管理者権限がありません')
+      setLoading(false)
+      return
+    }
+
+    router.push('/admin')
+  }
+
+  return (
+    <div className="min-h-screen bg-[#111111] flex items-center justify-center px-4">
+      <div className="w-full max-w-sm">
+        <div className="text-center mb-8">
+          <div className="w-12 h-12 rounded-2xl bg-[#E60023] flex items-center justify-center mx-auto mb-4 text-white font-black text-xl">管</div>
+          <h1 className="text-2xl font-black text-white">管理者ログイン</h1>
+          <p className="text-[#767676] text-sm mt-1">画像サブスクサービス 管理画面</p>
+        </div>
+
+        <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-6 sm:p-8 border border-white/10">
+          {error && (
+            <div className="bg-[#E60023]/20 border border-[#E60023]/30 text-[#FFE8EC] rounded-xl px-4 py-3 text-sm mb-5">
+              {error}
+            </div>
+          )}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-[#ABABAB] mb-1.5">メールアドレス</label>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                required
+                className="w-full bg-white/10 border border-white/10 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#E60023]/40 focus:border-[#E60023]/60 transition-all placeholder-white/30"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-[#ABABAB] mb-1.5">パスワード</label>
+              <input
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+                className="w-full bg-white/10 border border-white/10 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#E60023]/40 focus:border-[#E60023]/60 transition-all placeholder-white/30"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#E60023] text-white font-bold py-4 rounded-full hover:bg-[#C0001E] transition-all disabled:opacity-50 shadow-lg shadow-red-900/30 mt-2"
+            >
+              {loading ? 'ログイン中...' : 'ログイン'}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  )
+}
