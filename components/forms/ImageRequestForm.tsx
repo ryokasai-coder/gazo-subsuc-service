@@ -16,7 +16,7 @@ const PRODUCTION_TYPES = [
   'SNS投稿画像', 'ストーリーズ画像', 'リールサムネイル', 'YouTubeサムネイル',
 ]
 
-const DESIGN_FILTERS = ['高級感', 'シンプル', 'インパクト', 'SNS映え', 'かわいい', 'ナチュラル', 'お任せ']
+const DESIGN_FILTERS = ['高級感', 'シンプル', 'インパクト', 'SNS映え', 'かわいい', 'ナチュラル']
 
 const IMAGE_SIZES = [
   { label: '正方形 (1080×1080)', value: '正方形(1080x1080px)' },
@@ -267,7 +267,7 @@ const TEMPLATES: Template[] = [
 
 function getFilteredTemplates(productionTypes: string[], designFilter: string): Template[] {
   return TEMPLATES.filter(t => {
-    if (designFilter && designFilter !== 'お任せ') {
+    if (designFilter) {
       if (!t.designTags.includes(designFilter) && !t.designTags.includes('お任せ')) return false
     }
     return true
@@ -424,7 +424,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
   }, [])
   const [form, setForm] = useState<RequestFormData>(initial)
   const [error, setError] = useState('')
-  const [designFilter, setDesignFilter] = useState('お任せ')
+  const [designFilter, setDesignFilter] = useState('')
   const [canvasDataUrl, setCanvasDataUrl] = useState<string | null>(null)
   const [delivering, setDelivering] = useState(false)
   const [deliverResult, setDeliverResult] = useState<{ driveUrl: string; previewUrl: string } | null>(null)
@@ -735,6 +735,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                     textContent={form.text_content}
                     templateName={form.template_name}
                     imageSize={form.image_size}
+                    materialFile={form.materialFiles[0] ?? null}
                     onGenerated={handleCanvasGenerated}
                   />
                 ) : (
@@ -777,7 +778,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                     </svg>
                     Googleドライブに保存中...
                   </span>
-                ) : '📤 このデザインで納品する'}
+                ) : '📤 このデザインで依頼する'}
               </button>
 
               <p className="text-[10px] text-[#ABABAB] text-center">

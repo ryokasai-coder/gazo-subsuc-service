@@ -10,6 +10,7 @@ interface DesignCanvasProps {
   templateName: string
   imageSize: string
   companyName?: string
+  materialFile?: File | null
   onGenerated?: (dataUrl: string) => void
 }
 
@@ -911,6 +912,31 @@ function renderDesign(
   }
 }
 
+// 素材画像をcanvas上の指定エリアに描画（cover fit）
+function drawImageCover(
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  x: number, y: number, w: number, h: number,
+  radius = 0
+) {
+  const scale = Math.max(w / img.width, h / img.height)
+  const sw = img.width * scale
+  const sh = img.height * scale
+  const sx = x + (w - sw) / 2
+  const sy = y + (h - sh) / 2
+  ctx.save()
+  if (radius > 0) {
+    drawRoundRect(ctx, x, y, w, h, radius)
+    ctx.clip()
+  } else {
+    ctx.beginPath()
+    ctx.rect(x, y, w, h)
+    ctx.clip()
+  }
+  ctx.drawImage(img, sx, sy, sw, sh)
+  ctx.restore()
+}
+
 export function DesignCanvas({
   layoutType,
   bgFrom,
@@ -919,6 +945,7 @@ export function DesignCanvas({
   templateName,
   imageSize,
   companyName = '',
+  materialFile,
   onGenerated,
 }: DesignCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -928,16 +955,86 @@ export function DesignCanvas({
   const pw = Math.round(width * scale)
   const ph = Math.round(height * scale)
 
-  const draw = useCallback(() => {
+  const draw = useCallback((materialImg?: HTMLImageElement) => {
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d')
     if (!ctx) return
-    renderDesign(ctx, width, height, layoutType, bgFrom, bgTo, textContent, templateName, companyName)
+    const W = width, H = height
+    const U = Math.min(W, H) / 20
+
+    // ベースデザイン描画
+    renderDesign(ctx, W, H, layoutType, bgFrom, bgTo, textContent, templateName, companyName)
+
+    // 素材画像を写真プレースホルダー位置に重ね描き
+    if (materialImg) {
+      const photoLayouts: Record<string, () => void> = {
+        'photo-overlay': () => {
+          drawImageCover(ctx, materialImg, 0, 0, W, H * 0.65)
+        },
+        'product-card': () => {
+          drawImageCover(ctx, materialImg, 0, 0, W, H * 0.62)
+        },
+        'before-after': () => {
+          // Afterエリアに表示
+          drawImageCover(ctx, materialImg, W / 2 + 4, 0, W / 2 - 4, H * 0.82)
+        },
+        'person-info': () => {
+          // アバター円に表示
+          ctx.save()
+          ctx.beginPath()
+          ctx.arc(W / 2, H * 0.32, U * 4, 0, Math.PI * 2)
+          ctx.clip()
+          drawImageCover(ctx, materialImg, W / 2 - U * 4, H * 0.32 - U * 4, U * 8, U * 8)
+          ctx.restore()
+        },
+        'recruit-person': () => {
+          ctx.save()
+          ctx.beginPath()
+          ctx.arc(W / 2, H * 0.32, U * 4, 0, Math.PI * 2)
+          ctx.clip()
+          drawImageCover(ctx, materialImg, W / 2 - U * 4, H * 0.32 - U * 4, U * 8, U * 8)
+          ctx.restore()
+        },
+        'shop-hero': () => {
+          // 背景全体に薄く
+          ctx.save()
+          ctx.globalAlpha = 0.35
+          drawImageCover(ctx, materialImg, 0, 0, W, H)
+          ctx.restore()
+        },
+        'youtube-thumb': () => {
+          drawImageCover(ctx, materialImg, 0, 0, W * 0.48, H)
+        },
+        'menu-list': () => {
+          // 3つのサムネイルに表示
+          const rowH = (H * 0.78) / 3
+          for (let i = 0; i < 3; i++) {
+            const y = H * 0.2 + i * rowH
+            drawImageCover(ctx, materialImg, U, y + U * 0.3, U * 4, rowH - U * 1, U * 0.4)
+          }
+        },
+      }
+      const fn = photoLayouts[layoutType]
+      if (fn) fn()
+    }
+
     onGenerated?.(canvas.toDataURL('image/png'))
   }, [layoutType, bgFrom, bgTo, textContent, templateName, companyName, width, height, onGenerated])
 
-  useEffect(() => { draw() }, [draw])
+  useEffect(() => {
+    if (materialFile) {
+      const url = URL.createObjectURL(materialFile)
+      const img = new Image()
+      img.onload = () => {
+        draw(img)
+        URL.revokeObjectURL(url)
+      }
+      img.src = url
+    } else {
+      draw()
+    }
+  }, [draw, materialFile])
 
   return (
     <div className="flex justify-center">
