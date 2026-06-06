@@ -19,9 +19,12 @@ async function getOrCreateFolder(
   parentId: string,
   folderName: string
 ): Promise<string> {
+  // 共有ドライブ対応: supportsAllDrives: true が必須
   const res = await drive.files.list({
     q: `'${parentId}' in parents and name='${folderName}' and mimeType='application/vnd.google-apps.folder' and trashed=false`,
     fields: 'files(id, name)',
+    supportsAllDrives: true,
+    includeItemsFromAllDrives: true,
   })
   if (res.data.files && res.data.files.length > 0) {
     return res.data.files[0].id!
@@ -33,6 +36,7 @@ async function getOrCreateFolder(
       parents: [parentId],
     },
     fields: 'id',
+    supportsAllDrives: true,
   })
   return folder.data.id!
 }
@@ -71,12 +75,10 @@ export async function POST(req: NextRequest) {
     const base64Data = imageDataUrl.replace(/^data:image\/\w+;base64,/, '')
     const imageBuffer = Buffer.from(base64Data, 'base64')
 
-    // Check size limit (Vercel 4.5MB)
     if (imageBuffer.length > 4 * 1024 * 1024) {
-      return NextResponse.json({ error: '画像サイズが大きすぎます。テキスト量を減らすか別のサイズを選択してください。' }, { status: 413 })
+      return NextResponse.json({ error: '画像サイズが大きすぎます' }, { status: 413 })
     }
 
-    // Google Drive upload
     const parentFolderId = process.env.GOOGLE_DRIVE_PARENT_FOLDER_ID
     if (!parentFolderId) {
       return NextResponse.json({ error: 'Google Drive設定が完了していません' }, { status: 500 })
@@ -84,36 +86,39 @@ export async function POST(req: NextRequest) {
 
     const drive = await getGoogleDriveClient()
 
-    // お客様番号フォルダを取得または作成
+    // お客様番号フォルダを取得または作成（共有ドライブ対応）
     const customerFolderId = await getOrCreateFolder(drive, parentFolderId, userData.login_id)
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
-    const fileName = `${(templateName || 'design').replace(/[\/\\:*?"<>|]/g, '_')}_${timestamp}.png`
+    const safeName = (templateName || 'design').replace(/[\/\\:*?"<>|]/g, '_')
+    const fileName = `${safeName}_${timestamp}.jpg`
 
-    // Buffer → ReadableStream (Node.js環境対応)
     const { PassThrough } = await import('stream')
     const passThrough = new PassThrough()
     passThrough.end(imageBuffer)
 
+    // ファイルアップロード（共有ドライブ対応）
     const fileRes = await drive.files.create({
       requestBody: {
         name: fileName,
         parents: [customerFolderId],
-        mimeType: 'image/png',
+        mimeType: 'image/jpeg',
       },
       media: {
-        mimeType: 'image/png',
+        mimeType: 'image/jpeg',
         body: passThrough,
       },
       fields: 'id',
+      supportsAllDrives: true,
     })
 
     const fileId = fileRes.data.id!
 
-    // 公開アクセス設定
+    // 公開アクセス設定（共有ドライブ対応）
     await drive.permissions.create({
       fileId,
       requestBody: { role: 'reader', type: 'anyone' },
+      supportsAllDrives: true,
     })
 
     const driveUrl = `https://drive.google.com/file/d/${fileId}/view`
@@ -150,7 +155,6 @@ export async function POST(req: NextRequest) {
         })
       } catch (mailErr) {
         console.error('Email send error:', mailErr)
-        // メール失敗しても納品は成功扱い
       }
     }
 
