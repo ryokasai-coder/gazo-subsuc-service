@@ -459,11 +459,32 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
 
   const handleNext = () => { if (validate()) setStep(s => s + 1) }
 
+  // 画像を圧縮してVercel 4.5MB制限に対応
+  const compressImage = (dataUrl: string, maxWidth = 1080): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const scale = Math.min(1, maxWidth / img.width)
+        canvas.width = Math.round(img.width * scale)
+        canvas.height = Math.round(img.height * scale)
+        const ctx = canvas.getContext('2d')!
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+        // JPEGで圧縮（品質0.88）
+        resolve(canvas.toDataURL('image/jpeg', 0.88))
+      }
+      img.src = dataUrl
+    })
+  }
+
   const handleDeliver = async () => {
     if (!canvasDataUrl) { setError('デザインが生成されていません'); return }
     setDelivering(true)
     setError('')
     try {
+      // 圧縮してサイズを小さくする
+      const compressed = await compressImage(canvasDataUrl, 1080)
+
       const res = await fetch('/api/design/deliver', {
         method: 'POST',
         headers: {
@@ -471,7 +492,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
           'Authorization': `Bearer ${accessToken}`,
         },
         body: JSON.stringify({
-          imageDataUrl: canvasDataUrl,
+          imageDataUrl: compressed,
           templateName: form.template_name,
           textContent: form.text_content,
           imageType: form.production_types[0] || 'SNS投稿',
@@ -479,10 +500,10 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
         }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || '納品に失敗しました')
+      if (!res.ok) throw new Error(data.error || '依頼に失敗しました')
       setDeliverResult({ driveUrl: data.driveUrl, previewUrl: data.previewUrl })
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : '納品に失敗しました')
+      setError(e instanceof Error ? e.message : '依頼に失敗しました')
     } finally {
       setDelivering(false)
     }
