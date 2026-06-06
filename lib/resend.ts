@@ -1,8 +1,7 @@
 import { Resend } from 'resend'
 export const resend = new Resend(process.env.RESEND_API_KEY)
 
-const FROM = () =>
-  'noreply@' + (process.env.NEXT_PUBLIC_SERVICE_URL?.replace('https://', '').replace('http://', '') ?? 'example.com')
+const FROM = () => 'onboarding@resend.dev'
 
 export async function sendWelcomeEmail({ email, loginId, tempPassword }: {
   email: string; loginId: string; tempPassword: string

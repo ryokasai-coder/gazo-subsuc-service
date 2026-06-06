@@ -79,14 +79,15 @@ export default function AdminProjectsPage() {
   }
 
   const handleDeliver = async (req: Request) => {
-    if (!confirm('納品メールを送信しますか？')) return
+    const imageUrl = prompt('納品画像のURL（Google Drive / Dropbox など）を入力してください\n（後から設定する場合は空白のままOK）')
+    if (imageUrl === null) return // キャンセル
     await fetch('/api/admin/projects', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'deliver', requestId: req.id }),
+      body: JSON.stringify({ action: 'deliver', requestId: req.id, imageUrl: imageUrl || null }),
     })
     await updateStatus(req.id, 'delivered')
-    alert('納品メールを送信しました')
+    alert('納品完了・メールを送信しました')
   }
 
   const exportCSV = () => {
@@ -129,7 +130,10 @@ export default function AdminProjectsPage() {
             </svg>
           </Link>
           <h1 className="font-bold text-[#111111]">案件管理</h1>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            <Link href="/admin/projects/master" className="text-sm border border-[#EFEFEF] text-[#767676] px-4 py-2 rounded-full hover:bg-[#F1EFEF] transition-all">
+              案件マスタ
+            </Link>
             <button onClick={exportCSV} className="text-sm border border-[#EFEFEF] text-[#767676] px-4 py-2 rounded-full hover:bg-[#F1EFEF] transition-all">
               CSV出力
             </button>
