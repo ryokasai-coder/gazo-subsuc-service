@@ -1,9 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { TemplatePreview } from '@/components/ui/TemplatePreview'
+import { DesignCanvas } from '@/components/ui/DesignCanvas'
+import { createClient } from '@/lib/supabase'
 
-const STEPS = ['制作内容', 'テンプレート選択', '詳細・確認']
+const STEPS = ['制作内容', 'テンプレート選択', '詳細入力', 'プレビュー・納品']
 
 const PRODUCTION_TYPES = [
   '今月の予定・営業カレンダー', '商品紹介', 'メニュー紹介', 'キャンペーン紹介',
@@ -34,14 +36,13 @@ export interface Template {
   id: string
   name: string
   description: string
-  layoutType: string       // SVGプレビュー用
-  bgFrom: string           // グラデーション開始色
-  bgTo: string             // グラデーション終了色
+  layoutType: string
+  bgFrom: string
+  bgTo: string
   productionTags: string[]
   designTags: string[]
 }
 
-// テンプレートIDとlayoutTypeのマッピング
 const TEMPLATE_LAYOUT_MAP: Record<string, { layoutType: string; bgFrom: string; bgTo: string }> = {
   'sns-photo-overlay':    { layoutType: 'photo-overlay',  bgFrom: '#4b5563', bgTo: '#374151' },
   'sns-color-text':       { layoutType: 'color-text',     bgFrom: '#f43f5e', bgTo: '#fb7185' },
@@ -264,11 +265,7 @@ const TEMPLATES: Template[] = [
   },
 ]
 
-// ─── テンプレートレコメンドロジック ───────────────────────────────────
-function getFilteredTemplates(
-  productionTypes: string[],
-  designFilter: string,
-): Template[] {
+function getFilteredTemplates(productionTypes: string[], designFilter: string): Template[] {
   return TEMPLATES.filter(t => {
     if (designFilter && designFilter !== 'お任せ') {
       if (!t.designTags.includes(designFilter) && !t.designTags.includes('お任せ')) return false
@@ -285,7 +282,6 @@ function getFilteredTemplates(
   })
 }
 
-// ─── 型定義 ──────────────────────────────────────────────────────────
 export interface RequestFormData {
   production_types: string[]
   production_types_other: string
@@ -334,7 +330,24 @@ const initial: RequestFormData = {
   referenceFiles: [],
 }
 
-// ─── UIコンポーネント ─────────────────────────────────────────────────
+// ─── UIコンポーネント（関数の外に定義 ─────────────────────────────────
+// ★ここがバグ修正の核心：Fieldをメインコンポーネントの外に置くことで
+//   stateが変わるたびにremountされなくなる
+function Field({ label, required, children }: {
+  label: string
+  required?: boolean
+  children: React.ReactNode
+}) {
+  return (
+    <div>
+      <label className="block text-xs font-bold text-[#111111] mb-2">
+        {label} {required && <span className="text-[#E60023]">*</span>}
+      </label>
+      {children}
+    </div>
+  )
+}
+
 function CheckGroup({ options, selected, onChange }: {
   options: string[]
   selected: string[]
@@ -363,7 +376,6 @@ function CheckGroup({ options, selected, onChange }: {
   )
 }
 
-// ─── テンプレートカード ───────────────────────────────────────────────
 function TemplateCard({ template, selected, onSelect }: {
   template: Template
   selected: boolean
@@ -379,7 +391,6 @@ function TemplateCard({ template, selected, onSelect }: {
           : 'border-[#EFEFEF] hover:border-[#E60023]/50'
       }`}
     >
-      {/* SVGプレビュー */}
       <div className="relative">
         <TemplatePreview
           layoutType={template.layoutType}
@@ -392,7 +403,6 @@ function TemplateCard({ template, selected, onSelect }: {
           </div>
         )}
       </div>
-      {/* 情報 */}
       <div className="p-3 bg-white">
         <p className="text-xs font-black text-[#111111] leading-tight mb-1">{template.name}</p>
         <p className="text-[10px] text-[#767676] leading-snug">{template.description}</p>
@@ -403,16 +413,33 @@ function TemplateCard({ template, selected, onSelect }: {
 
 // ─── メインフォーム ───────────────────────────────────────────────────
 export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props) {
+  const [accessToken, setAccessToken] = useState<string | null>(null)
   const [step, setStep] = useState(0)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setAccessToken(session?.access_token ?? null)
+    })
+  }, [])
   const [form, setForm] = useState<RequestFormData>(initial)
   const [error, setError] = useState('')
   const [designFilter, setDesignFilter] = useState('お任せ')
+  const [canvasDataUrl, setCanvasDataUrl] = useState<string | null>(null)
+  const [delivering, setDelivering] = useState(false)
+  const [deliverResult, setDeliverResult] = useState<{ driveUrl: string; previewUrl: string } | null>(null)
 
   const update = <K extends keyof RequestFormData>(key: K, val: RequestFormData[K]) => {
     setForm(prev => ({ ...prev, [key]: val }))
   }
 
   const filteredTemplates = getFilteredTemplates(form.production_types, designFilter)
+
+  const selectedTemplate = TEMPLATES.find(t => t.id === form.template_id)
+
+  const handleCanvasGenerated = useCallback((dataUrl: string) => {
+    setCanvasDataUrl(dataUrl)
+  }, [])
 
   const validate = () => {
     if (step === 0) {
@@ -432,24 +459,34 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
 
   const handleNext = () => { if (validate()) setStep(s => s + 1) }
 
-  const handleSubmit = async () => {
-    if (!validate()) return
-    await onSubmit({
-      ...form,
-      production_types: form.production_types_other
-        ? [...form.production_types, `その他: ${form.production_types_other}`]
-        : form.production_types,
-    })
+  const handleDeliver = async () => {
+    if (!canvasDataUrl) { setError('デザインが生成されていません'); return }
+    setDelivering(true)
+    setError('')
+    try {
+      const res = await fetch('/api/design/deliver', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          imageDataUrl: canvasDataUrl,
+          templateName: form.template_name,
+          textContent: form.text_content,
+          imageType: form.production_types[0] || 'SNS投稿',
+          imageSize: form.image_size,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || '納品に失敗しました')
+      setDeliverResult({ driveUrl: data.driveUrl, previewUrl: data.previewUrl })
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : '納品に失敗しました')
+    } finally {
+      setDelivering(false)
+    }
   }
-
-  const Field = ({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) => (
-    <div>
-      <label className="block text-xs font-bold text-[#111111] mb-2">
-        {label} {required && <span className="text-[#E60023]">*</span>}
-      </label>
-      {children}
-    </div>
-  )
 
   const inputClass = "w-full border border-[#EFEFEF] rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#E60023]/20 focus:border-[#E60023] transition-all bg-[#FAFAFA]"
   const textareaClass = `${inputClass} resize-none`
@@ -485,7 +522,11 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
       {step === 0 && (
         <div className="space-y-5">
           <Field label="制作内容を選択（複数可）" required>
-            <CheckGroup options={PRODUCTION_TYPES} selected={form.production_types} onChange={v => update('production_types', v)} />
+            <CheckGroup
+              options={PRODUCTION_TYPES}
+              selected={form.production_types}
+              onChange={v => update('production_types', v)}
+            />
             <input
               type="text"
               value={form.production_types_other}
@@ -494,7 +535,9 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
               className={`mt-2 ${inputClass}`}
             />
             {form.production_types.length > 0 && (
-              <p className="text-xs text-[#E60023] mt-1 font-semibold">選択中: {form.production_types.length}件</p>
+              <p className="text-xs text-[#E60023] mt-1 font-semibold">
+                選択中: {form.production_types.length}件
+              </p>
             )}
           </Field>
         </div>
@@ -503,7 +546,6 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
       {/* Step 1: テンプレート選択 */}
       {step === 1 && (
         <div className="space-y-4">
-          {/* デザインフィルター */}
           <div>
             <p className="text-xs font-bold text-[#111111] mb-2">デザインイメージで絞り込む</p>
             <div className="flex flex-wrap gap-2">
@@ -524,7 +566,6 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
             </div>
           </div>
 
-          {/* テンプレートグリッド */}
           <div>
             <p className="text-xs font-bold text-[#111111] mb-3">
               テンプレートを選択 <span className="text-[#E60023]">*</span>
@@ -554,7 +595,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
         </div>
       )}
 
-      {/* Step 2: 詳細入力 + 確認 */}
+      {/* Step 2: 詳細入力 */}
       {step === 2 && (
         <div className="space-y-5">
           <Field label="画像サイズ" required>
@@ -569,7 +610,9 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                     onChange={() => update('image_size', s.value)}
                     className="accent-[#E60023]"
                   />
-                  <span className={`text-sm transition-colors ${form.image_size === s.value ? 'text-[#E60023] font-semibold' : 'text-[#767676]'}`}>{s.label}</span>
+                  <span className={`text-sm transition-colors ${form.image_size === s.value ? 'text-[#E60023] font-semibold' : 'text-[#767676]'}`}>
+                    {s.label}
+                  </span>
                 </label>
               ))}
             </div>
@@ -579,10 +622,13 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
             <textarea
               value={form.text_content}
               onChange={e => update('text_content', e.target.value)}
-              rows={3}
-              placeholder="画像に入れたい文言、キャッチコピー、日付など"
+              rows={4}
+              placeholder={`画像に入れたい文言、キャッチコピー、日付など\n例：\n夏のキャンペーン実施中！\n7月31日まで20%OFF`}
               className={textareaClass}
             />
+            <p className="text-xs text-[#ABABAB] mt-1">
+              1行目がメインキャッチコピー、2行目以降がサブテキストになります
+            </p>
           </Field>
 
           <Field label="素材アップロード（ロゴ・写真など）">
@@ -590,9 +636,17 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
               type="file"
               multiple
               accept="image/*,.pdf,.ai"
-              onChange={e => update('materialFiles', Array.from(e.target.files ?? []))}
+              onChange={e => {
+                const files = Array.from(e.target.files ?? [])
+                update('materialFiles', files)
+              }}
               className="w-full text-sm text-[#767676] file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FFE8EC] file:text-[#E60023] hover:file:bg-red-100"
             />
+            {form.materialFiles.length > 0 && (
+              <p className="text-xs text-[#22c55e] mt-1 font-semibold">
+                ✓ {form.materialFiles.length}件のファイルを選択済み：{form.materialFiles.map(f => f.name).join(', ')}
+              </p>
+            )}
             <p className="text-xs text-[#ABABAB] mt-1">jpg/png/ai/pdf・最大10MB</p>
           </Field>
 
@@ -608,57 +662,154 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                     onChange={() => update('delivery_speed', s.value)}
                     className="accent-[#E60023]"
                   />
-                  <span className={`text-sm ${form.delivery_speed === s.value ? 'text-[#E60023] font-semibold' : 'text-[#767676]'}`}>{s.label}</span>
+                  <span className={`text-sm ${form.delivery_speed === s.value ? 'text-[#E60023] font-semibold' : 'text-[#767676]'}`}>
+                    {s.label}
+                  </span>
                 </label>
               ))}
             </div>
           </Field>
+        </div>
+      )}
 
-          {/* 確認サマリー */}
-          <div className="bg-[#F1EFEF] rounded-2xl p-4 space-y-2 text-sm">
-            <p className="text-xs font-bold text-[#111111] mb-3">依頼内容の確認</p>
-            {[
-              ['制作内容', [...form.production_types, form.production_types_other ? `その他: ${form.production_types_other}` : ''].filter(Boolean).join('、') || '未選択'],
-              ['テンプレート', form.template_name || '未選択'],
-              ['サイズ', form.image_size || '未選択'],
-              ['テキスト', form.text_content || 'なし'],
-              ['素材ファイル', form.materialFiles.length > 0 ? form.materialFiles.map(f => f.name).join(', ') : 'なし'],
-              ['納期', form.delivery_speed],
-            ].map(([label, value]) => (
-              <div key={label} className="flex gap-2">
-                <span className="text-[#767676] flex-shrink-0 w-24 text-xs font-semibold">{label}</span>
-                <span className="text-[#111111] break-all text-xs">{value}</span>
+      {/* Step 3: プレビュー・納品 */}
+      {step === 3 && (
+        <div className="space-y-5">
+          {deliverResult ? (
+            /* 納品完了 */
+            <div className="text-center space-y-5">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                <span className="text-3xl">✅</span>
               </div>
-            ))}
-          </div>
+              <div>
+                <p className="text-lg font-black text-[#111111]">納品完了！</p>
+                <p className="text-sm text-[#767676] mt-1">Googleドライブにデザイン画像を保存しました</p>
+              </div>
+              {/* プレビュー画像 */}
+              <div className="rounded-2xl overflow-hidden border border-[#EFEFEF] mx-auto max-w-xs">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={deliverResult.previewUrl}
+                  alt="納品画像"
+                  className="w-full"
+                  onError={e => {
+                    (e.target as HTMLImageElement).style.display = 'none'
+                  }}
+                />
+              </div>
+              <a
+                href={deliverResult.driveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-[#1a73e8] text-white font-bold px-6 py-3 rounded-full hover:bg-[#1557b0] transition-all"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L2 19h20L12 2zm0 3l7 13H5l7-13z"/>
+                </svg>
+                Googleドライブで確認する
+              </a>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="text-sm text-[#767676] underline"
+                >
+                  ダッシュボードに戻る
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* プレビュー表示 */
+            <>
+              <div>
+                <p className="text-xs font-bold text-[#111111] mb-1">完成デザインプレビュー</p>
+                <p className="text-[10px] text-[#767676] mb-3">
+                  入力したテキストをもとにデザインを自動生成しています。
+                  「納品する」ボタンを押すと、このデザインがGoogleドライブに保存されます。
+                </p>
+                {selectedTemplate && form.image_size ? (
+                  <DesignCanvas
+                    layoutType={selectedTemplate.layoutType}
+                    bgFrom={selectedTemplate.bgFrom}
+                    bgTo={selectedTemplate.bgTo}
+                    textContent={form.text_content}
+                    templateName={form.template_name}
+                    imageSize={form.image_size}
+                    onGenerated={handleCanvasGenerated}
+                  />
+                ) : (
+                  <div className="bg-[#F1EFEF] rounded-2xl p-8 text-center text-[#767676] text-sm">
+                    テンプレートまたはサイズが未選択です
+                  </div>
+                )}
+              </div>
+
+              {/* 確認サマリー */}
+              <div className="bg-[#F1EFEF] rounded-2xl p-4 space-y-2 text-sm">
+                <p className="text-xs font-bold text-[#111111] mb-3">依頼内容の確認</p>
+                {[
+                  ['制作内容', [...form.production_types, form.production_types_other ? `その他: ${form.production_types_other}` : ''].filter(Boolean).join('、') || '未選択'],
+                  ['テンプレート', form.template_name || '未選択'],
+                  ['サイズ', form.image_size || '未選択'],
+                  ['テキスト', form.text_content || 'なし'],
+                  ['素材ファイル', form.materialFiles.length > 0 ? form.materialFiles.map(f => f.name).join(', ') : 'なし'],
+                  ['納期', form.delivery_speed],
+                ].map(([label, value]) => (
+                  <div key={label} className="flex gap-2">
+                    <span className="text-[#767676] flex-shrink-0 w-24 text-xs font-semibold">{label}</span>
+                    <span className="text-[#111111] break-all text-xs">{value}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* 納品ボタン */}
+              <button
+                type="button"
+                onClick={handleDeliver}
+                disabled={delivering || !canvasDataUrl}
+                className="w-full bg-[#E60023] text-white font-bold py-4 rounded-full hover:bg-[#C0001E] transition-all disabled:opacity-50 shadow-md shadow-red-100 text-base"
+              >
+                {delivering ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                    </svg>
+                    Googleドライブに保存中...
+                  </span>
+                ) : '📤 このデザインで納品する'}
+              </button>
+
+              <p className="text-[10px] text-[#ABABAB] text-center">
+                納品後、Googleドライブのお客様番号フォルダに自動保存されます
+              </p>
+            </>
+          )}
         </div>
       )}
 
       {/* Navigation */}
-      <div className="flex gap-3 mt-5">
-        {step > 0 ? (
-          <button type="button" onClick={() => setStep(s => s - 1)}
-            className="flex-1 border border-[#EFEFEF] text-[#767676] font-semibold py-3 rounded-full hover:bg-[#F1EFEF] transition-all">
-            戻る
-          </button>
-        ) : (
-          <button type="button" onClick={onCancel}
-            className="flex-1 border border-[#EFEFEF] text-[#767676] font-semibold py-3 rounded-full hover:bg-[#F1EFEF] transition-all">
-            キャンセル
-          </button>
-        )}
-        {step < STEPS.length - 1 ? (
-          <button type="button" onClick={handleNext}
-            className="flex-1 bg-[#E60023] text-white font-bold py-3 rounded-full hover:bg-[#C0001E] transition-all shadow-md shadow-red-100">
-            次へ
-          </button>
-        ) : (
-          <button type="button" onClick={handleSubmit} disabled={loading}
-            className="flex-1 bg-[#E60023] text-white font-bold py-3 rounded-full hover:bg-[#C0001E] transition-all disabled:opacity-50 shadow-md shadow-red-100">
-            {loading ? '送信中...' : '依頼を確定する'}
-          </button>
-        )}
-      </div>
+      {!deliverResult && (
+        <div className="flex gap-3 mt-5">
+          {step > 0 ? (
+            <button type="button" onClick={() => setStep(s => s - 1)}
+              className="flex-1 border border-[#EFEFEF] text-[#767676] font-semibold py-3 rounded-full hover:bg-[#F1EFEF] transition-all">
+              戻る
+            </button>
+          ) : (
+            <button type="button" onClick={onCancel}
+              className="flex-1 border border-[#EFEFEF] text-[#767676] font-semibold py-3 rounded-full hover:bg-[#F1EFEF] transition-all">
+              キャンセル
+            </button>
+          )}
+          {step < STEPS.length - 1 && (
+            <button type="button" onClick={handleNext}
+              className="flex-1 bg-[#E60023] text-white font-bold py-3 rounded-full hover:bg-[#C0001E] transition-all shadow-md shadow-red-100">
+              次へ
+            </button>
+          )}
+        </div>
+      )}
     </div>
   )
 }
