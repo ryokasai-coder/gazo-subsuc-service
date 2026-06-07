@@ -66,6 +66,7 @@ export async function POST(req: NextRequest) {
           email: requestData.users.email,
           companyName: requestData.users.company_name,
           requestId,
+          driveUrl: requestData.delivered_image_url ?? null,
         })
         await notifySlack(`【納品完了】${requestData.users.company_name} / 依頼ID: ${requestId}`)
       } catch (e) {

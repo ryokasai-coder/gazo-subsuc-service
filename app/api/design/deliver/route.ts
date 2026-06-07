@@ -124,7 +124,8 @@ export async function POST(req: NextRequest) {
     const driveUrl = `https://drive.google.com/file/d/${fileId}/view`
     const previewUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`
 
-    // DBに保存
+    // DBに保存（statusはpending: 管理画面から納品操作するまで納品しない）
+    const billingMonth = new Date().toISOString().slice(0, 7)
     const { data: requestData, error: reqError } = await service
       .from('image_requests')
       .insert({
@@ -133,29 +134,15 @@ export async function POST(req: NextRequest) {
         image_size: imageSize || '正方形(1080x1080px)',
         text_content: textContent || '',
         template_name: templateName || '',
-        status: 'delivered',
-        delivered_image_url: driveUrl,
-        delivered_at: new Date().toISOString(),
+        status: 'pending',
+        delivered_image_url: driveUrl,   // 管理画面でプレビュー用
+        billing_month: billingMonth,
       })
       .select()
       .single()
 
     if (reqError) {
       console.error('DB insert error:', reqError)
-    }
-
-    // メール送信
-    const emailTarget = userData.email || user.email
-    if (emailTarget && requestData?.id) {
-      try {
-        await sendDeliveryEmail({
-          email: emailTarget,
-          companyName: userData.company_name || '',
-          requestId: requestData.id,
-        })
-      } catch (mailErr) {
-        console.error('Email send error:', mailErr)
-      }
     }
 
     return NextResponse.json({

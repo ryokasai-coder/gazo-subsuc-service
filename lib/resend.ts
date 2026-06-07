@@ -67,8 +67,8 @@ export async function sendFeedbackEmail({ email, companyName, contactName, billi
   })
 }
 
-export async function sendDeliveryEmail({ email, companyName, requestId }: {
-  email: string; companyName: string; requestId: string
+export async function sendDeliveryEmail({ email, companyName, requestId, driveUrl }: {
+  email: string; companyName: string; requestId: string; driveUrl?: string | null
 }) {
   await resend.emails.send({
     from: FROM(),
@@ -77,6 +77,7 @@ export async function sendDeliveryEmail({ email, companyName, requestId }: {
     html: `
       <p>${companyName} 様</p>
       <p>ご依頼いただいた画像制作が完了しました。</p>
+      ${driveUrl ? `<p><strong>▼ 納品画像はこちらからご確認ください</strong><br/><a href="${driveUrl}">${driveUrl}</a></p>` : ''}
       <p><a href="${process.env.NEXT_PUBLIC_SERVICE_URL}/dashboard/history">依頼履歴から確認する</a></p>
       <p>依頼ID: ${requestId}</p>
     `
