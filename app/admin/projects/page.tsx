@@ -97,13 +97,18 @@ export default function AdminProjectsPage() {
         }),
       })
       if (res.ok) {
+        const d = await res.json()
         setRequests(prev => prev.map(r =>
           r.id === req.id ? { ...r, status: 'delivered', delivered_at: new Date().toISOString() } : r
         ))
         if (selectedRequest?.id === req.id) {
           setSelectedRequest(prev => prev ? { ...prev, status: 'delivered' } : null)
         }
-        alert('✅ 納品完了・メールを送信しました')
+        if (d.emailSent) {
+          alert('✅ 納品完了・メールを送信しました')
+        } else {
+          alert('⚠️ ステータスを納品済みに更新しましたが、メール送信に失敗しました。\n手動でご連絡ください。\nエラー: ' + (d.emailError ?? '不明'))
+        }
       } else {
         const d = await res.json()
         alert('エラー: ' + (d.error || '納品に失敗しました'))

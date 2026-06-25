@@ -60,6 +60,8 @@ export async function POST(req: NextRequest) {
       .eq('id', requestId)
       .single()
 
+    let emailSent = false
+    let emailError: string | null = null
     if (requestData?.users) {
       try {
         await sendDeliveryEmail({
@@ -69,19 +71,23 @@ export async function POST(req: NextRequest) {
           driveUrl: requestData.delivered_image_url ?? null,
         })
         await notifySlack(`【納品完了】${requestData.users.company_name} / 依頼ID: ${requestId}`)
+        emailSent = true
       } catch (e) {
         console.error('Delivery email failed:', e)
+        emailError = e instanceof Error ? e.message : String(e)
       }
     }
 
-    // Update status
-    await service.from('image_requests').update({
+    // ステータス更新（メール送信失敗でも更新する）
+    const { error: updateError } = await service.from('image_requests').update({
       status: 'delivered',
       delivered_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }).eq('id', requestId)
 
-    return NextResponse.json({ ok: true })
+    if (updateError) return NextResponse.json({ error: updateError.message }, { status: 400 })
+
+    return NextResponse.json({ ok: true, emailSent, emailError })
   }
 
   return NextResponse.json({ error: 'Unknown action' }, { status: 400 })

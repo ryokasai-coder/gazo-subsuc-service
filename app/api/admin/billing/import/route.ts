@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
         deposit_date: parseDate(r.deposit_date),
         notes: r.notes,
         billing_month: r.period_start
-          ? r.period_start.substring(0, 7).replace('/', '-')
+          ? parseDate(r.period_start)?.substring(0, 7) ?? null
           : null,
         sales_date: parseDate(r.sales_date),
         user_id: userMap.get(r.billing_code) ?? null,
