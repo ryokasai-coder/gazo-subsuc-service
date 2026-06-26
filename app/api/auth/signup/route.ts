@@ -2,15 +2,24 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase-server'
 import { sendWelcomeEmail } from '@/lib/resend'
 
-function generateLoginId() {
-  return 'USR' + Math.random().toString(36).substring(2, 8).toUpperCase()
+async function generateLoginId(supabase: ReturnType<typeof createServiceClient>): Promise<string> {
+  const { data } = await supabase
+    .from('users')
+    .select('login_id')
+    .like('login_id', 'C-%')
+    .order('login_id', { ascending: false })
+    .limit(1)
+  const last = data?.[0]?.login_id
+  const lastNum = last ? parseInt(last.replace('C-', ''), 10) : 0
+  const next = (lastNum + 1).toString().padStart(4, '0')
+  return `C-${next}`
 }
 
 export async function POST(req: NextRequest) {
   const { email, password, companyName, contactName, phone } = await req.json()
   const supabase = createServiceClient()
 
-  const loginId = generateLoginId()
+  const loginId = await generateLoginId(supabase)
 
   // Create auth user
   const { data: authData, error: authError } = await supabase.auth.admin.createUser({

@@ -224,7 +224,7 @@ export default function HomePage() {
           <div className="text-center mb-12">
             <span className="text-xs font-bold text-[#E60023] uppercase tracking-widest">Gallery</span>
             <h2 className="text-3xl sm:text-4xl font-black text-[#111111] mt-2 mb-3">制作実績ギャラリー</h2>
-            <p className="text-[#767676]">납품実績の一部をご紹介します</p>
+            <p className="text-[#767676]">納品実績の一部をご紹介します</p>
           </div>
           {/* Masonry-style grid */}
           <div className="columns-2 sm:columns-3 lg:columns-4 gap-4 space-y-4">
@@ -317,7 +317,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="border-t border-white/10 mt-8 pt-8 text-center text-xs">
-            &copy; 2024 DESIGN BOX. All rights reserved.
+            &copy; 2026 DESIGN BOX. All rights reserved.
           </div>
         </div>
       </footer>

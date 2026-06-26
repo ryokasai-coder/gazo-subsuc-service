@@ -181,7 +181,7 @@ export default function AdminBillingPage() {
           <div className="bg-white rounded-2xl p-4 shadow-sm text-center border-t-2 border-[#111111]">
             <div className="text-2xl font-black text-[#111111]">{activeContracts}社</div>
             <div className="text-xs text-[#767676] mt-0.5">契約中顧客数</div>
-            <div className="text-sm text-[#ABABAB]">billing_type=1</div>
+            <div className="text-sm text-[#ABABAB]">月額契約</div>
           </div>
         </div>
 
