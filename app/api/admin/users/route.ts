@@ -36,3 +36,36 @@ export async function PATCH(req: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
   return NextResponse.json({ ok: true })
 }
+
+export async function POST(req: NextRequest) {
+  const service = await checkAdmin()
+  if (!service) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { action, userId } = await req.json()
+
+  if (action === 'dunning') {
+    const { data: user } = await service.from('users').select('email, company_name').eq('id', userId).single()
+    if (!user) return NextResponse.json({ error: 'ユーザーが見つかりません' }, { status: 404 })
+    // 督促メールはResendで送信（sendDunningEmail）
+    const { sendDunningEmail } = await import('@/lib/resend')
+    try {
+      await sendDunningEmail({ email: user.email, companyName: user.company_name })
+      return NextResponse.json({ ok: true })
+    } catch (e) {
+      return NextResponse.json({ error: e instanceof Error ? e.message : String(e) }, { status: 500 })
+    }
+  }
+
+  if (action === 'reset_password') {
+    const { data: user } = await service.from('users').select('email').eq('id', userId).single()
+    if (!user) return NextResponse.json({ error: 'ユーザーが見つかりません' }, { status: 404 })
+    const { error } = await service.auth.admin.generateLink({
+      type: 'recovery',
+      email: user.email,
+    })
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json({ ok: true, message: 'パスワードリセットメールを送信しました' })
+  }
+
+  return NextResponse.json({ error: 'Unknown action' }, { status: 400 })
+}

@@ -69,6 +69,7 @@ export default function AdminPage() {
   const navItems = [
     { href: '/admin/projects', label: '案件管理', icon: '🎨', desc: '依頼の確認・ステータス変更・納品' },
     { href: '/admin/billing', label: '請求管理', icon: '💰', desc: 'CSV取込・支払い状況確認' },
+    { href: '/admin/users', label: 'ユーザー管理', icon: '👥', desc: '登録ユーザー一覧・有効化・PW再設定' },
     { href: '/admin/remaining', label: '依頼数管理', icon: '📊', desc: 'ユーザーの残り依頼数確認' },
     { href: '/admin/feedback', label: 'フィードバック', icon: '⭐', desc: '評価・コメント一覧' },
   ]
