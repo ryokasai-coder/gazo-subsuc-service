@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient, createServiceClient } from '@/lib/supabase-server'
+import { sendDunningEmail } from '@/lib/resend'
 
 async function checkAdmin() {
   const supabase = await createServerSupabaseClient()
@@ -46,8 +47,6 @@ export async function POST(req: NextRequest) {
   if (action === 'dunning') {
     const { data: user } = await service.from('users').select('email, company_name').eq('id', userId).single()
     if (!user) return NextResponse.json({ error: 'ユーザーが見つかりません' }, { status: 404 })
-    // 督促メールはResendで送信（sendDunningEmail）
-    const { sendDunningEmail } = await import('@/lib/resend')
     try {
       await sendDunningEmail({ email: user.email, companyName: user.company_name })
       return NextResponse.json({ ok: true })
