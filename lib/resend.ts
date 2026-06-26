@@ -9,7 +9,7 @@ export async function sendWelcomeEmail({ email, loginId, tempPassword }: {
   await resend.emails.send({
     from: FROM(),
     to: email,
-    subject: '【画像作成サブスクサービス（仮）】ログインIDのご案内',
+    subject: '【DESIGN BOX】ログインIDのご案内',
     html: `
       <p>この度はお申込みいただきありがとうございます。</p>
       <p>以下の情報でログインをお願いいたします。</p>
@@ -35,7 +35,7 @@ export async function sendReminderEmail({ user, usedCount, requiredCount, thresh
   await resend.emails.send({
     from: FROM(),
     to: user.email,
-    subject: '【画像作成サブスクサービス（仮）】今月の画像依頼はお済みですか？',
+    subject: '【DESIGN BOX】今月の画像依頼はお済みですか？',
     html: `
       <p>${user.company_name} ${user.contact_name ?? ''} 様</p>
       <p>いつもご利用いただきありがとうございます。</p>
@@ -57,7 +57,7 @@ export async function sendFeedbackEmail({ email, companyName, contactName, billi
   await resend.emails.send({
     from: FROM(),
     to: email,
-    subject: '【画像作成サブスクサービス（仮）】今月のサービスに関するアンケートのお願い',
+    subject: '【DESIGN BOX】今月のサービスに関するアンケートのお願い',
     html: `
       <p>${companyName} ${contactName ?? ''} 様</p>
       <p>いつもご利用いただきありがとうございます。</p>
@@ -73,7 +73,7 @@ export async function sendDeliveryEmail({ email, companyName, requestId, driveUr
   await resend.emails.send({
     from: FROM(),
     to: email,
-    subject: '【画像作成サブスクサービス（仮）】納品のご連絡',
+    subject: '【DESIGN BOX】納品のご連絡',
     html: `
       <p>${companyName} 様</p>
       <p>ご依頼いただいた画像制作が完了しました。</p>
@@ -90,7 +90,7 @@ export async function sendDunningEmail({ email, companyName }: {
   await resend.emails.send({
     from: FROM(),
     to: email,
-    subject: '【画像作成サブスクサービス（仮）】お支払いのご確認',
+    subject: '【DESIGN BOX】お支払いのご確認',
     html: `
       <p>${companyName} 様</p>
       <p>お支払いが確認できていない月が2ヶ月以上続いています。</p>

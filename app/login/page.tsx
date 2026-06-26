@@ -48,8 +48,8 @@ export default function LoginPage() {
       <header className="bg-white border-b border-[#EFEFEF] px-4">
         <div className="max-w-6xl mx-auto h-[60px] flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <span className="w-7 h-7 rounded-lg bg-[#E60023] flex items-center justify-center text-white font-bold text-xs">画</span>
-            <span className="font-bold text-[#111111] text-sm hidden sm:block">画像作成サブスクサービス（仮）</span>
+            <span className="w-7 h-7 rounded-lg bg-[#E60023] flex items-center justify-center text-white font-bold text-xs">D</span>
+            <span className="font-bold text-[#111111] text-sm hidden sm:block">DESIGN BOX</span>
           </Link>
           <Link href="/apply" className="text-sm text-[#767676] hover:text-[#111111] transition-colors">新規お申し込み</Link>
         </div>

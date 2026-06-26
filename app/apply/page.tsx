@@ -3,10 +3,10 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 
-const TERMS = `画像作成サブスクサービス（仮）利用規約
+const TERMS = `DESIGN BOX利用規約
 
 第1条（目的）
-本規約は、画像作成サブスクサービス（仮）（以下「本サービス」といいます）の利用条件を定めるものです。
+本規約は、DESIGN BOX（以下「本サービス」といいます）の利用条件を定めるものです。
 
 第2条（利用申し込み）
 本サービスの利用希望者は、本規約に同意の上、所定の申し込み手続きを行うものとします。申し込みの承諾をもって、本サービスの利用契約（以下「本契約」といいます）が成立するものとします。
@@ -142,8 +142,8 @@ export default function ApplyPage() {
       <header className="bg-white border-b border-[#EFEFEF] px-4">
         <div className="max-w-6xl mx-auto h-[60px] flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <span className="w-7 h-7 rounded-lg bg-[#E60023] flex items-center justify-center text-white font-bold text-xs">画</span>
-            <span className="font-bold text-[#111111] text-sm hidden sm:block">画像作成サブスクサービス（仮）</span>
+            <span className="w-7 h-7 rounded-lg bg-[#E60023] flex items-center justify-center text-white font-bold text-xs">D</span>
+            <span className="font-bold text-[#111111] text-sm hidden sm:block">DESIGN BOX</span>
           </Link>
           <Link href="/login" className="text-sm text-[#767676] hover:text-[#111111] transition-colors">ログインはこちら</Link>
         </div>

@@ -303,8 +303,8 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <span className="w-7 h-7 rounded-lg bg-[#E60023] flex items-center justify-center text-white font-bold text-xs">画</span>
-                <span className="text-white font-bold text-sm">画像作成サブスクサービス（仮）</span>
+                <span className="w-7 h-7 rounded-lg bg-[#E60023] flex items-center justify-center text-white font-bold text-xs">D</span>
+                <span className="text-white font-bold text-sm">DESIGN BOX</span>
               </div>
               <p className="text-xs">月額定額の画像制作サービス</p>
             </div>
@@ -317,7 +317,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="border-t border-white/10 mt-8 pt-8 text-center text-xs">
-            &copy; 2024 画像作成サブスクサービス（仮）. All rights reserved.
+            &copy; 2024 DESIGN BOX. All rights reserved.
           </div>
         </div>
       </footer>

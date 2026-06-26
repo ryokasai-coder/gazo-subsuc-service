@@ -10,7 +10,7 @@ const notoSansJP = Noto_Sans_JP({
 })
 
 export const metadata: Metadata = {
-  title: '画像作成サブスクサービス（仮）',
+  title: 'DESIGN BOX',
   description: '月額定額で高品質な画像制作をサブスクリプション提供。月10回まで依頼可能。',
   keywords: '画像制作, サブスクリプション, デザイン, 月額定額',
 }
