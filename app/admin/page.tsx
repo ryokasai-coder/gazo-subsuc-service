@@ -75,27 +75,27 @@ export default function AdminPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#F1EFEF]">
+    <div className="min-h-screen bg-[#F7F7F9]">
       <header className="bg-white border-b border-[#EFEFEF] sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-[60px] flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-7 h-7 rounded-lg bg-[#E60023] flex items-center justify-center text-white font-bold text-xs">管</span>
+            <span className="w-7 h-7 rounded-lg bg-[#F5308A] flex items-center justify-center text-white font-bold text-xs">管</span>
             <span className="font-bold text-[#111111] text-sm">管理ダッシュボード</span>
           </div>
-          <button onClick={handleLogout} className="text-sm text-[#767676] hover:text-[#111111] px-3 py-1.5 rounded-full hover:bg-[#F1EFEF] transition-all">ログアウト</button>
+          <button onClick={handleLogout} className="text-sm text-[#767676] hover:text-[#111111] px-3 py-1.5 rounded-full hover:bg-[#F7F7F9] transition-all">ログアウト</button>
         </div>
       </header>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         <div className="mb-6">
-          <p className="text-xs font-bold text-[#E60023] uppercase tracking-widest mb-1">Admin</p>
+          <p className="text-xs font-bold text-[#F5308A] uppercase tracking-widest mb-1">Admin</p>
           <h1 className="text-2xl font-black text-[#111111]">管理ダッシュボード</h1>
           <p className="text-[#767676] text-sm mt-0.5">{billingMonth.replace('-', '年')}月 概要</p>
         </div>
 
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="w-8 h-8 border-2 border-[#E60023] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#F5308A] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <>
@@ -109,7 +109,7 @@ export default function AdminPage() {
                 { label: '未払い', value: stats?.unpaidCount, red: (stats?.unpaidCount ?? 0) > 0 },
               ].map(item => (
                 <div key={item.label} className="bg-white rounded-2xl p-4 shadow-sm text-center">
-                  <div className={`text-2xl font-black ${item.red ? 'text-[#E60023]' : 'text-[#111111]'}`}>{item.value}</div>
+                  <div className={`text-2xl font-black ${item.red ? 'text-[#F5308A]' : 'text-[#111111]'}`}>{item.value}</div>
                   <div className="text-xs text-[#767676] mt-1">{item.label}</div>
                 </div>
               ))}
@@ -125,7 +125,7 @@ export default function AdminPage() {
                   <div className="text-3xl mb-4">{item.icon}</div>
                   <div className="font-bold text-[#111111] mb-1">{item.label}</div>
                   <div className="text-xs text-[#767676]">{item.desc}</div>
-                  <div className="mt-4 flex items-center gap-1 text-xs text-[#E60023] font-semibold">
+                  <div className="mt-4 flex items-center gap-1 text-xs text-[#F5308A] font-semibold">
                     開く
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />

@@ -82,10 +82,10 @@ function FeedbackContent() {
   )
 
   return (
-    <div className="min-h-screen bg-[#F1EFEF]">
+    <div className="min-h-screen bg-[#F7F7F9]">
       <header className="bg-white border-b border-[#EFEFEF] sticky top-0 z-40">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 h-[60px] flex items-center gap-4">
-          <Link href="/dashboard" className="w-8 h-8 rounded-full flex items-center justify-center text-[#767676] hover:bg-[#F1EFEF] transition-all">
+          <Link href="/dashboard" className="w-8 h-8 rounded-full flex items-center justify-center text-[#767676] hover:bg-[#F7F7F9] transition-all">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
             </svg>
@@ -97,17 +97,17 @@ function FeedbackContent() {
       <div className="max-w-lg mx-auto px-4 sm:px-6 py-8">
         <div className="bg-white rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] p-6 sm:p-8">
           <div className="mb-6">
-            <span className="text-xs font-bold text-[#E60023] uppercase tracking-widest">Feedback</span>
+            <span className="text-xs font-bold text-[#F5308A] uppercase tracking-widest">Feedback</span>
             <h2 className="text-xl font-black text-[#111111] mt-1">{monthParam.replace('-', '年')}月のサービス評価</h2>
             <p className="text-sm text-[#767676] mt-1">今月のサービスについてご意見をお聞かせください</p>
           </div>
 
           {submitted ? (
             <div className="text-center py-8">
-              <div className="w-16 h-16 bg-[#FFE8EC] rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">🙏</div>
+              <div className="w-16 h-16 bg-[#FFF0F7] rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">🙏</div>
               <h3 className="font-black text-[#111111] mb-2">ご回答ありがとうございました</h3>
               <p className="text-sm text-[#767676] mb-6">いただいたご意見はサービス改善に活用いたします。</p>
-              <Link href="/dashboard" className="text-[#E60023] hover:underline text-sm font-semibold">ダッシュボードに戻る</Link>
+              <Link href="/dashboard" className="text-[#F5308A] hover:underline text-sm font-semibold">ダッシュボードに戻る</Link>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5">
@@ -121,13 +121,13 @@ function FeedbackContent() {
                   onChange={e => setForm(p => ({ ...p, comment: e.target.value }))}
                   rows={4}
                   placeholder="ご感想やご要望があればご記入ください"
-                  className="w-full border border-[#EFEFEF] rounded-2xl px-4 py-3 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#E60023]/20 focus:border-[#E60023] transition-all bg-[#FAFAFA] resize-none"
+                  className="w-full border border-[#EFEFEF] rounded-2xl px-4 py-3 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#F5308A]/20 focus:border-[#F5308A] transition-all bg-[#FAFAFA] resize-none"
                 />
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#E60023] text-white font-bold py-4 rounded-full hover:bg-[#C0001E] transition-all disabled:opacity-50 shadow-md shadow-red-100"
+                className="w-full bg-[#F5308A] text-white font-bold py-4 rounded-full hover:bg-[#D81B79] transition-all disabled:opacity-50 shadow-md shadow-red-100"
               >
                 {loading ? '送信中...' : 'フィードバックを送信する'}
               </button>
@@ -141,7 +141,7 @@ function FeedbackContent() {
 
 export default function FeedbackPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#F1EFEF] flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#E60023] border-t-transparent rounded-full animate-spin" /></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#F7F7F9] flex items-center justify-center"><div className="w-8 h-8 border-2 border-[#F5308A] border-t-transparent rounded-full animate-spin" /></div>}>
       <FeedbackContent />
     </Suspense>
   )

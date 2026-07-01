@@ -44,11 +44,11 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' }:
         </div>
         {/* Header */}
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-[#F1EFEF]">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[#F7F7F9]">
             <h2 className="text-base font-bold text-[#111111]">{title}</h2>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-full text-[#767676] hover:text-[#111111] hover:bg-[#F1EFEF] transition-all"
+              className="p-1.5 rounded-full text-[#767676] hover:text-[#111111] hover:bg-[#F7F7F9] transition-all"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />

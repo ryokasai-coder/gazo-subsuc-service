@@ -43,13 +43,18 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F1EFEF] flex flex-col">
+    <div className="min-h-screen bg-[#F7F7F9] flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-[#EFEFEF] px-4">
+      <header className="bg-white border-b border-[#ECECEF] px-4">
         <div className="max-w-6xl mx-auto h-[60px] flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <span className="w-7 h-7 rounded-lg bg-[#E60023] flex items-center justify-center text-white font-bold text-xs">D</span>
-            <span className="font-bold text-[#111111] text-sm hidden sm:block">DESIGN BOX</span>
+            <span className="w-7 h-7 rounded-[9px] bg-brand-gradient flex items-center justify-center text-white">
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2l8.66 5v10L12 22 3.34 17V7L12 2z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                <path d="M3.34 7L12 12l8.66-5M12 12v10" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+              </svg>
+            </span>
+            <span className="font-black text-[#111111] text-sm hidden sm:block tracking-tight">DESIGN<span className="text-gradient">BOX</span></span>
           </Link>
           <Link href="/apply" className="text-sm text-[#767676] hover:text-[#111111] transition-colors">新規お申し込み</Link>
         </div>
@@ -58,14 +63,14 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
-            <span className="text-xs font-bold text-[#E60023] uppercase tracking-widest">Login</span>
+            <span className="text-xs font-black text-gradient uppercase tracking-widest">Login</span>
             <h1 className="text-3xl font-black text-[#111111] mt-2 mb-2">ログイン</h1>
             <p className="text-[#767676] text-sm">アカウント情報を入力してください</p>
           </div>
 
           <div className="bg-white rounded-3xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] p-6 sm:p-8">
             {error && (
-              <div className="bg-[#FFE8EC] border border-red-100 text-[#E60023] rounded-xl px-4 py-3 text-sm mb-5">
+              <div className="bg-[#FFF0F7] border border-red-100 text-[#F5308A] rounded-xl px-4 py-3 text-sm mb-5">
                 {error}
               </div>
             )}
@@ -79,7 +84,7 @@ export default function LoginPage() {
                   onChange={(e) => setLoginId(e.target.value)}
                   required
                   placeholder="例：C-0001"
-                  className="w-full border border-[#EFEFEF] rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#E60023]/20 focus:border-[#E60023] transition-all bg-[#FAFAFA]"
+                  className="w-full border border-[#EFEFEF] rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#F5308A]/20 focus:border-[#F5308A] transition-all bg-[#FAFAFA]"
                 />
               </div>
               <div>
@@ -90,13 +95,13 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="パスワード"
-                  className="w-full border border-[#EFEFEF] rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#E60023]/20 focus:border-[#E60023] transition-all bg-[#FAFAFA]"
+                  className="w-full border border-[#EFEFEF] rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#F5308A]/20 focus:border-[#F5308A] transition-all bg-[#FAFAFA]"
                 />
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#E60023] text-white font-bold py-4 rounded-full hover:bg-[#C0001E] transition-all disabled:opacity-50 shadow-md shadow-red-100 mt-2"
+                className="btn-gradient w-full font-bold py-4 rounded-full transition-all disabled:opacity-50 mt-2"
               >
                 {loading ? 'ログイン中...' : 'ログイン'}
               </button>
@@ -104,7 +109,7 @@ export default function LoginPage() {
 
             <div className="mt-5 text-center text-xs text-[#ABABAB]">
               アカウントをお持ちでない方は
-              <Link href="/apply" className="text-[#E60023] hover:underline ml-1">
+              <Link href="/apply" className="text-[#F5308A] hover:underline ml-1">
                 こちらから申し込み
               </Link>
             </div>

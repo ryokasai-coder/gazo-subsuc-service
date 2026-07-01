@@ -147,7 +147,7 @@ export default function AdminProjectsPage() {
     return d.toISOString().slice(0, 7)
   })
 
-  const selectClass = "border border-[#EFEFEF] rounded-full px-4 py-2 text-sm text-[#111111] bg-white focus:outline-none focus:ring-2 focus:ring-[#E60023]/20 focus:border-[#E60023] transition-all"
+  const selectClass = "border border-[#EFEFEF] rounded-full px-4 py-2 text-sm text-[#111111] bg-white focus:outline-none focus:ring-2 focus:ring-[#F5308A]/20 focus:border-[#F5308A] transition-all"
   const thClass = "text-left px-4 py-3 text-xs font-semibold text-[#767676]"
   const tdClass = "px-4 py-3"
 
@@ -158,20 +158,20 @@ export default function AdminProjectsPage() {
   }, {} as Record<string, number>)
 
   return (
-    <div className="min-h-screen bg-[#F1EFEF]">
+    <div className="min-h-screen bg-[#F7F7F9]">
       <header className="bg-white border-b border-[#EFEFEF] sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-[60px] flex items-center gap-4">
-          <Link href="/admin" className="w-8 h-8 rounded-full flex items-center justify-center text-[#767676] hover:bg-[#F1EFEF] transition-all">
+          <Link href="/admin" className="w-8 h-8 rounded-full flex items-center justify-center text-[#767676] hover:bg-[#F7F7F9] transition-all">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
             </svg>
           </Link>
           <h1 className="font-bold text-[#111111]">案件管理</h1>
           <div className="ml-auto flex items-center gap-2">
-            <Link href="/admin/projects/master" className="text-sm border border-[#EFEFEF] text-[#767676] px-4 py-2 rounded-full hover:bg-[#F1EFEF] transition-all">
+            <Link href="/admin/projects/master" className="text-sm border border-[#EFEFEF] text-[#767676] px-4 py-2 rounded-full hover:bg-[#F7F7F9] transition-all">
               案件マスタ
             </Link>
-            <button onClick={exportCSV} className="text-sm border border-[#EFEFEF] text-[#767676] px-4 py-2 rounded-full hover:bg-[#F1EFEF] transition-all">
+            <button onClick={exportCSV} className="text-sm border border-[#EFEFEF] text-[#767676] px-4 py-2 rounded-full hover:bg-[#F7F7F9] transition-all">
               CSV出力
             </button>
           </div>
@@ -185,7 +185,7 @@ export default function AdminProjectsPage() {
             { label: '依頼中', key: 'pending', color: 'text-yellow-600 bg-yellow-50 border-yellow-200' },
             { label: '制作中', key: 'in_progress', color: 'text-blue-600 bg-blue-50 border-blue-200' },
             { label: '納品済', key: 'delivered', color: 'text-emerald-600 bg-emerald-50 border-emerald-200' },
-            { label: '合計', key: 'total', color: 'text-[#E60023] bg-[#FFE8EC] border-red-200' },
+            { label: '合計', key: 'total', color: 'text-[#F5308A] bg-[#FFF0F7] border-red-200' },
           ].map(({ label, key, color }) => (
             <div key={key} className={`rounded-2xl border p-4 ${color}`}>
               <p className="text-xs font-semibold opacity-70">{label}</p>
@@ -208,20 +208,20 @@ export default function AdminProjectsPage() {
             {months.map(m => <option key={m} value={m}>{m.replace('-', '年')}月</option>)}
           </select>
           <button onClick={() => { setLoading(true); fetchRequests() }}
-            className="border border-[#EFEFEF] bg-white text-[#767676] px-4 py-2 rounded-full text-sm hover:bg-[#F1EFEF] transition-all">
+            className="border border-[#EFEFEF] bg-white text-[#767676] px-4 py-2 rounded-full text-sm hover:bg-[#F7F7F9] transition-all">
             🔄 更新
           </button>
         </div>
 
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="w-8 h-8 border-2 border-[#E60023] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#F5308A] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-[#F1EFEF] border-b border-[#EFEFEF]">
+                <thead className="bg-[#F7F7F9] border-b border-[#EFEFEF]">
                   <tr>
                     <th className={thClass}>お客様番号</th>
                     <th className={thClass}>会社名</th>
@@ -232,7 +232,7 @@ export default function AdminProjectsPage() {
                     <th className={thClass}>操作</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F1EFEF]">
+                <tbody className="divide-y divide-[#F7F7F9]">
                   {requests.map(req => (
                     <tr key={req.id} className="hover:bg-[#FAFAFA] transition-colors">
                       <td className={`${tdClass} font-mono text-xs text-[#767676]`}>{req.users?.login_id}</td>
@@ -257,7 +257,7 @@ export default function AdminProjectsPage() {
                       <td className={tdClass}>
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <button onClick={() => setSelectedRequest(req)}
-                            className="text-xs text-[#E60023] hover:underline font-semibold">
+                            className="text-xs text-[#F5308A] hover:underline font-semibold">
                             詳細
                           </button>
                           {req.status === 'pending' && (
@@ -293,14 +293,14 @@ export default function AdminProjectsPage() {
             <div className="flex items-center gap-2 flex-wrap">
               <StatusBadge status={selectedRequest.status} />
               <span className="text-sm text-[#767676]">{selectedRequest.billing_month?.replace('-', '年')}月</span>
-              <span className="text-xs bg-[#F1EFEF] text-[#767676] px-2 py-0.5 rounded-full font-mono">
+              <span className="text-xs bg-[#F7F7F9] text-[#767676] px-2 py-0.5 rounded-full font-mono">
                 {selectedRequest.users?.login_id}
               </span>
             </div>
 
             {/* Driveプレビュー */}
             {selectedRequest.delivered_image_url && (
-              <div className="bg-[#F1EFEF] rounded-2xl p-4">
+              <div className="bg-[#F7F7F9] rounded-2xl p-4">
                 <p className="text-xs font-semibold text-[#767676] mb-2">📁 Googleドライブ画像</p>
                 <a href={selectedRequest.delivered_image_url} target="_blank" rel="noopener noreferrer"
                   className="text-sm text-blue-600 hover:underline break-all">
@@ -321,7 +321,7 @@ export default function AdminProjectsPage() {
                 ['備考', selectedRequest.notes || '-'],
               ].map(([label, value]) => (
                 <div key={label}
-                  className={`${label === '備考' || label === 'テキスト内容' ? 'col-span-2' : ''} bg-[#F1EFEF] rounded-xl p-3`}>
+                  className={`${label === '備考' || label === 'テキスト内容' ? 'col-span-2' : ''} bg-[#F7F7F9] rounded-xl p-3`}>
                   <span className="text-xs font-semibold text-[#767676] block mb-0.5">{label}</span>
                   <span className="text-sm text-[#111111] break-all">{value}</span>
                 </div>
@@ -346,7 +346,7 @@ export default function AdminProjectsPage() {
                 </button>
               )}
               {selectedRequest.status === 'delivered' && (
-                <div className="flex-1 bg-[#F1EFEF] text-[#767676] py-3 rounded-full text-sm text-center font-semibold">
+                <div className="flex-1 bg-[#F7F7F9] text-[#767676] py-3 rounded-full text-sm text-center font-semibold">
                   ✅ 納品済み {selectedRequest.delivered_at && `（${new Date(selectedRequest.delivered_at).toLocaleDateString('ja-JP')}）`}
                 </div>
               )}

@@ -87,10 +87,10 @@ export default function AdminUsersPage() {
   const tdClass = "px-4 py-3"
 
   return (
-    <div className="min-h-screen bg-[#F1EFEF]">
+    <div className="min-h-screen bg-[#F7F7F9]">
       <header className="bg-white border-b border-[#EFEFEF] sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-[60px] flex items-center gap-4">
-          <Link href="/admin" className="w-8 h-8 rounded-full flex items-center justify-center text-[#767676] hover:bg-[#F1EFEF] transition-all">
+          <Link href="/admin" className="w-8 h-8 rounded-full flex items-center justify-center text-[#767676] hover:bg-[#F7F7F9] transition-all">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
             </svg>
@@ -102,7 +102,7 @@ export default function AdminUsersPage() {
               placeholder="会社名・ID・メールで検索"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="border border-[#EFEFEF] rounded-full px-4 py-2 text-sm text-[#111111] bg-white focus:outline-none focus:ring-2 focus:ring-[#E60023]/20 focus:border-[#E60023] transition-all w-64"
+              className="border border-[#EFEFEF] rounded-full px-4 py-2 text-sm text-[#111111] bg-white focus:outline-none focus:ring-2 focus:ring-[#F5308A]/20 focus:border-[#F5308A] transition-all w-64"
             />
           </div>
         </div>
@@ -127,13 +127,13 @@ export default function AdminUsersPage() {
 
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="w-8 h-8 border-2 border-[#E60023] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#F5308A] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-[#F1EFEF] border-b border-[#EFEFEF]">
+                <thead className="bg-[#F7F7F9] border-b border-[#EFEFEF]">
                   <tr>
                     <th className={thClass}>お客様番号</th>
                     <th className={thClass}>会社名 / 担当者</th>
@@ -144,10 +144,10 @@ export default function AdminUsersPage() {
                     <th className={thClass}>操作</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F1EFEF]">
+                <tbody className="divide-y divide-[#F7F7F9]">
                   {filtered.map(user => (
                     <tr key={user.id} className={`transition-colors ${user.is_active ? 'hover:bg-[#FAFAFA]' : 'bg-gray-50 opacity-60'}`}>
-                      <td className={`${tdClass} font-mono text-xs font-bold text-[#E60023]`}>{user.login_id}</td>
+                      <td className={`${tdClass} font-mono text-xs font-bold text-[#F5308A]`}>{user.login_id}</td>
                       <td className={tdClass}>
                         <p className="font-semibold text-[#111111]">{user.company_name}</p>
                         <p className="text-xs text-[#ABABAB]">{user.contact_name}</p>
@@ -180,7 +180,7 @@ export default function AdminUsersPage() {
                         <button
                           onClick={() => resetPassword(user)}
                           disabled={actionLoading === user.id + '_pw'}
-                          className="text-xs bg-[#F1EFEF] text-[#767676] px-2.5 py-1 rounded-full hover:bg-[#E0DEDE] transition-all disabled:opacity-50"
+                          className="text-xs bg-[#F7F7F9] text-[#767676] px-2.5 py-1 rounded-full hover:bg-[#E0DEDE] transition-all disabled:opacity-50"
                         >
                           {actionLoading === user.id + '_pw' ? '送信中...' : 'PW再設定'}
                         </button>

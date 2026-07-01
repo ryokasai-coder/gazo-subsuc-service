@@ -77,8 +77,9 @@ export async function POST(req: NextRequest) {
 
   // Slack notification
   const types = (body.production_types ?? []).join(', ') || '未設定'
+  const templateInfo = body.template_name ? `\nテンプレート: ${body.template_name}` : ''
   await notifySlack(
-    `【新規依頼】${userData.company_name}\n制作内容: ${types}\n依頼ID: ${requestData.id}`
+    `【新規依頼】${userData.company_name}\n制作内容: ${types}${templateInfo}\n依頼ID: ${requestData.id}`
   )
 
   return NextResponse.json({ id: requestData.id })

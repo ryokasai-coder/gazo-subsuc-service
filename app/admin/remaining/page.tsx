@@ -52,10 +52,10 @@ export default function AdminRemainingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F1EFEF]">
+    <div className="min-h-screen bg-[#F7F7F9]">
       <header className="bg-white border-b border-[#EFEFEF] sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-[60px] flex items-center gap-4">
-          <Link href="/admin" className="w-8 h-8 rounded-full flex items-center justify-center text-[#767676] hover:bg-[#F1EFEF] transition-all">
+          <Link href="/admin" className="w-8 h-8 rounded-full flex items-center justify-center text-[#767676] hover:bg-[#F7F7F9] transition-all">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
             </svg>
@@ -66,20 +66,20 @@ export default function AdminRemainingPage() {
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         <div className="bg-white rounded-2xl p-4 mb-5 flex items-center gap-4 shadow-sm">
-          <div className="w-10 h-10 bg-[#FFE8EC] rounded-full flex items-center justify-center flex-shrink-0">
+          <div className="w-10 h-10 bg-[#FFF0F7] rounded-full flex items-center justify-center flex-shrink-0">
             <span className="text-lg">📊</span>
           </div>
           <div>
             <p className="text-sm font-semibold text-[#111111]">
               {billingMonth.replace('-', '年')}月 — {dayOfMonth}日時点（月間進捗 {Math.round(pacingRate * 100)}%）
             </p>
-            <p className="text-xs text-[#767676] mt-0.5">ペース通りの依頼数：<strong className="text-[#E60023]">{expectedCount}回 / 10回</strong></p>
+            <p className="text-xs text-[#767676] mt-0.5">ペース通りの依頼数：<strong className="text-[#F5308A]">{expectedCount}回 / 10回</strong></p>
           </div>
         </div>
 
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="w-8 h-8 border-2 border-[#E60023] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#F5308A] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : usages.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-3xl shadow-sm">
@@ -88,7 +88,7 @@ export default function AdminRemainingPage() {
         ) : (
           <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-[#F1EFEF] border-b border-[#EFEFEF]">
+              <thead className="bg-[#F7F7F9] border-b border-[#EFEFEF]">
                 <tr>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-[#767676]">会社名</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-[#767676]">依頼数</th>
@@ -96,7 +96,7 @@ export default function AdminRemainingPage() {
                   <th className="text-left px-4 py-3 text-xs font-semibold text-[#767676]">ステータス</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#F1EFEF]">
+              <tbody className="divide-y divide-[#F7F7F9]">
                 {usages.map(u => {
                   const status = getStatus(u.used_count)
                   const pct = (u.used_count / u.max_count) * 100
@@ -111,9 +111,9 @@ export default function AdminRemainingPage() {
                         <span className="text-[#ABABAB]"> / {u.max_count}</span>
                       </td>
                       <td className="px-4 py-3 w-44">
-                        <div className="w-32 bg-[#F1EFEF] rounded-full h-2">
+                        <div className="w-32 bg-[#F7F7F9] rounded-full h-2">
                           <div
-                            className="bg-[#E60023] h-2 rounded-full transition-all"
+                            className="bg-[#F5308A] h-2 rounded-full transition-all"
                             style={{ width: `${Math.min(pct, 100)}%` }}
                           />
                         </div>

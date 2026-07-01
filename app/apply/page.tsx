@@ -12,7 +12,7 @@ const TERMS = `DESIGN BOX利用規約
 本サービスの利用希望者は、本規約に同意の上、所定の申し込み手続きを行うものとします。申し込みの承諾をもって、本サービスの利用契約（以下「本契約」といいます）が成立するものとします。
 
 第3条（料金）
-1. 本サービスの利用料金は月額20,000円（税抜）とします。
+1. 本サービスの利用料金は月額5,000円（税抜）とします。
 2. 利用料金は毎月月初に翌月分を請求いたします。
 3. 支払い方法はクレジットカード払いのみとします。
 
@@ -133,17 +133,22 @@ export default function ApplyPage() {
     }
   }
 
-  const inputClass = "w-full border border-[#EFEFEF] rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#E60023]/20 focus:border-[#E60023] transition-all bg-[#FAFAFA]"
+  const inputClass = "w-full border border-[#EFEFEF] rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#F5308A]/20 focus:border-[#F5308A] transition-all bg-[#FAFAFA]"
   const labelClass = "block text-xs font-semibold text-[#111111] mb-1.5"
 
   return (
-    <div className="min-h-screen bg-[#F1EFEF]">
+    <div className="min-h-screen bg-[#F7F7F9]">
       {/* Header */}
-      <header className="bg-white border-b border-[#EFEFEF] px-4">
+      <header className="bg-white border-b border-[#ECECEF] px-4">
         <div className="max-w-6xl mx-auto h-[60px] flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <span className="w-7 h-7 rounded-lg bg-[#E60023] flex items-center justify-center text-white font-bold text-xs">D</span>
-            <span className="font-bold text-[#111111] text-sm hidden sm:block">DESIGN BOX</span>
+            <span className="w-7 h-7 rounded-[9px] bg-brand-gradient flex items-center justify-center text-white">
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2l8.66 5v10L12 22 3.34 17V7L12 2z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                <path d="M3.34 7L12 12l8.66-5M12 12v10" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+              </svg>
+            </span>
+            <span className="font-black text-[#111111] text-sm hidden sm:block tracking-tight">DESIGN<span className="text-gradient">BOX</span></span>
           </Link>
           <Link href="/login" className="text-sm text-[#767676] hover:text-[#111111] transition-colors">ログインはこちら</Link>
         </div>
@@ -152,7 +157,7 @@ export default function ApplyPage() {
       <div className="max-w-lg mx-auto px-4 py-12">
         {/* Title */}
         <div className="text-center mb-8">
-          <span className="text-xs font-bold text-[#E60023] uppercase tracking-widest">Sign Up</span>
+          <span className="text-xs font-black text-gradient uppercase tracking-widest">Sign Up</span>
           <h1 className="text-3xl font-black text-[#111111] mt-2 mb-2">新規お申し込み</h1>
           <p className="text-[#767676] text-sm">必要事項を入力してアカウントを作成してください</p>
         </div>
@@ -163,8 +168,8 @@ export default function ApplyPage() {
             <div key={s.n} className="flex items-center flex-1">
               <div className="flex flex-col items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                  s.n < step ? 'bg-[#E60023] text-white' :
-                  s.n === step ? 'bg-[#E60023] text-white ring-4 ring-[#FFE8EC]' :
+                  s.n < step ? 'bg-[#F5308A] text-white' :
+                  s.n === step ? 'bg-[#F5308A] text-white ring-4 ring-[#FFF0F7]' :
                   'bg-[#EFEFEF] text-[#ABABAB]'
                 }`}>
                   {s.n < step ? (
@@ -173,9 +178,9 @@ export default function ApplyPage() {
                     </svg>
                   ) : s.n}
                 </div>
-                <span className={`text-xs mt-1 ${s.n <= step ? 'text-[#E60023] font-semibold' : 'text-[#ABABAB]'}`}>{s.label}</span>
+                <span className={`text-xs mt-1 ${s.n <= step ? 'text-[#F5308A] font-semibold' : 'text-[#ABABAB]'}`}>{s.label}</span>
               </div>
-              {i < 2 && <div className={`flex-1 h-px mx-2 mb-4 ${s.n < step ? 'bg-[#E60023]' : 'bg-[#EFEFEF]'}`} />}
+              {i < 2 && <div className={`flex-1 h-px mx-2 mb-4 ${s.n < step ? 'bg-[#F5308A]' : 'bg-[#EFEFEF]'}`} />}
             </div>
           ))}
         </div>
@@ -186,7 +191,7 @@ export default function ApplyPage() {
             <div>
               <h2 className="text-base font-bold text-[#111111] mb-5">基本情報の入力</h2>
               {error && (
-                <div className="bg-[#FFE8EC] border border-red-100 text-[#E60023] rounded-xl px-4 py-3 text-sm mb-4">
+                <div className="bg-[#FFF0F7] border border-red-100 text-[#F5308A] rounded-xl px-4 py-3 text-sm mb-4">
                   {error}
                 </div>
               )}
@@ -201,7 +206,7 @@ export default function ApplyPage() {
                   { name: 'passwordConfirm', label: 'パスワード（確認）', placeholder: 'パスワードを再入力', type: 'password' },
                 ].map(({ name, label, placeholder, type }) => (
                   <div key={name}>
-                    <label className={labelClass}>{label} <span className="text-[#E60023]">*</span></label>
+                    <label className={labelClass}>{label} <span className="text-[#F5308A]">*</span></label>
                     <input
                       type={type}
                       name={name}
@@ -215,7 +220,7 @@ export default function ApplyPage() {
               </div>
               <button
                 onClick={handleStep1Next}
-                className="mt-6 w-full bg-[#E60023] text-white font-bold py-4 rounded-full hover:bg-[#C0001E] transition-all shadow-md shadow-red-100"
+                className="btn-gradient mt-6 w-full font-bold py-4 rounded-full"
               >
                 次へ：利用規約を確認する
               </button>
@@ -235,7 +240,7 @@ export default function ApplyPage() {
                 {TERMS}
               </div>
               {error && (
-                <div className="bg-[#FFE8EC] border border-red-100 text-[#E60023] rounded-xl px-4 py-3 text-sm mb-4">
+                <div className="bg-[#FFF0F7] border border-red-100 text-[#F5308A] rounded-xl px-4 py-3 text-sm mb-4">
                   {error}
                 </div>
               )}
@@ -244,7 +249,7 @@ export default function ApplyPage() {
                 disabled={!termsScrolled || loading}
                 className={`w-full font-bold py-4 rounded-full transition-all ${
                   termsScrolled && !loading
-                    ? 'bg-[#E60023] text-white hover:bg-[#C0001E] shadow-md shadow-red-100'
+                    ? 'btn-gradient'
                     : 'bg-[#EFEFEF] text-[#ABABAB] cursor-not-allowed'
                 }`}
               >
@@ -262,8 +267,8 @@ export default function ApplyPage() {
           {/* Step 3 */}
           {step === 3 && (
             <div className="text-center">
-              <div className="w-16 h-16 bg-[#FFE8EC] rounded-full flex items-center justify-center mx-auto mb-5">
-                <svg className="w-8 h-8 text-[#E60023]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-16 h-16 bg-[#FFF0F7] rounded-full flex items-center justify-center mx-auto mb-5">
+                <svg className="w-8 h-8 text-[#F5308A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
@@ -271,9 +276,9 @@ export default function ApplyPage() {
               <p className="text-[#767676] text-sm mb-6">ご登録のメールアドレスにログインIDをお送りしました。</p>
 
               {loginId && (
-                <div className="bg-[#FFE8EC] rounded-2xl p-4 mb-6 text-left">
-                  <p className="text-xs text-[#E60023] font-semibold mb-1">ログインID</p>
-                  <p className="text-lg font-black text-[#E60023]">{loginId}</p>
+                <div className="bg-[#FFF0F7] rounded-2xl p-4 mb-6 text-left">
+                  <p className="text-xs text-[#F5308A] font-semibold mb-1">ログインID</p>
+                  <p className="text-lg font-black text-[#F5308A]">{loginId}</p>
                   <p className="text-xs text-[#767676] mt-2">このIDはメールにも記載されています。大切に保管してください。</p>
                 </div>
               )}
@@ -287,7 +292,7 @@ export default function ApplyPage() {
                 </ol>
               </div>
 
-              <Link href="/login" className="block w-full bg-[#E60023] text-white font-bold py-4 rounded-full hover:bg-[#C0001E] transition-all shadow-md shadow-red-100">
+              <Link href="/login" className="btn-gradient block w-full text-center font-bold py-4 rounded-full">
                 ログインページへ
               </Link>
             </div>
@@ -296,7 +301,7 @@ export default function ApplyPage() {
 
         <p className="text-center text-xs text-[#ABABAB] mt-6">
           すでにアカウントをお持ちの方は
-          <Link href="/login" className="text-[#E60023] hover:underline ml-1">こちら</Link>
+          <Link href="/login" className="text-[#F5308A] hover:underline ml-1">こちら</Link>
         </p>
       </div>
     </div>

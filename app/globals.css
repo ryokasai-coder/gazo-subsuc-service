@@ -3,13 +3,21 @@
 :root {
   --background: #ffffff;
   --foreground: #111111;
-  --primary: #E60023;
-  --primary-dark: #C0001E;
-  --primary-light: #FFE8EC;
-  --surface: #F1EFEF;
+
+  /* ─── Brand（オレンジ→ピンク グラデーション） ─── */
+  --brand-orange: #FF8A00;
+  --brand-pink: #FF4DFF;
+  --brand-gradient: linear-gradient(135deg, #FF8A00 0%, #FF4DFF 100%);
+
+  /* 単色が必要な箇所用の代表色（グラデーションの中間トーン） */
+  --primary: #F5308A;
+  --primary-dark: #D81B79;
+  --primary-light: #FFF0F7;
+
+  --surface: #F7F7F9;
   --card: #ffffff;
   --muted: #767676;
-  --border: #EFEFEF;
+  --border: #ECECEF;
 }
 
 body {
@@ -23,17 +31,62 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Pinterest-style card hover lift */
-.card-hover {
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
-}
-.card-hover:hover {
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-  transform: translateY(-2px);
+/* ─── ブランドグラデーション ユーティリティ ─── */
+
+/* グラデーション背景（ボタン・アイコン・アクセント面） */
+.bg-brand-gradient {
+  background-image: var(--brand-gradient);
 }
 
-/* Pinterest-style scrollbar */
+/* グラデーション文字（見出しのアクセントワード等） */
+.text-gradient {
+  background-image: var(--brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* プライマリボタン（グラデーション＋ホバーで浮き上がる） */
+.btn-gradient {
+  background-image: var(--brand-gradient);
+  color: #fff;
+  box-shadow: 0 8px 24px -6px rgba(255, 77, 200, 0.5);
+  transition: box-shadow 0.25s ease, transform 0.25s ease, filter 0.25s ease;
+}
+.btn-gradient:hover {
+  box-shadow: 0 12px 32px -6px rgba(255, 77, 200, 0.6);
+  transform: translateY(-2px);
+  filter: brightness(1.04);
+}
+
+/* グラデーションの薄い面（ヒーロー背景の光彩など） */
+.bg-brand-glow {
+  background:
+    radial-gradient(60% 60% at 80% 20%, rgba(255, 77, 255, 0.14) 0%, transparent 70%),
+    radial-gradient(50% 50% at 15% 30%, rgba(255, 138, 0, 0.12) 0%, transparent 70%);
+}
+
+/* グラデーションの細ボーダー（カード縁取り） */
+.border-gradient {
+  position: relative;
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    var(--brand-gradient) border-box;
+  border: 1.5px solid transparent;
+}
+
+/* カードのホバーで浮き上がる */
+.card-hover {
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.card-hover:hover {
+  box-shadow: 0 12px 40px rgba(255, 77, 200, 0.14);
+  transform: translateY(-3px);
+}
+
+/* スクロールバー */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #D4D4D4; border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: #ABABAB; }
+::-webkit-scrollbar-thumb { background: #E4C4E0; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #FF8AC4; }

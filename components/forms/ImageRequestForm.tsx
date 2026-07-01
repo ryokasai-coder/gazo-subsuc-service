@@ -7,14 +7,38 @@ import { createClient } from '@/lib/supabase'
 
 const STEPS = ['制作内容', 'テンプレート選択', '詳細入力', 'プレビュー・納品']
 
-const PRODUCTION_TYPES = [
-  '今月の予定・営業カレンダー', '商品紹介', 'メニュー紹介', 'キャンペーン紹介',
-  'クーポン告知', 'LINE登録促進', 'Google口コミ依頼', 'イベント告知',
-  '新商品告知', '季節限定メニュー', 'スタッフ紹介', '店舗紹介',
-  'お客様の声・口コミ紹介', 'ビフォーアフター', '求人募集', 'LP風画像',
-  'バナー画像', 'POP作成', 'メニュー表作成', 'チラシ作成',
-  'SNS投稿画像', 'ストーリーズ画像', 'リールサムネイル', 'YouTubeサムネイル',
+const PRODUCTION_TYPE_CATEGORIES = [
+  {
+    label: 'SNS・動画',
+    types: ['SNS投稿画像', 'ストーリーズ画像', 'リールサムネイル'],
+  },
+  {
+    label: 'メニュー・商品',
+    types: ['商品紹介', 'メニュー紹介', '新商品告知', '季節限定メニュー', 'メニュー表作成'],
+  },
+  {
+    label: 'キャンペーン',
+    types: ['キャンペーン紹介', 'クーポン告知'],
+  },
+  {
+    label: 'イベント・お知らせ',
+    types: ['イベント告知', '今月の予定・営業カレンダー'],
+  },
+  {
+    label: '集客・口コミ',
+    types: ['LINE登録促進', 'Google口コミ依頼'],
+  },
+  {
+    label: '採用・店舗',
+    types: ['スタッフ紹介', '求人募集', '店舗紹介'],
+  },
+  {
+    label: '印刷物・Web',
+    types: ['LP風画像', 'POP作成', 'チラシ作成'],
+  },
 ]
+
+const PRODUCTION_TYPES = PRODUCTION_TYPE_CATEGORIES.flatMap(c => c.types)
 
 const DESIGN_FILTERS = ['高級感', 'シンプル', 'インパクト', 'SNS映え', 'かわいい', 'ナチュラル']
 
@@ -68,6 +92,19 @@ const TEMPLATE_LAYOUT_MAP: Record<string, { layoutType: string; bgFrom: string; 
   'pop-store':            { layoutType: 'pop-border',     bgFrom: '#dc2626', bgTo: '#f43f5e' },
   'youtube-thumbnail':    { layoutType: 'youtube-thumb',  bgFrom: '#dc2626', bgTo: '#ef4444' },
   'natural-simple':       { layoutType: 'natural',        bgFrom: '#f0fdf4', bgTo: '#f7fee7' },
+  // カフェ・飲食店 Vol.2
+  'cafe-new-product-announce':   { layoutType: 'color-text',    bgFrom: '#f97316', bgTo: '#ec4899' },
+  'cafe-product-hero-sns':       { layoutType: 'product-card',  bgFrom: '#e0f2fe', bgTo: '#f0fdf4' },
+  'cafe-takeout-menu':           { layoutType: 'menu-list',     bgFrom: '#f5f0e8', bgTo: '#fffbf0' },
+  'cafe-drink-menu':             { layoutType: 'menu-list',     bgFrom: '#f0fdf4', bgTo: '#fef9c3' },
+  'cafe-side-menu':              { layoutType: 'menu-list',     bgFrom: '#fef9c3', bgTo: '#f0fdf4' },
+  'cafe-burger-menu':            { layoutType: 'menu-list',     bgFrom: '#1e293b', bgTo: '#334155' },
+  'cafe-onigiri-menu':           { layoutType: 'menu-list',     bgFrom: '#1e293b', bgTo: '#334155' },
+  'cafe-menu-cover':             { layoutType: 'shop-hero',     bgFrom: '#1a1a2e', bgTo: '#16213e' },
+  'cafe-product-single-premium': { layoutType: 'photo-overlay', bgFrom: '#1c1c1c', bgTo: '#3d3d3d' },
+  // 汎用追加
+  'seasonal-campaign-banner':    { layoutType: 'banner-limit',  bgFrom: '#fce4ec', bgTo: '#fff9c4' },
+  'sns-callout-photo':           { layoutType: 'photo-overlay', bgFrom: '#1c1c1c', bgTo: '#2d2d2d' },
 }
 
 const TEMPLATES: Template[] = [
@@ -263,6 +300,96 @@ const TEMPLATES: Template[] = [
     productionTags: ['商品紹介', 'メニュー紹介', '店舗紹介', 'お客様の声・口コミ紹介'],
     designTags: ['ナチュラル', 'かわいい', 'お任せ'],
   },
+  // ── カフェ・飲食店 Vol.2 ─────────────────────────────────────────
+  {
+    id: 'cafe-new-product-announce',
+    name: '新商品告知（ビビッドグラデーション）',
+    description: '鮮やかなグラデーション背景にフルーツ・商品を散りばめた新商品告知デザイン',
+    ...TEMPLATE_LAYOUT_MAP['cafe-new-product-announce'],
+    productionTags: ['新商品告知', '季節限定メニュー', 'SNS投稿画像'],
+    designTags: ['インパクト', 'SNS映え', 'かわいい'],
+  },
+  {
+    id: 'cafe-product-hero-sns',
+    name: '商品ヒーロー写真（SNS映え・1商品主役）',
+    description: '1商品を主役に大きく見せるSNS映えデザイン。具材バッジ・価格を添える',
+    ...TEMPLATE_LAYOUT_MAP['cafe-product-hero-sns'],
+    productionTags: ['商品紹介', '新商品告知', 'メニュー紹介', '季節限定メニュー'],
+    designTags: ['SNS映え', 'ナチュラル', 'かわいい'],
+  },
+  {
+    id: 'cafe-takeout-menu',
+    name: 'お持ち帰りメニュー表（テイクアウト一覧）',
+    description: 'テイクアウトメニューを一覧で整理するシンプル・信頼感あるデザイン',
+    ...TEMPLATE_LAYOUT_MAP['cafe-takeout-menu'],
+    productionTags: ['メニュー紹介', 'メニュー表作成', '商品紹介'],
+    designTags: ['シンプル', 'ナチュラル'],
+  },
+  {
+    id: 'cafe-drink-menu',
+    name: 'ドリンクメニュー（2カラム・ナチュラル）',
+    description: '2カラムレイアウトでCOFFEE/TEAを整理するナチュラルカフェ向けデザイン',
+    ...TEMPLATE_LAYOUT_MAP['cafe-drink-menu'],
+    productionTags: ['メニュー紹介', 'メニュー表作成'],
+    designTags: ['ナチュラル', 'シンプル'],
+  },
+  {
+    id: 'cafe-side-menu',
+    name: 'サイド・デザートメニュー（写真付き）',
+    description: 'サイドメニューやデザートを写真・バッジ付きで魅力的に紹介するナチュラルデザイン',
+    ...TEMPLATE_LAYOUT_MAP['cafe-side-menu'],
+    productionTags: ['メニュー紹介', '商品紹介'],
+    designTags: ['ナチュラル', 'かわいい'],
+  },
+  {
+    id: 'cafe-burger-menu',
+    name: 'ライスバーガー等バリエーション選択型メニュー',
+    description: '4種バリエーションカード＋セット価格表で商品選択肢をわかりやすく見せるデザイン',
+    ...TEMPLATE_LAYOUT_MAP['cafe-burger-menu'],
+    productionTags: ['メニュー紹介', 'メニュー表作成', '商品紹介'],
+    designTags: ['シンプル', '高級感'],
+  },
+  {
+    id: 'cafe-onigiri-menu',
+    name: 'おにぎり等カテゴリーメニュー（具材タグ・価格表）',
+    description: '具材タグ一覧＋サイズ別価格表で情報を整理した和食系メニューデザイン',
+    ...TEMPLATE_LAYOUT_MAP['cafe-onigiri-menu'],
+    productionTags: ['メニュー紹介', 'メニュー表作成'],
+    designTags: ['シンプル', '高級感'],
+  },
+  {
+    id: 'cafe-menu-cover',
+    name: 'メニュー表紙（スワイプ投稿1枚目・ブランド訴求）',
+    description: '世界観・スタッフ写真でブランドを伝えるスワイプ投稿の表紙デザイン',
+    ...TEMPLATE_LAYOUT_MAP['cafe-menu-cover'],
+    productionTags: ['メニュー表作成', '店舗紹介'],
+    designTags: ['高級感', 'ナチュラル'],
+  },
+  {
+    id: 'cafe-product-single-premium',
+    name: '商品単品訴求（写真全面・高級感）',
+    description: '料理・商品写真を全面に使いシンプルなテキストだけで訴求する高級感デザイン',
+    ...TEMPLATE_LAYOUT_MAP['cafe-product-single-premium'],
+    productionTags: ['商品紹介', 'メニュー紹介', 'SNS投稿画像'],
+    designTags: ['高級感', 'SNS映え'],
+  },
+  // ── 汎用追加 ──────────────────────────────────────────────────────
+  {
+    id: 'seasonal-campaign-banner',
+    name: '季節・期間限定キャンペーンバナー',
+    description: '季節カラーのグラデーション背景に商品写真とOFF率を大きく訴求する限定感バナー',
+    ...TEMPLATE_LAYOUT_MAP['seasonal-campaign-banner'],
+    productionTags: ['キャンペーン紹介', '季節限定メニュー', 'クーポン告知'],
+    designTags: ['インパクト', 'SNS映え', 'かわいい'],
+  },
+  {
+    id: 'sns-callout-photo',
+    name: 'SNS口コミ・吹き出しコメント写真',
+    description: '料理写真の各ポイントから手書き吹き出しコメントを引き出すSNS映えデザイン',
+    ...TEMPLATE_LAYOUT_MAP['sns-callout-photo'],
+    productionTags: ['お客様の声・口コミ紹介', 'SNS投稿画像', '商品紹介'],
+    designTags: ['SNS映え', 'かわいい'],
+  },
 ]
 
 function getFilteredTemplates(productionTypes: string[], designFilter: string): Template[] {
@@ -341,7 +468,7 @@ function Field({ label, required, children }: {
   return (
     <div>
       <label className="block text-xs font-bold text-[#111111] mb-2">
-        {label} {required && <span className="text-[#E60023]">*</span>}
+        {label} {required && <span className="text-[#F5308A]">*</span>}
       </label>
       {children}
     </div>
@@ -365,8 +492,8 @@ function CheckGroup({ options, selected, onChange }: {
           onClick={() => toggle(opt)}
           className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
             selected.includes(opt)
-              ? 'bg-[#E60023] text-white border-[#E60023] shadow-sm'
-              : 'bg-white text-[#767676] border-[#EFEFEF] hover:border-[#E60023] hover:text-[#E60023]'
+              ? 'bg-[#F5308A] text-white border-[#F5308A] shadow-sm'
+              : 'bg-white text-[#767676] border-[#EFEFEF] hover:border-[#F5308A] hover:text-[#F5308A]'
           }`}
         >
           {opt}
@@ -387,8 +514,8 @@ function TemplateCard({ template, selected, onSelect }: {
       onClick={onSelect}
       className={`w-full text-left rounded-2xl border-2 overflow-hidden transition-all hover:shadow-md ${
         selected
-          ? 'border-[#E60023] shadow-lg shadow-red-100 scale-[1.02]'
-          : 'border-[#EFEFEF] hover:border-[#E60023]/50'
+          ? 'border-[#F5308A] shadow-lg shadow-red-100 scale-[1.02]'
+          : 'border-[#EFEFEF] hover:border-[#F5308A]/50'
       }`}
     >
       <div className="relative">
@@ -398,7 +525,7 @@ function TemplateCard({ template, selected, onSelect }: {
           bgTo={template.bgTo}
         />
         {selected && (
-          <div className="absolute top-2 right-2 w-6 h-6 bg-[#E60023] rounded-full flex items-center justify-center text-white text-xs font-bold shadow">
+          <div className="absolute top-2 right-2 w-6 h-6 bg-[#F5308A] rounded-full flex items-center justify-center text-white text-xs font-bold shadow">
             ✓
           </div>
         )}
@@ -509,7 +636,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
     }
   }
 
-  const inputClass = "w-full border border-[#EFEFEF] rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#E60023]/20 focus:border-[#E60023] transition-all bg-[#FAFAFA]"
+  const inputClass = "w-full border border-[#EFEFEF] rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#F5308A]/20 focus:border-[#F5308A] transition-all bg-[#FAFAFA]"
   const textareaClass = `${inputClass} resize-none`
 
   return (
@@ -519,48 +646,60 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
         {STEPS.map((s, i) => (
           <div key={s} className="flex items-center flex-shrink-0">
             <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-all ${
-              i < step ? 'bg-[#E60023] text-white' :
-              i === step ? 'bg-[#E60023] text-white ring-4 ring-[#FFE8EC]' :
+              i < step ? 'bg-[#F5308A] text-white' :
+              i === step ? 'bg-[#F5308A] text-white ring-4 ring-[#FFF0F7]' :
               'bg-[#EFEFEF] text-[#ABABAB]'
             }`}>
               {i < step ? '✓' : i + 1}
             </div>
-            <span className={`ml-1 text-xs hidden sm:block truncate max-w-[80px] ${i <= step ? 'text-[#E60023] font-semibold' : 'text-[#ABABAB]'}`}>{s}</span>
+            <span className={`ml-1 text-xs hidden sm:block truncate max-w-[80px] ${i <= step ? 'text-[#F5308A] font-semibold' : 'text-[#ABABAB]'}`}>{s}</span>
             {i < STEPS.length - 1 && (
-              <div className={`w-4 h-px mx-1.5 flex-shrink-0 ${i < step ? 'bg-[#E60023]' : 'bg-[#EFEFEF]'}`} />
+              <div className={`w-4 h-px mx-1.5 flex-shrink-0 ${i < step ? 'bg-[#F5308A]' : 'bg-[#EFEFEF]'}`} />
             )}
           </div>
         ))}
       </div>
 
       {error && (
-        <div className="bg-[#FFE8EC] border border-red-100 text-[#E60023] rounded-xl px-4 py-2.5 text-sm mb-4">
+        <div className="bg-[#FFF0F7] border border-red-100 text-[#F5308A] rounded-xl px-4 py-2.5 text-sm mb-4">
           {error}
         </div>
       )}
 
       {/* Step 0: 制作内容 */}
       {step === 0 && (
-        <div className="space-y-5">
-          <Field label="制作内容を選択（複数可）" required>
-            <CheckGroup
-              options={PRODUCTION_TYPES}
-              selected={form.production_types}
-              onChange={v => update('production_types', v)}
-            />
-            <input
-              type="text"
-              value={form.production_types_other}
-              onChange={e => update('production_types_other', e.target.value)}
-              placeholder="その他（自由入力）"
-              className={`mt-2 ${inputClass}`}
-            />
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-bold text-[#111111]">
+              制作内容を選択（複数可） <span className="text-[#F5308A]">*</span>
+            </label>
             {form.production_types.length > 0 && (
-              <p className="text-xs text-[#E60023] mt-1 font-semibold">
-                選択中: {form.production_types.length}件
-              </p>
+              <span className="text-xs text-[#F5308A] font-semibold bg-[#FFF0F7] px-2 py-0.5 rounded-full">
+                {form.production_types.length}件選択中
+              </span>
             )}
-          </Field>
+          </div>
+          <div className="space-y-3">
+            {PRODUCTION_TYPE_CATEGORIES.map(cat => (
+              <div key={cat.label}>
+                <p className="text-[10px] font-bold text-[#ABABAB] uppercase tracking-widest mb-1.5">
+                  {cat.label}
+                </p>
+                <CheckGroup
+                  options={cat.types}
+                  selected={form.production_types}
+                  onChange={v => update('production_types', v)}
+                />
+              </div>
+            ))}
+          </div>
+          <input
+            type="text"
+            value={form.production_types_other}
+            onChange={e => update('production_types_other', e.target.value)}
+            placeholder="その他（上記にない場合は自由入力）"
+            className={inputClass}
+          />
         </div>
       )}
 
@@ -577,8 +716,8 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                   onClick={() => setDesignFilter(f)}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                     designFilter === f
-                      ? 'bg-[#E60023] text-white border-[#E60023] shadow-sm'
-                      : 'bg-white text-[#767676] border-[#EFEFEF] hover:border-[#E60023] hover:text-[#E60023]'
+                      ? 'bg-[#F5308A] text-white border-[#F5308A] shadow-sm'
+                      : 'bg-white text-[#767676] border-[#EFEFEF] hover:border-[#F5308A] hover:text-[#F5308A]'
                   }`}
                 >
                   {f}
@@ -589,7 +728,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
 
           <div>
             <p className="text-xs font-bold text-[#111111] mb-3">
-              テンプレートを選択 <span className="text-[#E60023]">*</span>
+              テンプレートを選択 <span className="text-[#F5308A]">*</span>
               <span className="text-[#767676] font-normal ml-1">（{filteredTemplates.length}件表示中）</span>
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[400px] overflow-y-auto pr-1">
@@ -609,7 +748,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
           </div>
 
           {form.template_id && (
-            <div className="bg-[#FFE8EC] rounded-xl px-4 py-3 text-xs text-[#E60023] font-semibold">
+            <div className="bg-[#FFF0F7] rounded-xl px-4 py-3 text-xs text-[#F5308A] font-semibold">
               ✓ 選択中：{form.template_name}
             </div>
           )}
@@ -629,9 +768,9 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                     value={s.value}
                     checked={form.image_size === s.value}
                     onChange={() => update('image_size', s.value)}
-                    className="accent-[#E60023]"
+                    className="accent-[#F5308A]"
                   />
-                  <span className={`text-sm transition-colors ${form.image_size === s.value ? 'text-[#E60023] font-semibold' : 'text-[#767676]'}`}>
+                  <span className={`text-sm transition-colors ${form.image_size === s.value ? 'text-[#F5308A] font-semibold' : 'text-[#767676]'}`}>
                     {s.label}
                   </span>
                 </label>
@@ -661,7 +800,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                 const files = Array.from(e.target.files ?? [])
                 update('materialFiles', files)
               }}
-              className="w-full text-sm text-[#767676] file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FFE8EC] file:text-[#E60023] hover:file:bg-red-100"
+              className="w-full text-sm text-[#767676] file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FFF0F7] file:text-[#F5308A] hover:file:bg-red-100"
             />
             {form.materialFiles.length > 0 && (
               <p className="text-xs text-[#22c55e] mt-1 font-semibold">
@@ -681,14 +820,24 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                     value={s.value}
                     checked={form.delivery_speed === s.value}
                     onChange={() => update('delivery_speed', s.value)}
-                    className="accent-[#E60023]"
+                    className="accent-[#F5308A]"
                   />
-                  <span className={`text-sm ${form.delivery_speed === s.value ? 'text-[#E60023] font-semibold' : 'text-[#767676]'}`}>
+                  <span className={`text-sm ${form.delivery_speed === s.value ? 'text-[#F5308A] font-semibold' : 'text-[#767676]'}`}>
                     {s.label}
                   </span>
                 </label>
               ))}
             </div>
+          </Field>
+
+          <Field label="その他ご要望・参考にしてほしいこと">
+            <textarea
+              value={form.other_requests}
+              onChange={e => update('other_requests', e.target.value)}
+              rows={3}
+              placeholder={`例：\n・競合他社に似たデザインは避けてほしい\n・過去に作ってもらった〇〇と同じトーンで\n・参考URL: https://...`}
+              className={textareaClass}
+            />
           </Field>
         </div>
       )}
@@ -760,14 +909,14 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                     onGenerated={handleCanvasGenerated}
                   />
                 ) : (
-                  <div className="bg-[#F1EFEF] rounded-2xl p-8 text-center text-[#767676] text-sm">
+                  <div className="bg-[#F7F7F9] rounded-2xl p-8 text-center text-[#767676] text-sm">
                     テンプレートまたはサイズが未選択です
                   </div>
                 )}
               </div>
 
               {/* 確認サマリー */}
-              <div className="bg-[#F1EFEF] rounded-2xl p-4 space-y-2 text-sm">
+              <div className="bg-[#F7F7F9] rounded-2xl p-4 space-y-2 text-sm">
                 <p className="text-xs font-bold text-[#111111] mb-3">依頼内容の確認</p>
                 {[
                   ['制作内容', [...form.production_types, form.production_types_other ? `その他: ${form.production_types_other}` : ''].filter(Boolean).join('、') || '未選択'],
@@ -789,7 +938,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                 type="button"
                 onClick={handleDeliver}
                 disabled={delivering || !canvasDataUrl}
-                className="w-full bg-[#E60023] text-white font-bold py-4 rounded-full hover:bg-[#C0001E] transition-all disabled:opacity-50 shadow-md shadow-red-100 text-base"
+                className="w-full bg-[#F5308A] text-white font-bold py-4 rounded-full hover:bg-[#D81B79] transition-all disabled:opacity-50 shadow-md shadow-red-100 text-base"
               >
                 {delivering ? (
                   <span className="flex items-center justify-center gap-2">
@@ -815,18 +964,18 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
         <div className="flex gap-3 mt-5">
           {step > 0 ? (
             <button type="button" onClick={() => setStep(s => s - 1)}
-              className="flex-1 border border-[#EFEFEF] text-[#767676] font-semibold py-3 rounded-full hover:bg-[#F1EFEF] transition-all">
+              className="flex-1 border border-[#EFEFEF] text-[#767676] font-semibold py-3 rounded-full hover:bg-[#F7F7F9] transition-all">
               戻る
             </button>
           ) : (
             <button type="button" onClick={onCancel}
-              className="flex-1 border border-[#EFEFEF] text-[#767676] font-semibold py-3 rounded-full hover:bg-[#F1EFEF] transition-all">
+              className="flex-1 border border-[#EFEFEF] text-[#767676] font-semibold py-3 rounded-full hover:bg-[#F7F7F9] transition-all">
               キャンセル
             </button>
           )}
           {step < STEPS.length - 1 && (
             <button type="button" onClick={handleNext}
-              className="flex-1 bg-[#E60023] text-white font-bold py-3 rounded-full hover:bg-[#C0001E] transition-all shadow-md shadow-red-100">
+              className="flex-1 bg-[#F5308A] text-white font-bold py-3 rounded-full hover:bg-[#D81B79] transition-all shadow-md shadow-red-100">
               次へ
             </button>
           )}

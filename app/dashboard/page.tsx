@@ -90,6 +90,8 @@ export default function DashboardPage() {
           production_types: formData.production_types,
           production_purpose: formData.production_purpose,
           design_image: formData.design_image,
+          template_id: formData.template_id || null,
+          template_name: formData.template_name || null,
           target: formData.target,
           media_types: formData.media_types,
           image_size: formData.image_size,
@@ -127,84 +129,92 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F1EFEF] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#E60023] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#F7F7F9] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#F5308A] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#F1EFEF]">
+    <div className="min-h-screen bg-[#F7F7F9]">
       {/* Header */}
       <header className="bg-white border-b border-[#EFEFEF] sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-[60px] flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <span className="w-7 h-7 rounded-lg bg-[#E60023] flex items-center justify-center text-white font-bold text-xs">画</span>
-            <span className="font-bold text-[#111111] text-sm hidden sm:block">画像作成サブスク</span>
+            <span className="w-7 h-7 rounded-[9px] bg-brand-gradient flex items-center justify-center text-white">
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2l8.66 5v10L12 22 3.34 17V7L12 2z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+                <path d="M3.34 7L12 12l8.66-5M12 12v10" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+              </svg>
+            </span>
+            <span className="font-black text-[#111111] text-sm hidden sm:block tracking-tight">DESIGN<span className="text-gradient">BOX</span></span>
           </Link>
           <div className="flex items-center gap-1">
-            <Link href="/dashboard/history" className="text-xs text-[#767676] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F1EFEF] transition-all">履歴</Link>
-            <Link href="/dashboard/feedback" className="text-xs text-[#767676] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F1EFEF] transition-all">フィードバック</Link>
-            <button onClick={handleLogout} className="text-xs text-[#767676] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F1EFEF] transition-all">ログアウト</button>
+            <Link href="/dashboard/history" className="text-xs text-[#767676] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F7F7F9] transition-all">履歴</Link>
+            <Link href="/dashboard/feedback" className="text-xs text-[#767676] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F7F7F9] transition-all">フィードバック</Link>
+            <button onClick={handleLogout} className="text-xs text-[#767676] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F7F7F9] transition-all">ログアウト</button>
           </div>
         </div>
       </header>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome */}
-        <div className="mb-6">
-          <p className="text-xs font-bold text-[#E60023] uppercase tracking-widest mb-1">Dashboard</p>
-          <h1 className="text-2xl font-black text-[#111111]">{user?.company_name} 様</h1>
-          <p className="text-[#767676] text-sm mt-0.5">{billingMonth.replace('-', '年')}月のダッシュボード</p>
+        {/* Hero CTA card */}
+        <div className="bg-white rounded-3xl shadow-sm p-6 mb-5">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-black text-gradient uppercase tracking-widest mb-1">
+                {billingMonth.replace('-', '年')}月
+              </p>
+              <h1 className="text-xl font-black text-[#111111] truncate">{user?.company_name} 様</h1>
+              <div className="flex items-baseline gap-1.5 mt-3">
+                <span className={`text-4xl font-black leading-none ${remaining <= 2 ? 'text-[#F5308A]' : 'text-[#111111]'}`}>
+                  {remaining}
+                </span>
+                <span className="text-sm text-[#ABABAB]">回 残り / {usage?.total_limit ?? 10}回</span>
+              </div>
+              <div className="w-full max-w-[200px] bg-[#F7F7F9] rounded-full h-1.5 mt-2">
+                <div
+                  className={`h-1.5 rounded-full transition-all ${usedPct >= 80 ? 'bg-[#F5308A]' : 'bg-[#111111]'}`}
+                  style={{ width: `${Math.min(usedPct, 100)}%` }}
+                />
+              </div>
+              <p className="text-xs text-[#ABABAB] mt-1.5">未使用分の翌月繰越は不可</p>
+            </div>
+            <button
+              onClick={() => {
+                if (!user?.is_payment_registered && user?.role !== 'admin') { setShowPaymentModal(true); return }
+                if (remaining <= 0) { alert('今月の依頼上限に達しています'); return }
+                setShowRequestForm(true)
+              }}
+              disabled={remaining <= 0}
+              className="btn-gradient inline-flex items-center justify-center gap-2 font-bold px-8 py-4 rounded-full text-base disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap flex-shrink-0"
+            >
+              <span className="text-lg leading-none">＋</span>新しい依頼をする
+            </button>
+          </div>
         </div>
 
         {/* Stats row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+        <div className="grid grid-cols-3 gap-3 mb-5">
           {[
-            { label: '使用回数', value: `${usage?.used_count ?? 0}回`, sub: `/ ${usage?.total_limit ?? 10}回` },
-            { label: '残り回数', value: `${remaining}回`, sub: '今月', red: remaining <= 2 },
-            { label: '依頼中', value: `${requests.filter(r => r.status === 'pending').length}件` },
-            { label: '制作中', value: `${requests.filter(r => r.status === 'in_progress').length}件` },
+            { label: '使用回数', value: `${usage?.used_count ?? 0}`, sub: `/ ${usage?.total_limit ?? 10}回` },
+            { label: '依頼中', value: `${requests.filter(r => r.status === 'pending').length}`, sub: '件' },
+            { label: '制作中', value: `${requests.filter(r => r.status === 'in_progress').length}`, sub: '件' },
           ].map((stat) => (
             <div key={stat.label} className="bg-white rounded-2xl p-4 shadow-sm">
               <p className="text-xs text-[#767676] mb-1">{stat.label}</p>
-              <div className="flex items-baseline gap-1">
-                <span className={`text-2xl font-black ${stat.red ? 'text-[#E60023]' : 'text-[#111111]'}`}>{stat.value}</span>
-                {stat.sub && <span className="text-xs text-[#ABABAB]">{stat.sub}</span>}
+              <div className="flex items-baseline gap-0.5">
+                <span className="text-2xl font-black text-[#111111]">{stat.value}</span>
+                <span className="text-xs text-[#ABABAB]">{stat.sub}</span>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Usage card */}
-        <div className="bg-white rounded-3xl shadow-sm p-6 mb-5">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-semibold text-[#111111]">今月の依頼状況</p>
-            <span className="text-xs text-[#767676]">{usedPct}% 使用</span>
-          </div>
-          <div className="w-full bg-[#F1EFEF] rounded-full h-2.5 mb-1.5">
-            <div
-              className={`h-2.5 rounded-full transition-all ${usedPct >= 80 ? 'bg-[#E60023]' : 'bg-[#111111]'}`}
-              style={{ width: `${Math.min(usedPct, 100)}%` }}
-            />
-          </div>
-          <p className="text-xs text-[#ABABAB] mb-5">未使用分の翌月繰越は不可</p>
-          <button
-            onClick={() => {
-              if (!user?.is_payment_registered && user?.role !== 'admin') { setShowPaymentModal(true); return }
-              if (remaining <= 0) { alert('今月の依頼上限に達しています'); return }
-              setShowRequestForm(true)
-            }}
-            className="inline-flex items-center gap-2 bg-[#E60023] text-white font-bold px-6 py-3 rounded-full hover:bg-[#C0001E] transition-all shadow-md shadow-red-100 text-sm"
-          >
-            <span>＋</span>新しい依頼をする
-          </button>
-        </div>
-
         {/* Request list */}
         <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
           {/* Tabs */}
-          <div className="flex border-b border-[#F1EFEF] px-2 pt-2 gap-1">
+          <div className="flex border-b border-[#F7F7F9] px-2 pt-2 gap-1">
             {([
               ['pending', '依頼中'],
               ['in_progress', '制作中'],
@@ -216,11 +226,11 @@ export default function DashboardPage() {
                 className={`px-4 py-2.5 text-sm font-semibold rounded-full transition-all ${
                   activeTab === tab
                     ? 'bg-[#111111] text-white'
-                    : 'text-[#767676] hover:bg-[#F1EFEF]'
+                    : 'text-[#767676] hover:bg-[#F7F7F9]'
                 }`}
               >
                 {label}
-                <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${activeTab === tab ? 'bg-white/20 text-white' : 'bg-[#F1EFEF] text-[#767676]'}`}>
+                <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${activeTab === tab ? 'bg-white/20 text-white' : 'bg-[#F7F7F9] text-[#767676]'}`}>
                   {requests.filter(r => r.status === tab).length}
                 </span>
               </button>
@@ -238,7 +248,7 @@ export default function DashboardPage() {
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-[#F1EFEF]">
+            <div className="divide-y divide-[#F7F7F9]">
               {filteredRequests.map(req => (
                 <div key={req.id} className="px-6 py-4 flex items-center justify-between gap-4 hover:bg-[#FAFAFA] transition-colors">
                   <div className="flex-1 min-w-0">
@@ -260,7 +270,7 @@ export default function DashboardPage() {
       {/* Payment modal */}
       <Modal isOpen={showPaymentModal} onClose={() => setShowPaymentModal(false)} title="決済登録が必要です">
         <div className="text-center py-4">
-          <div className="w-16 h-16 bg-[#FFE8EC] rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">💳</div>
+          <div className="w-16 h-16 bg-[#FFF0F7] rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">💳</div>
           <p className="text-[#767676] mb-6 text-sm leading-relaxed">
             サービスをご利用いただくには<br />決済情報の登録が必要です。
           </p>
@@ -269,7 +279,7 @@ export default function DashboardPage() {
               alert('決済登録ページへ遷移します（実装時に決済URLを設定してください）')
               setShowPaymentModal(false)
             }}
-            className="w-full bg-[#E60023] text-white font-bold py-4 rounded-full hover:bg-[#C0001E] transition-all shadow-md shadow-red-100"
+            className="btn-gradient w-full font-bold py-4 rounded-full"
           >
             決済登録をする
           </button>

@@ -58,10 +58,10 @@ export default function AdminFeedbackPage() {
   )
 
   return (
-    <div className="min-h-screen bg-[#F1EFEF]">
+    <div className="min-h-screen bg-[#F7F7F9]">
       <header className="bg-white border-b border-[#EFEFEF] sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-[60px] flex items-center gap-4">
-          <Link href="/admin" className="w-8 h-8 rounded-full flex items-center justify-center text-[#767676] hover:bg-[#F1EFEF] transition-all">
+          <Link href="/admin" className="w-8 h-8 rounded-full flex items-center justify-center text-[#767676] hover:bg-[#F7F7F9] transition-all">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
             </svg>
@@ -71,7 +71,7 @@ export default function AdminFeedbackPage() {
             <select
               value={billingMonth}
               onChange={e => { setBillingMonth(e.target.value); setLoading(true) }}
-              className="border border-[#EFEFEF] rounded-full px-4 py-2 text-sm text-[#111111] bg-white focus:outline-none focus:ring-2 focus:ring-[#E60023]/20 transition-all"
+              className="border border-[#EFEFEF] rounded-full px-4 py-2 text-sm text-[#111111] bg-white focus:outline-none focus:ring-2 focus:ring-[#F5308A]/20 transition-all"
             >
               {months.map(m => <option key={m} value={m}>{m.replace('-', '年')}月</option>)}
             </select>
@@ -98,7 +98,7 @@ export default function AdminFeedbackPage() {
 
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="w-8 h-8 border-2 border-[#E60023] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#F5308A] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : feedbacks.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-3xl shadow-sm">
@@ -124,7 +124,7 @@ export default function AdminFeedbackPage() {
                   {fb.speed_rating > 0 && <span>スピード: <Stars value={fb.speed_rating} /> {fb.speed_rating}点</span>}
                 </div>
                 {fb.comment && (
-                  <p className="text-sm text-[#111111] bg-[#F1EFEF] rounded-2xl px-4 py-3">{fb.comment}</p>
+                  <p className="text-sm text-[#111111] bg-[#F7F7F9] rounded-2xl px-4 py-3">{fb.comment}</p>
                 )}
               </div>
             ))}
