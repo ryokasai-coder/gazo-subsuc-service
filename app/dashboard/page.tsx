@@ -129,30 +129,25 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F7F9] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#F5308A] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#F8F8FA] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#E85C97] border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#F7F7F9]">
+    <div className="min-h-screen bg-[#F8F8FA]">
       {/* Header */}
       <header className="bg-white border-b border-[#EFEFEF] sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-[60px] flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="w-7 h-7 rounded-[9px] bg-brand-gradient flex items-center justify-center text-white">
-              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2l8.66 5v10L12 22 3.34 17V7L12 2z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-                <path d="M3.34 7L12 12l8.66-5M12 12v10" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-              </svg>
-            </span>
-            <span className="font-black text-[#111111] text-sm hidden sm:block tracking-tight">DESIGN<span className="text-gradient">BOX</span></span>
+          <Link href="/" className="flex items-center" aria-label="DESIGN BOX ホーム">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-horizontal.png" alt="DESIGN BOX" className="h-7 w-auto" />
           </Link>
           <div className="flex items-center gap-1">
-            <Link href="/dashboard/history" className="text-xs text-[#767676] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F7F7F9] transition-all">履歴</Link>
-            <Link href="/dashboard/feedback" className="text-xs text-[#767676] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F7F7F9] transition-all">フィードバック</Link>
-            <button onClick={handleLogout} className="text-xs text-[#767676] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F7F7F9] transition-all">ログアウト</button>
+            <Link href="/dashboard/history" className="text-xs text-[#6B7280] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F8F8FA] transition-all">履歴</Link>
+            <Link href="/dashboard/feedback" className="text-xs text-[#6B7280] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F8F8FA] transition-all">フィードバック</Link>
+            <button onClick={handleLogout} className="text-xs text-[#6B7280] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F8F8FA] transition-all">ログアウト</button>
           </div>
         </div>
       </header>
@@ -167,14 +162,14 @@ export default function DashboardPage() {
               </p>
               <h1 className="text-xl font-black text-[#111111] truncate">{user?.company_name} 様</h1>
               <div className="flex items-baseline gap-1.5 mt-3">
-                <span className={`text-4xl font-black leading-none ${remaining <= 2 ? 'text-[#F5308A]' : 'text-[#111111]'}`}>
+                <span className={`text-4xl font-black leading-none ${remaining <= 2 ? 'text-[#E85C97]' : 'text-[#111111]'}`}>
                   {remaining}
                 </span>
                 <span className="text-sm text-[#ABABAB]">回 残り / {usage?.total_limit ?? 10}回</span>
               </div>
-              <div className="w-full max-w-[200px] bg-[#F7F7F9] rounded-full h-1.5 mt-2">
+              <div className="w-full max-w-[200px] bg-[#F8F8FA] rounded-full h-1.5 mt-2">
                 <div
-                  className={`h-1.5 rounded-full transition-all ${usedPct >= 80 ? 'bg-[#F5308A]' : 'bg-[#111111]'}`}
+                  className={`h-1.5 rounded-full transition-all ${usedPct >= 80 ? 'bg-[#E85C97]' : 'bg-[#111111]'}`}
                   style={{ width: `${Math.min(usedPct, 100)}%` }}
                 />
               </div>
@@ -202,7 +197,7 @@ export default function DashboardPage() {
             { label: '制作中', value: `${requests.filter(r => r.status === 'in_progress').length}`, sub: '件' },
           ].map((stat) => (
             <div key={stat.label} className="bg-white rounded-2xl p-4 shadow-sm">
-              <p className="text-xs text-[#767676] mb-1">{stat.label}</p>
+              <p className="text-xs text-[#6B7280] mb-1">{stat.label}</p>
               <div className="flex items-baseline gap-0.5">
                 <span className="text-2xl font-black text-[#111111]">{stat.value}</span>
                 <span className="text-xs text-[#ABABAB]">{stat.sub}</span>
@@ -214,7 +209,7 @@ export default function DashboardPage() {
         {/* Request list */}
         <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
           {/* Tabs */}
-          <div className="flex border-b border-[#F7F7F9] px-2 pt-2 gap-1">
+          <div className="flex border-b border-[#F8F8FA] px-2 pt-2 gap-1">
             {([
               ['pending', '依頼中'],
               ['in_progress', '制作中'],
@@ -226,11 +221,11 @@ export default function DashboardPage() {
                 className={`px-4 py-2.5 text-sm font-semibold rounded-full transition-all ${
                   activeTab === tab
                     ? 'bg-[#111111] text-white'
-                    : 'text-[#767676] hover:bg-[#F7F7F9]'
+                    : 'text-[#6B7280] hover:bg-[#F8F8FA]'
                 }`}
               >
                 {label}
-                <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${activeTab === tab ? 'bg-white/20 text-white' : 'bg-[#F7F7F9] text-[#767676]'}`}>
+                <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${activeTab === tab ? 'bg-white/20 text-white' : 'bg-[#F8F8FA] text-[#6B7280]'}`}>
                   {requests.filter(r => r.status === tab).length}
                 </span>
               </button>
@@ -248,7 +243,7 @@ export default function DashboardPage() {
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-[#F7F7F9]">
+            <div className="divide-y divide-[#F8F8FA]">
               {filteredRequests.map(req => (
                 <div key={req.id} className="px-6 py-4 flex items-center justify-between gap-4 hover:bg-[#FAFAFA] transition-colors">
                   <div className="flex-1 min-w-0">
@@ -270,8 +265,8 @@ export default function DashboardPage() {
       {/* Payment modal */}
       <Modal isOpen={showPaymentModal} onClose={() => setShowPaymentModal(false)} title="決済登録が必要です">
         <div className="text-center py-4">
-          <div className="w-16 h-16 bg-[#FFF0F7] rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">💳</div>
-          <p className="text-[#767676] mb-6 text-sm leading-relaxed">
+          <div className="w-16 h-16 bg-[#FFF0F6] rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">💳</div>
+          <p className="text-[#6B7280] mb-6 text-sm leading-relaxed">
             サービスをご利用いただくには<br />決済情報の登録が必要です。
           </p>
           <button

@@ -50,7 +50,7 @@ const IMAGE_SIZES = [
 ]
 
 const DELIVERY_SPEEDS = [
-  { label: '通常（14営業日以内）', value: '通常' },
+  { label: '通常（3営業日以内）', value: '通常' },
   { label: 'お急ぎ（要相談）', value: 'お急ぎ' },
   { label: '特に希望なし', value: '特に希望なし' },
 ]
@@ -468,7 +468,7 @@ function Field({ label, required, children }: {
   return (
     <div>
       <label className="block text-xs font-bold text-[#111111] mb-2">
-        {label} {required && <span className="text-[#F5308A]">*</span>}
+        {label} {required && <span className="text-[#E85C97]">*</span>}
       </label>
       {children}
     </div>
@@ -492,8 +492,8 @@ function CheckGroup({ options, selected, onChange }: {
           onClick={() => toggle(opt)}
           className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
             selected.includes(opt)
-              ? 'bg-[#F5308A] text-white border-[#F5308A] shadow-sm'
-              : 'bg-white text-[#767676] border-[#EFEFEF] hover:border-[#F5308A] hover:text-[#F5308A]'
+              ? 'bg-[#E85C97] text-white border-[#E85C97] shadow-sm'
+              : 'bg-white text-[#6B7280] border-[#EFEFEF] hover:border-[#E85C97] hover:text-[#E85C97]'
           }`}
         >
           {opt}
@@ -514,8 +514,8 @@ function TemplateCard({ template, selected, onSelect }: {
       onClick={onSelect}
       className={`w-full text-left rounded-2xl border-2 overflow-hidden transition-all hover:shadow-md ${
         selected
-          ? 'border-[#F5308A] shadow-lg shadow-red-100 scale-[1.02]'
-          : 'border-[#EFEFEF] hover:border-[#F5308A]/50'
+          ? 'border-[#E85C97] shadow-lg shadow-red-100 scale-[1.02]'
+          : 'border-[#EFEFEF] hover:border-[#E85C97]/50'
       }`}
     >
       <div className="relative">
@@ -525,14 +525,14 @@ function TemplateCard({ template, selected, onSelect }: {
           bgTo={template.bgTo}
         />
         {selected && (
-          <div className="absolute top-2 right-2 w-6 h-6 bg-[#F5308A] rounded-full flex items-center justify-center text-white text-xs font-bold shadow">
+          <div className="absolute top-2 right-2 w-6 h-6 bg-[#E85C97] rounded-full flex items-center justify-center text-white text-xs font-bold shadow">
             ✓
           </div>
         )}
       </div>
       <div className="p-3 bg-white">
         <p className="text-xs font-black text-[#111111] leading-tight mb-1">{template.name}</p>
-        <p className="text-[10px] text-[#767676] leading-snug">{template.description}</p>
+        <p className="text-[10px] text-[#6B7280] leading-snug">{template.description}</p>
       </div>
     </button>
   )
@@ -636,7 +636,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
     }
   }
 
-  const inputClass = "w-full border border-[#EFEFEF] rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#F5308A]/20 focus:border-[#F5308A] transition-all bg-[#FAFAFA]"
+  const inputClass = "w-full border border-[#EFEFEF] rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#E85C97]/20 focus:border-[#E85C97] transition-all bg-[#FAFAFA]"
   const textareaClass = `${inputClass} resize-none`
 
   return (
@@ -646,22 +646,22 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
         {STEPS.map((s, i) => (
           <div key={s} className="flex items-center flex-shrink-0">
             <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-all ${
-              i < step ? 'bg-[#F5308A] text-white' :
-              i === step ? 'bg-[#F5308A] text-white ring-4 ring-[#FFF0F7]' :
+              i < step ? 'bg-[#E85C97] text-white' :
+              i === step ? 'bg-[#E85C97] text-white ring-4 ring-[#FFF0F6]' :
               'bg-[#EFEFEF] text-[#ABABAB]'
             }`}>
               {i < step ? '✓' : i + 1}
             </div>
-            <span className={`ml-1 text-xs hidden sm:block truncate max-w-[80px] ${i <= step ? 'text-[#F5308A] font-semibold' : 'text-[#ABABAB]'}`}>{s}</span>
+            <span className={`ml-1 text-xs hidden sm:block truncate max-w-[80px] ${i <= step ? 'text-[#E85C97] font-semibold' : 'text-[#ABABAB]'}`}>{s}</span>
             {i < STEPS.length - 1 && (
-              <div className={`w-4 h-px mx-1.5 flex-shrink-0 ${i < step ? 'bg-[#F5308A]' : 'bg-[#EFEFEF]'}`} />
+              <div className={`w-4 h-px mx-1.5 flex-shrink-0 ${i < step ? 'bg-[#E85C97]' : 'bg-[#EFEFEF]'}`} />
             )}
           </div>
         ))}
       </div>
 
       {error && (
-        <div className="bg-[#FFF0F7] border border-red-100 text-[#F5308A] rounded-xl px-4 py-2.5 text-sm mb-4">
+        <div className="bg-[#FFF0F6] border border-red-100 text-[#E85C97] rounded-xl px-4 py-2.5 text-sm mb-4">
           {error}
         </div>
       )}
@@ -671,10 +671,10 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <label className="text-xs font-bold text-[#111111]">
-              制作内容を選択（複数可） <span className="text-[#F5308A]">*</span>
+              制作内容を選択（複数可） <span className="text-[#E85C97]">*</span>
             </label>
             {form.production_types.length > 0 && (
-              <span className="text-xs text-[#F5308A] font-semibold bg-[#FFF0F7] px-2 py-0.5 rounded-full">
+              <span className="text-xs text-[#E85C97] font-semibold bg-[#FFF0F6] px-2 py-0.5 rounded-full">
                 {form.production_types.length}件選択中
               </span>
             )}
@@ -716,8 +716,8 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                   onClick={() => setDesignFilter(f)}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                     designFilter === f
-                      ? 'bg-[#F5308A] text-white border-[#F5308A] shadow-sm'
-                      : 'bg-white text-[#767676] border-[#EFEFEF] hover:border-[#F5308A] hover:text-[#F5308A]'
+                      ? 'bg-[#E85C97] text-white border-[#E85C97] shadow-sm'
+                      : 'bg-white text-[#6B7280] border-[#EFEFEF] hover:border-[#E85C97] hover:text-[#E85C97]'
                   }`}
                 >
                   {f}
@@ -728,8 +728,8 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
 
           <div>
             <p className="text-xs font-bold text-[#111111] mb-3">
-              テンプレートを選択 <span className="text-[#F5308A]">*</span>
-              <span className="text-[#767676] font-normal ml-1">（{filteredTemplates.length}件表示中）</span>
+              テンプレートを選択 <span className="text-[#E85C97]">*</span>
+              <span className="text-[#6B7280] font-normal ml-1">（{filteredTemplates.length}件表示中）</span>
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[400px] overflow-y-auto pr-1">
               {filteredTemplates.map(t => (
@@ -748,7 +748,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
           </div>
 
           {form.template_id && (
-            <div className="bg-[#FFF0F7] rounded-xl px-4 py-3 text-xs text-[#F5308A] font-semibold">
+            <div className="bg-[#FFF0F6] rounded-xl px-4 py-3 text-xs text-[#E85C97] font-semibold">
               ✓ 選択中：{form.template_name}
             </div>
           )}
@@ -768,9 +768,9 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                     value={s.value}
                     checked={form.image_size === s.value}
                     onChange={() => update('image_size', s.value)}
-                    className="accent-[#F5308A]"
+                    className="accent-[#E85C97]"
                   />
-                  <span className={`text-sm transition-colors ${form.image_size === s.value ? 'text-[#F5308A] font-semibold' : 'text-[#767676]'}`}>
+                  <span className={`text-sm transition-colors ${form.image_size === s.value ? 'text-[#E85C97] font-semibold' : 'text-[#6B7280]'}`}>
                     {s.label}
                   </span>
                 </label>
@@ -800,7 +800,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                 const files = Array.from(e.target.files ?? [])
                 update('materialFiles', files)
               }}
-              className="w-full text-sm text-[#767676] file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FFF0F7] file:text-[#F5308A] hover:file:bg-red-100"
+              className="w-full text-sm text-[#6B7280] file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FFF0F6] file:text-[#E85C97] hover:file:bg-red-100"
             />
             {form.materialFiles.length > 0 && (
               <p className="text-xs text-[#22c55e] mt-1 font-semibold">
@@ -820,9 +820,9 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                     value={s.value}
                     checked={form.delivery_speed === s.value}
                     onChange={() => update('delivery_speed', s.value)}
-                    className="accent-[#F5308A]"
+                    className="accent-[#E85C97]"
                   />
-                  <span className={`text-sm ${form.delivery_speed === s.value ? 'text-[#F5308A] font-semibold' : 'text-[#767676]'}`}>
+                  <span className={`text-sm ${form.delivery_speed === s.value ? 'text-[#E85C97] font-semibold' : 'text-[#6B7280]'}`}>
                     {s.label}
                   </span>
                 </label>
@@ -853,7 +853,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
               </div>
               <div>
                 <p className="text-lg font-black text-[#111111]">納品完了！</p>
-                <p className="text-sm text-[#767676] mt-1">Googleドライブにデザイン画像を保存しました</p>
+                <p className="text-sm text-[#6B7280] mt-1">Googleドライブにデザイン画像を保存しました</p>
               </div>
               {/* プレビュー画像 */}
               <div className="rounded-2xl overflow-hidden border border-[#EFEFEF] mx-auto max-w-xs">
@@ -882,7 +882,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                 <button
                   type="button"
                   onClick={onCancel}
-                  className="text-sm text-[#767676] underline"
+                  className="text-sm text-[#6B7280] underline"
                 >
                   ダッシュボードに戻る
                 </button>
@@ -893,7 +893,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
             <>
               <div>
                 <p className="text-xs font-bold text-[#111111] mb-1">完成デザインプレビュー</p>
-                <p className="text-[10px] text-[#767676] mb-3">
+                <p className="text-[10px] text-[#6B7280] mb-3">
                   入力したテキストをもとにデザインを自動生成しています。
                   「納品する」ボタンを押すと、このデザインがGoogleドライブに保存されます。
                 </p>
@@ -909,14 +909,14 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                     onGenerated={handleCanvasGenerated}
                   />
                 ) : (
-                  <div className="bg-[#F7F7F9] rounded-2xl p-8 text-center text-[#767676] text-sm">
+                  <div className="bg-[#F8F8FA] rounded-2xl p-8 text-center text-[#6B7280] text-sm">
                     テンプレートまたはサイズが未選択です
                   </div>
                 )}
               </div>
 
               {/* 確認サマリー */}
-              <div className="bg-[#F7F7F9] rounded-2xl p-4 space-y-2 text-sm">
+              <div className="bg-[#F8F8FA] rounded-2xl p-4 space-y-2 text-sm">
                 <p className="text-xs font-bold text-[#111111] mb-3">依頼内容の確認</p>
                 {[
                   ['制作内容', [...form.production_types, form.production_types_other ? `その他: ${form.production_types_other}` : ''].filter(Boolean).join('、') || '未選択'],
@@ -927,7 +927,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                   ['納期', form.delivery_speed],
                 ].map(([label, value]) => (
                   <div key={label} className="flex gap-2">
-                    <span className="text-[#767676] flex-shrink-0 w-24 text-xs font-semibold">{label}</span>
+                    <span className="text-[#6B7280] flex-shrink-0 w-24 text-xs font-semibold">{label}</span>
                     <span className="text-[#111111] break-all text-xs">{value}</span>
                   </div>
                 ))}
@@ -938,7 +938,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                 type="button"
                 onClick={handleDeliver}
                 disabled={delivering || !canvasDataUrl}
-                className="w-full bg-[#F5308A] text-white font-bold py-4 rounded-full hover:bg-[#D81B79] transition-all disabled:opacity-50 shadow-md shadow-red-100 text-base"
+                className="w-full bg-[#E85C97] text-white font-bold py-4 rounded-full hover:bg-[#D8477F] transition-all disabled:opacity-50 shadow-md shadow-red-100 text-base"
               >
                 {delivering ? (
                   <span className="flex items-center justify-center gap-2">
@@ -964,18 +964,18 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
         <div className="flex gap-3 mt-5">
           {step > 0 ? (
             <button type="button" onClick={() => setStep(s => s - 1)}
-              className="flex-1 border border-[#EFEFEF] text-[#767676] font-semibold py-3 rounded-full hover:bg-[#F7F7F9] transition-all">
+              className="flex-1 border border-[#EFEFEF] text-[#6B7280] font-semibold py-3 rounded-full hover:bg-[#F8F8FA] transition-all">
               戻る
             </button>
           ) : (
             <button type="button" onClick={onCancel}
-              className="flex-1 border border-[#EFEFEF] text-[#767676] font-semibold py-3 rounded-full hover:bg-[#F7F7F9] transition-all">
+              className="flex-1 border border-[#EFEFEF] text-[#6B7280] font-semibold py-3 rounded-full hover:bg-[#F8F8FA] transition-all">
               キャンセル
             </button>
           )}
           {step < STEPS.length - 1 && (
             <button type="button" onClick={handleNext}
-              className="flex-1 bg-[#F5308A] text-white font-bold py-3 rounded-full hover:bg-[#D81B79] transition-all shadow-md shadow-red-100">
+              className="flex-1 bg-[#E85C97] text-white font-bold py-3 rounded-full hover:bg-[#D8477F] transition-all shadow-md shadow-red-100">
               次へ
             </button>
           )}

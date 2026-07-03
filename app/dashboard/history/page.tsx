@@ -54,13 +54,13 @@ export default function HistoryPage() {
     return d.toISOString().slice(0, 7)
   })
 
-  const selectClass = "border border-[#EFEFEF] rounded-full px-4 py-2 text-sm text-[#111111] bg-white focus:outline-none focus:ring-2 focus:ring-[#F5308A]/20 focus:border-[#F5308A] transition-all"
+  const selectClass = "border border-[#EFEFEF] rounded-full px-4 py-2 text-sm text-[#111111] bg-white focus:outline-none focus:ring-2 focus:ring-[#E85C97]/20 focus:border-[#E85C97] transition-all"
 
   return (
-    <div className="min-h-screen bg-[#F7F7F9]">
+    <div className="min-h-screen bg-[#F8F8FA]">
       <header className="bg-white border-b border-[#EFEFEF] sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-[60px] flex items-center gap-4">
-          <Link href="/dashboard" className="w-8 h-8 rounded-full flex items-center justify-center text-[#767676] hover:bg-[#F7F7F9] transition-all">
+          <Link href="/dashboard" className="w-8 h-8 rounded-full flex items-center justify-center text-[#6B7280] hover:bg-[#F8F8FA] transition-all">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
             </svg>
@@ -89,7 +89,7 @@ export default function HistoryPage() {
 
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="w-8 h-8 border-2 border-[#F5308A] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#E85C97] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : requests.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-3xl shadow-sm">
@@ -97,7 +97,7 @@ export default function HistoryPage() {
             <p className="text-[#ABABAB] text-sm">依頼履歴がありません</p>
           </div>
         ) : (
-          <div className="bg-white rounded-3xl shadow-sm divide-y divide-[#F7F7F9]">
+          <div className="bg-white rounded-3xl shadow-sm divide-y divide-[#F8F8FA]">
             {requests.map(req => (
               <div key={req.id} className="px-6 py-5 hover:bg-[#FAFAFA] transition-colors">
                 <div className="flex items-start justify-between gap-4">
@@ -108,7 +108,7 @@ export default function HistoryPage() {
                     </div>
                     <p className="font-semibold text-[#111111] text-sm">{req.purpose}</p>
                     <div className="flex flex-wrap gap-2 mt-1">
-                      <span className="text-xs text-[#767676]">{req.image_type}</span>
+                      <span className="text-xs text-[#6B7280]">{req.image_type}</span>
                       {req.format && <span className="text-xs text-[#ABABAB]">• {req.format}</span>}
                       {req.size && <span className="text-xs text-[#ABABAB]">• {req.size}</span>}
                     </div>
@@ -116,8 +116,8 @@ export default function HistoryPage() {
                   </div>
                 </div>
                 {req.status === 'delivered' && req.delivery_file_urls && req.delivery_file_urls.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-[#F7F7F9]">
-                    <p className="text-xs font-semibold text-[#767676] mb-2">納品ファイル</p>
+                  <div className="mt-3 pt-3 border-t border-[#F8F8FA]">
+                    <p className="text-xs font-semibold text-[#6B7280] mb-2">納品ファイル</p>
                     <div className="flex flex-wrap gap-2">
                       {req.delivery_file_urls.map((url, i) => (
                         <a
@@ -125,7 +125,7 @@ export default function HistoryPage() {
                           href={url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs bg-[#FFF0F7] text-[#F5308A] px-3 py-1.5 rounded-full hover:bg-red-100 transition-colors font-medium"
+                          className="text-xs bg-[#FFF0F6] text-[#E85C97] px-3 py-1.5 rounded-full hover:bg-red-100 transition-colors font-medium"
                         >
                           ファイル {i + 1} をダウンロード
                         </a>

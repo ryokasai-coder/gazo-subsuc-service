@@ -21,7 +21,7 @@ const TERMS = `DESIGN BOX利用規約
 2. 未使用の依頼回数は翌月に繰り越すことができません。
 
 第5条（納品）
-1. 必要素材および制作情報のご提出後、原則14営業日以内に初稿を納品します。
+1. 必要素材および制作情報のご提出後、原則3営業日以内に初稿を納品します。
 2. 修正回数については別途サポートよりご案内いたします。
 3. 修正依頼は初稿納品後7日以内にお申し出ください。
 
@@ -133,24 +133,19 @@ export default function ApplyPage() {
     }
   }
 
-  const inputClass = "w-full border border-[#EFEFEF] rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#F5308A]/20 focus:border-[#F5308A] transition-all bg-[#FAFAFA]"
+  const inputClass = "w-full border border-[#EFEFEF] rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#E85C97]/20 focus:border-[#E85C97] transition-all bg-[#FAFAFA]"
   const labelClass = "block text-xs font-semibold text-[#111111] mb-1.5"
 
   return (
-    <div className="min-h-screen bg-[#F7F7F9]">
+    <div className="min-h-screen bg-[#F8F8FA]">
       {/* Header */}
-      <header className="bg-white border-b border-[#ECECEF] px-4">
+      <header className="bg-white border-b border-[#EAEAEA] px-4">
         <div className="max-w-6xl mx-auto h-[60px] flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="w-7 h-7 rounded-[9px] bg-brand-gradient flex items-center justify-center text-white">
-              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2l8.66 5v10L12 22 3.34 17V7L12 2z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-                <path d="M3.34 7L12 12l8.66-5M12 12v10" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-              </svg>
-            </span>
-            <span className="font-black text-[#111111] text-sm hidden sm:block tracking-tight">DESIGN<span className="text-gradient">BOX</span></span>
+          <Link href="/" className="flex items-center" aria-label="DESIGN BOX ホーム">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-horizontal.png" alt="DESIGN BOX" className="h-7 w-auto" />
           </Link>
-          <Link href="/login" className="text-sm text-[#767676] hover:text-[#111111] transition-colors">ログインはこちら</Link>
+          <Link href="/login" className="text-sm text-[#6B7280] hover:text-[#111111] transition-colors">ログインはこちら</Link>
         </div>
       </header>
 
@@ -159,7 +154,7 @@ export default function ApplyPage() {
         <div className="text-center mb-8">
           <span className="text-xs font-black text-gradient uppercase tracking-widest">Sign Up</span>
           <h1 className="text-3xl font-black text-[#111111] mt-2 mb-2">新規お申し込み</h1>
-          <p className="text-[#767676] text-sm">必要事項を入力してアカウントを作成してください</p>
+          <p className="text-[#6B7280] text-sm">必要事項を入力してアカウントを作成してください</p>
         </div>
 
         {/* Step indicator */}
@@ -168,8 +163,8 @@ export default function ApplyPage() {
             <div key={s.n} className="flex items-center flex-1">
               <div className="flex flex-col items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                  s.n < step ? 'bg-[#F5308A] text-white' :
-                  s.n === step ? 'bg-[#F5308A] text-white ring-4 ring-[#FFF0F7]' :
+                  s.n < step ? 'bg-[#E85C97] text-white' :
+                  s.n === step ? 'bg-[#E85C97] text-white ring-4 ring-[#FFF0F6]' :
                   'bg-[#EFEFEF] text-[#ABABAB]'
                 }`}>
                   {s.n < step ? (
@@ -178,9 +173,9 @@ export default function ApplyPage() {
                     </svg>
                   ) : s.n}
                 </div>
-                <span className={`text-xs mt-1 ${s.n <= step ? 'text-[#F5308A] font-semibold' : 'text-[#ABABAB]'}`}>{s.label}</span>
+                <span className={`text-xs mt-1 ${s.n <= step ? 'text-[#E85C97] font-semibold' : 'text-[#ABABAB]'}`}>{s.label}</span>
               </div>
-              {i < 2 && <div className={`flex-1 h-px mx-2 mb-4 ${s.n < step ? 'bg-[#F5308A]' : 'bg-[#EFEFEF]'}`} />}
+              {i < 2 && <div className={`flex-1 h-px mx-2 mb-4 ${s.n < step ? 'bg-[#E85C97]' : 'bg-[#EFEFEF]'}`} />}
             </div>
           ))}
         </div>
@@ -191,7 +186,7 @@ export default function ApplyPage() {
             <div>
               <h2 className="text-base font-bold text-[#111111] mb-5">基本情報の入力</h2>
               {error && (
-                <div className="bg-[#FFF0F7] border border-red-100 text-[#F5308A] rounded-xl px-4 py-3 text-sm mb-4">
+                <div className="bg-[#FFF0F6] border border-red-100 text-[#E85C97] rounded-xl px-4 py-3 text-sm mb-4">
                   {error}
                 </div>
               )}
@@ -206,7 +201,7 @@ export default function ApplyPage() {
                   { name: 'passwordConfirm', label: 'パスワード（確認）', placeholder: 'パスワードを再入力', type: 'password' },
                 ].map(({ name, label, placeholder, type }) => (
                   <div key={name}>
-                    <label className={labelClass}>{label} <span className="text-[#F5308A]">*</span></label>
+                    <label className={labelClass}>{label} <span className="text-[#E85C97]">*</span></label>
                     <input
                       type={type}
                       name={name}
@@ -231,16 +226,16 @@ export default function ApplyPage() {
           {step === 2 && (
             <div>
               <h2 className="text-base font-bold text-[#111111] mb-2">利用規約の確認</h2>
-              <p className="text-xs text-[#767676] mb-4">最後までスクロールして読むと同意ボタンが有効になります。</p>
+              <p className="text-xs text-[#6B7280] mb-4">最後までスクロールして読むと同意ボタンが有効になります。</p>
               <div
                 ref={termsRef}
                 onScroll={handleTermsScroll}
-                className="border border-[#EFEFEF] rounded-2xl p-4 h-64 overflow-y-scroll text-sm text-[#767676] whitespace-pre-wrap leading-relaxed mb-4 bg-[#FAFAFA]"
+                className="border border-[#EFEFEF] rounded-2xl p-4 h-64 overflow-y-scroll text-sm text-[#6B7280] whitespace-pre-wrap leading-relaxed mb-4 bg-[#FAFAFA]"
               >
                 {TERMS}
               </div>
               {error && (
-                <div className="bg-[#FFF0F7] border border-red-100 text-[#F5308A] rounded-xl px-4 py-3 text-sm mb-4">
+                <div className="bg-[#FFF0F6] border border-red-100 text-[#E85C97] rounded-xl px-4 py-3 text-sm mb-4">
                   {error}
                 </div>
               )}
@@ -257,7 +252,7 @@ export default function ApplyPage() {
               </button>
               <button
                 onClick={() => setStep(1)}
-                className="mt-3 w-full text-sm text-[#767676] hover:text-[#111111] py-2 transition-colors"
+                className="mt-3 w-full text-sm text-[#6B7280] hover:text-[#111111] py-2 transition-colors"
               >
                 ← 前に戻る
               </button>
@@ -267,19 +262,19 @@ export default function ApplyPage() {
           {/* Step 3 */}
           {step === 3 && (
             <div className="text-center">
-              <div className="w-16 h-16 bg-[#FFF0F7] rounded-full flex items-center justify-center mx-auto mb-5">
-                <svg className="w-8 h-8 text-[#F5308A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-16 h-16 bg-[#FFF0F6] rounded-full flex items-center justify-center mx-auto mb-5">
+                <svg className="w-8 h-8 text-[#E85C97]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
               <h2 className="text-xl font-black text-[#111111] mb-2">お申し込みが完了しました！</h2>
-              <p className="text-[#767676] text-sm mb-6">ご登録のメールアドレスにログインIDをお送りしました。</p>
+              <p className="text-[#6B7280] text-sm mb-6">ご登録のメールアドレスにログインIDをお送りしました。</p>
 
               {loginId && (
-                <div className="bg-[#FFF0F7] rounded-2xl p-4 mb-6 text-left">
-                  <p className="text-xs text-[#F5308A] font-semibold mb-1">ログインID</p>
-                  <p className="text-lg font-black text-[#F5308A]">{loginId}</p>
-                  <p className="text-xs text-[#767676] mt-2">このIDはメールにも記載されています。大切に保管してください。</p>
+                <div className="bg-[#FFF0F6] rounded-2xl p-4 mb-6 text-left">
+                  <p className="text-xs text-[#E85C97] font-semibold mb-1">ログインID</p>
+                  <p className="text-lg font-black text-[#E85C97]">{loginId}</p>
+                  <p className="text-xs text-[#6B7280] mt-2">このIDはメールにも記載されています。大切に保管してください。</p>
                 </div>
               )}
 
@@ -301,7 +296,7 @@ export default function ApplyPage() {
 
         <p className="text-center text-xs text-[#ABABAB] mt-6">
           すでにアカウントをお持ちの方は
-          <Link href="/login" className="text-[#F5308A] hover:underline ml-1">こちら</Link>
+          <Link href="/login" className="text-[#E85C97] hover:underline ml-1">こちら</Link>
         </p>
       </div>
     </div>

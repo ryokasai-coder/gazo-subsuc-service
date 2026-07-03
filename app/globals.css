@@ -1,23 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #111111;
+  /* ─── ライトトーン仕様書（DESIGNBOX LP ライトトーン版）準拠 ─── */
+  --background: #ffffff;       /* Background */
+  --foreground: #111111;       /* Main Text */
 
-  /* ─── Brand（オレンジ→ピンク グラデーション） ─── */
-  --brand-orange: #FF8A00;
-  --brand-pink: #FF4DFF;
-  --brand-gradient: linear-gradient(135deg, #FF8A00 0%, #FF4DFF 100%);
+  /* ─── Brand（オレンジ→ピンク グラデーション・ライトトーン） ─── */
+  --brand-orange: #FFB347;     /* Brand Gradient start */
+  --brand-pink: #FF8AC7;       /* Brand Gradient end */
+  --brand-gradient: linear-gradient(135deg, #FFB347 0%, #FF8AC7 100%);
 
-  /* 単色が必要な箇所用の代表色（グラデーションの中間トーン） */
-  --primary: #F5308A;
-  --primary-dark: #D81B79;
-  --primary-light: #FFF0F7;
+  /* 単色が必要な箇所用の代表色（グラデーションと調和する可読性のあるピンク） */
+  --primary: #E85C97;
+  --primary-dark: #D8477F;
+  --primary-light: #FFF0F6;
 
-  --surface: #F7F7F9;
+  --surface: #F8F8FA;          /* Section */
   --card: #ffffff;
-  --muted: #767676;
-  --border: #ECECEF;
+  --muted: #6B7280;            /* Secondary Text */
+  --border: #EAEAEA;           /* Border */
 }
 
 body {
@@ -51,20 +52,20 @@ html {
 .btn-gradient {
   background-image: var(--brand-gradient);
   color: #fff;
-  box-shadow: 0 8px 24px -6px rgba(255, 77, 200, 0.5);
+  box-shadow: 0 8px 24px -8px rgba(255, 138, 199, 0.55);
   transition: box-shadow 0.25s ease, transform 0.25s ease, filter 0.25s ease;
 }
 .btn-gradient:hover {
-  box-shadow: 0 12px 32px -6px rgba(255, 77, 200, 0.6);
+  box-shadow: 0 12px 32px -8px rgba(255, 138, 199, 0.7);
   transform: translateY(-2px);
-  filter: brightness(1.04);
+  filter: brightness(1.03);
 }
 
-/* グラデーションの薄い面（ヒーロー背景の光彩など） */
+/* グラデーションの薄い面（ヒーロー背景の光彩など・ライトトーン） */
 .bg-brand-glow {
   background:
-    radial-gradient(60% 60% at 80% 20%, rgba(255, 77, 255, 0.14) 0%, transparent 70%),
-    radial-gradient(50% 50% at 15% 30%, rgba(255, 138, 0, 0.12) 0%, transparent 70%);
+    radial-gradient(60% 60% at 80% 18%, rgba(255, 138, 199, 0.16) 0%, transparent 70%),
+    radial-gradient(50% 55% at 12% 28%, rgba(255, 179, 71, 0.14) 0%, transparent 70%);
 }
 
 /* グラデーションの細ボーダー（カード縁取り） */
@@ -81,12 +82,12 @@ html {
   transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
 .card-hover:hover {
-  box-shadow: 0 12px 40px rgba(255, 77, 200, 0.14);
+  box-shadow: 0 14px 44px rgba(255, 138, 199, 0.18);
   transform: translateY(-3px);
 }
 
 /* スクロールバー */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #E4C4E0; border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: #FF8AC4; }
+::-webkit-scrollbar-thumb { background: #EAD4E4; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #FF8AC7; }

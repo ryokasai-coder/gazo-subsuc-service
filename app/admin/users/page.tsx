@@ -83,14 +83,14 @@ export default function AdminUsersPage() {
     u.email?.includes(search)
   )
 
-  const thClass = "text-left px-4 py-3 text-xs font-semibold text-[#767676] whitespace-nowrap"
+  const thClass = "text-left px-4 py-3 text-xs font-semibold text-[#6B7280] whitespace-nowrap"
   const tdClass = "px-4 py-3"
 
   return (
-    <div className="min-h-screen bg-[#F7F7F9]">
+    <div className="min-h-screen bg-[#F8F8FA]">
       <header className="bg-white border-b border-[#EFEFEF] sticky top-0 z-40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-[60px] flex items-center gap-4">
-          <Link href="/admin" className="w-8 h-8 rounded-full flex items-center justify-center text-[#767676] hover:bg-[#F7F7F9] transition-all">
+          <Link href="/admin" className="w-8 h-8 rounded-full flex items-center justify-center text-[#6B7280] hover:bg-[#F8F8FA] transition-all">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
             </svg>
@@ -102,7 +102,7 @@ export default function AdminUsersPage() {
               placeholder="会社名・ID・メールで検索"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="border border-[#EFEFEF] rounded-full px-4 py-2 text-sm text-[#111111] bg-white focus:outline-none focus:ring-2 focus:ring-[#F5308A]/20 focus:border-[#F5308A] transition-all w-64"
+              className="border border-[#EFEFEF] rounded-full px-4 py-2 text-sm text-[#111111] bg-white focus:outline-none focus:ring-2 focus:ring-[#E85C97]/20 focus:border-[#E85C97] transition-all w-64"
             />
           </div>
         </div>
@@ -113,27 +113,27 @@ export default function AdminUsersPage() {
         <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="bg-white rounded-2xl p-4 shadow-sm text-center">
             <div className="text-2xl font-black text-[#111111]">{users.length}</div>
-            <div className="text-xs text-[#767676] mt-1">総ユーザー数</div>
+            <div className="text-xs text-[#6B7280] mt-1">総ユーザー数</div>
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm text-center">
             <div className="text-2xl font-black text-emerald-600">{users.filter(u => u.is_payment_registered).length}</div>
-            <div className="text-xs text-[#767676] mt-1">決済登録済み</div>
+            <div className="text-xs text-[#6B7280] mt-1">決済登録済み</div>
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm text-center">
             <div className="text-2xl font-black text-amber-500">{users.filter(u => !u.is_payment_registered).length}</div>
-            <div className="text-xs text-[#767676] mt-1">決済未登録</div>
+            <div className="text-xs text-[#6B7280] mt-1">決済未登録</div>
           </div>
         </div>
 
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="w-8 h-8 border-2 border-[#F5308A] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#E85C97] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-[#F7F7F9] border-b border-[#EFEFEF]">
+                <thead className="bg-[#F8F8FA] border-b border-[#EFEFEF]">
                   <tr>
                     <th className={thClass}>お客様番号</th>
                     <th className={thClass}>会社名 / 担当者</th>
@@ -144,15 +144,15 @@ export default function AdminUsersPage() {
                     <th className={thClass}>操作</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#F7F7F9]">
+                <tbody className="divide-y divide-[#F8F8FA]">
                   {filtered.map(user => (
                     <tr key={user.id} className={`transition-colors ${user.is_active ? 'hover:bg-[#FAFAFA]' : 'bg-gray-50 opacity-60'}`}>
-                      <td className={`${tdClass} font-mono text-xs font-bold text-[#F5308A]`}>{user.login_id}</td>
+                      <td className={`${tdClass} font-mono text-xs font-bold text-[#E85C97]`}>{user.login_id}</td>
                       <td className={tdClass}>
                         <p className="font-semibold text-[#111111]">{user.company_name}</p>
                         <p className="text-xs text-[#ABABAB]">{user.contact_name}</p>
                       </td>
-                      <td className={`${tdClass} text-xs text-[#767676]`}>{user.email}</td>
+                      <td className={`${tdClass} text-xs text-[#6B7280]`}>{user.email}</td>
                       <td className={tdClass}>
                         {user.is_payment_registered ? (
                           <span className="text-xs px-2.5 py-1 rounded-full font-semibold text-emerald-700 bg-emerald-50 ring-1 ring-emerald-200">登録済</span>
@@ -180,7 +180,7 @@ export default function AdminUsersPage() {
                         <button
                           onClick={() => resetPassword(user)}
                           disabled={actionLoading === user.id + '_pw'}
-                          className="text-xs bg-[#F7F7F9] text-[#767676] px-2.5 py-1 rounded-full hover:bg-[#E0DEDE] transition-all disabled:opacity-50"
+                          className="text-xs bg-[#F8F8FA] text-[#6B7280] px-2.5 py-1 rounded-full hover:bg-[#E0DEDE] transition-all disabled:opacity-50"
                         >
                           {actionLoading === user.id + '_pw' ? '送信中...' : 'PW再設定'}
                         </button>

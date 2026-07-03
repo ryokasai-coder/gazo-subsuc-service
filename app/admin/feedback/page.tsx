@@ -58,10 +58,10 @@ export default function AdminFeedbackPage() {
   )
 
   return (
-    <div className="min-h-screen bg-[#F7F7F9]">
+    <div className="min-h-screen bg-[#F8F8FA]">
       <header className="bg-white border-b border-[#EFEFEF] sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-[60px] flex items-center gap-4">
-          <Link href="/admin" className="w-8 h-8 rounded-full flex items-center justify-center text-[#767676] hover:bg-[#F7F7F9] transition-all">
+          <Link href="/admin" className="w-8 h-8 rounded-full flex items-center justify-center text-[#6B7280] hover:bg-[#F8F8FA] transition-all">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
             </svg>
@@ -71,7 +71,7 @@ export default function AdminFeedbackPage() {
             <select
               value={billingMonth}
               onChange={e => { setBillingMonth(e.target.value); setLoading(true) }}
-              className="border border-[#EFEFEF] rounded-full px-4 py-2 text-sm text-[#111111] bg-white focus:outline-none focus:ring-2 focus:ring-[#F5308A]/20 transition-all"
+              className="border border-[#EFEFEF] rounded-full px-4 py-2 text-sm text-[#111111] bg-white focus:outline-none focus:ring-2 focus:ring-[#E85C97]/20 transition-all"
             >
               {months.map(m => <option key={m} value={m}>{m.replace('-', '年')}月</option>)}
             </select>
@@ -89,8 +89,8 @@ export default function AdminFeedbackPage() {
               { label: 'スピード', value: speedAvg.toFixed(1), unit: '点' },
             ].map(item => (
               <div key={item.label} className="bg-white rounded-2xl p-4 shadow-sm text-center">
-                <div className="text-2xl font-black text-[#111111]">{item.value}<span className="text-sm font-normal text-[#767676]">{item.unit}</span></div>
-                <div className="text-xs text-[#767676] mt-1">{item.label}</div>
+                <div className="text-2xl font-black text-[#111111]">{item.value}<span className="text-sm font-normal text-[#6B7280]">{item.unit}</span></div>
+                <div className="text-xs text-[#6B7280] mt-1">{item.label}</div>
               </div>
             ))}
           </div>
@@ -98,7 +98,7 @@ export default function AdminFeedbackPage() {
 
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="w-8 h-8 border-2 border-[#F5308A] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#E85C97] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : feedbacks.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-3xl shadow-sm">
@@ -116,15 +116,15 @@ export default function AdminFeedbackPage() {
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Stars value={fb.overall_rating} />
-                    <span className="text-xs text-[#767676]">総合 {fb.overall_rating}点</span>
+                    <span className="text-xs text-[#6B7280]">総合 {fb.overall_rating}点</span>
                   </div>
                 </div>
-                <div className="flex flex-wrap gap-4 text-xs text-[#767676] mb-3">
+                <div className="flex flex-wrap gap-4 text-xs text-[#6B7280] mb-3">
                   {fb.quality_rating > 0 && <span>クオリティ: <Stars value={fb.quality_rating} /> {fb.quality_rating}点</span>}
                   {fb.speed_rating > 0 && <span>スピード: <Stars value={fb.speed_rating} /> {fb.speed_rating}点</span>}
                 </div>
                 {fb.comment && (
-                  <p className="text-sm text-[#111111] bg-[#F7F7F9] rounded-2xl px-4 py-3">{fb.comment}</p>
+                  <p className="text-sm text-[#111111] bg-[#F8F8FA] rounded-2xl px-4 py-3">{fb.comment}</p>
                 )}
               </div>
             ))}

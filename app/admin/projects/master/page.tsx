@@ -134,19 +134,19 @@ export default function ProjectMasterPage() {
     setMasters(prev => prev.filter(m => m.user_id !== userId))
   }
 
-  const inputClass = "w-full border border-[#EFEFEF] rounded-xl px-3 py-2 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#F5308A]/20 focus:border-[#F5308A] transition-all bg-[#FAFAFA]"
+  const inputClass = "w-full border border-[#EFEFEF] rounded-xl px-3 py-2 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#E85C97]/20 focus:border-[#E85C97] transition-all bg-[#FAFAFA]"
 
   return (
-    <div className="min-h-screen bg-[#F7F7F9]">
+    <div className="min-h-screen bg-[#F8F8FA]">
       <header className="bg-white border-b border-[#EFEFEF] sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 h-[60px] flex items-center gap-4">
-          <Link href="/admin/projects" className="w-8 h-8 rounded-full flex items-center justify-center text-[#767676] hover:bg-[#F7F7F9] transition-all">
+          <Link href="/admin/projects" className="w-8 h-8 rounded-full flex items-center justify-center text-[#6B7280] hover:bg-[#F8F8FA] transition-all">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
             </svg>
           </Link>
           <h1 className="font-bold text-[#111111]">案件マスタ</h1>
-          <p className="text-xs text-[#767676] hidden sm:block">各お客様のブランド設定を管理します</p>
+          <p className="text-xs text-[#6B7280] hidden sm:block">各お客様のブランド設定を管理します</p>
         </div>
       </header>
 
@@ -171,7 +171,7 @@ export default function ProjectMasterPage() {
 
         {loading ? (
           <div className="flex justify-center py-12">
-            <div className="w-8 h-8 border-2 border-[#F5308A] border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#E85C97] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -182,7 +182,7 @@ export default function ProjectMasterPage() {
               return (
                 <div key={user.id} className="bg-white rounded-3xl shadow-sm overflow-hidden">
                   {/* ヘッダー */}
-                  <div className="bg-gradient-to-br from-[#F5308A] to-[#D81B79] px-5 py-4 text-white">
+                  <div className="bg-gradient-to-br from-[#E85C97] to-[#D8477F] px-5 py-4 text-white">
                     <p className="font-bold text-sm leading-tight">{user.company_name || user.email}</p>
                     {user.contact_name && (
                       <p className="text-xs text-white/80 mt-0.5">{user.contact_name}</p>
@@ -195,10 +195,10 @@ export default function ProjectMasterPage() {
                     {isEditing ? (
                       <div className="space-y-3">
                         {error && (
-                          <p className="text-xs text-[#F5308A] bg-[#FFF0F7] rounded-lg px-3 py-2">{error}</p>
+                          <p className="text-xs text-[#E85C97] bg-[#FFF0F6] rounded-lg px-3 py-2">{error}</p>
                         )}
                         <div>
-                          <label className="block text-[10px] font-bold text-[#767676] mb-1">ブランド名</label>
+                          <label className="block text-[10px] font-bold text-[#6B7280] mb-1">ブランド名</label>
                           <input
                             type="text"
                             value={form.brand_name}
@@ -208,7 +208,7 @@ export default function ProjectMasterPage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-[10px] font-bold text-[#767676] mb-1">ブランドカラー</label>
+                          <label className="block text-[10px] font-bold text-[#6B7280] mb-1">ブランドカラー</label>
                           <input
                             type="text"
                             value={form.brand_colors}
@@ -218,7 +218,7 @@ export default function ProjectMasterPage() {
                           />
                         </div>
                         <div>
-                          <label className="block text-[10px] font-bold text-[#767676] mb-1">フォントスタイル</label>
+                          <label className="block text-[10px] font-bold text-[#6B7280] mb-1">フォントスタイル</label>
                           <div className="flex flex-wrap gap-1.5">
                             {FONT_STYLES.map(f => (
                               <button
@@ -227,8 +227,8 @@ export default function ProjectMasterPage() {
                                 onClick={() => setForm(prev => ({ ...prev, font_style: f }))}
                                 className={`px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all ${
                                   form.font_style === f
-                                    ? 'bg-[#F5308A] text-white border-[#F5308A]'
-                                    : 'bg-white text-[#767676] border-[#EFEFEF] hover:border-[#F5308A]'
+                                    ? 'bg-[#E85C97] text-white border-[#E85C97]'
+                                    : 'bg-white text-[#6B7280] border-[#EFEFEF] hover:border-[#E85C97]'
                                 }`}
                               >
                                 {f}
@@ -237,7 +237,7 @@ export default function ProjectMasterPage() {
                           </div>
                         </div>
                         <div>
-                          <label className="block text-[10px] font-bold text-[#767676] mb-1">トーン</label>
+                          <label className="block text-[10px] font-bold text-[#6B7280] mb-1">トーン</label>
                           <div className="flex flex-wrap gap-1.5">
                             {TONE_OPTIONS.map(t => (
                               <button
@@ -246,8 +246,8 @@ export default function ProjectMasterPage() {
                                 onClick={() => setForm(prev => ({ ...prev, tone: t }))}
                                 className={`px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all ${
                                   form.tone === t
-                                    ? 'bg-[#F5308A] text-white border-[#F5308A]'
-                                    : 'bg-white text-[#767676] border-[#EFEFEF] hover:border-[#F5308A]'
+                                    ? 'bg-[#E85C97] text-white border-[#E85C97]'
+                                    : 'bg-white text-[#6B7280] border-[#EFEFEF] hover:border-[#E85C97]'
                                 }`}
                               >
                                 {t}
@@ -256,7 +256,7 @@ export default function ProjectMasterPage() {
                           </div>
                         </div>
                         <div>
-                          <label className="block text-[10px] font-bold text-[#767676] mb-1">メモ・特記事項</label>
+                          <label className="block text-[10px] font-bold text-[#6B7280] mb-1">メモ・特記事項</label>
                           <textarea
                             value={form.notes}
                             onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
@@ -269,7 +269,7 @@ export default function ProjectMasterPage() {
                           <button
                             type="button"
                             onClick={() => setEditingUserId(null)}
-                            className="flex-1 border border-[#EFEFEF] text-[#767676] text-xs font-semibold py-2 rounded-full hover:bg-[#F7F7F9] transition-all"
+                            className="flex-1 border border-[#EFEFEF] text-[#6B7280] text-xs font-semibold py-2 rounded-full hover:bg-[#F8F8FA] transition-all"
                           >
                             キャンセル
                           </button>
@@ -277,7 +277,7 @@ export default function ProjectMasterPage() {
                             type="button"
                             onClick={handleSave}
                             disabled={saving}
-                            className="flex-1 bg-[#F5308A] text-white text-xs font-bold py-2 rounded-full hover:bg-[#D81B79] transition-all disabled:opacity-50"
+                            className="flex-1 bg-[#E85C97] text-white text-xs font-bold py-2 rounded-full hover:bg-[#D8477F] transition-all disabled:opacity-50"
                           >
                             {saving ? '保存中...' : '保存'}
                           </button>
@@ -289,32 +289,32 @@ export default function ProjectMasterPage() {
                           <div className="space-y-2 text-xs mb-4">
                             {master.brand_name && (
                               <div className="flex gap-2">
-                                <span className="text-[#767676] font-semibold w-20 flex-shrink-0">ブランド名</span>
+                                <span className="text-[#6B7280] font-semibold w-20 flex-shrink-0">ブランド名</span>
                                 <span className="text-[#111111]">{master.brand_name}</span>
                               </div>
                             )}
                             {master.brand_colors && (
                               <div className="flex gap-2 items-center">
-                                <span className="text-[#767676] font-semibold w-20 flex-shrink-0">カラー</span>
+                                <span className="text-[#6B7280] font-semibold w-20 flex-shrink-0">カラー</span>
                                 <span className="text-[#111111] break-all">{master.brand_colors}</span>
                               </div>
                             )}
                             {master.font_style && (
                               <div className="flex gap-2">
-                                <span className="text-[#767676] font-semibold w-20 flex-shrink-0">フォント</span>
-                                <span className="bg-[#F7F7F9] text-[#111111] px-2 py-0.5 rounded-full">{master.font_style}</span>
+                                <span className="text-[#6B7280] font-semibold w-20 flex-shrink-0">フォント</span>
+                                <span className="bg-[#F8F8FA] text-[#111111] px-2 py-0.5 rounded-full">{master.font_style}</span>
                               </div>
                             )}
                             {master.tone && (
                               <div className="flex gap-2">
-                                <span className="text-[#767676] font-semibold w-20 flex-shrink-0">トーン</span>
-                                <span className="bg-[#F7F7F9] text-[#111111] px-2 py-0.5 rounded-full">{master.tone}</span>
+                                <span className="text-[#6B7280] font-semibold w-20 flex-shrink-0">トーン</span>
+                                <span className="bg-[#F8F8FA] text-[#111111] px-2 py-0.5 rounded-full">{master.tone}</span>
                               </div>
                             )}
                             {master.notes && (
                               <div className="flex gap-2">
-                                <span className="text-[#767676] font-semibold w-20 flex-shrink-0">メモ</span>
-                                <span className="text-[#767676]">{master.notes}</span>
+                                <span className="text-[#6B7280] font-semibold w-20 flex-shrink-0">メモ</span>
+                                <span className="text-[#6B7280]">{master.notes}</span>
                               </div>
                             )}
                           </div>
@@ -325,7 +325,7 @@ export default function ProjectMasterPage() {
                           <button
                             type="button"
                             onClick={() => startEdit(user)}
-                            className="flex-1 bg-[#F5308A] text-white text-xs font-bold py-2 rounded-full hover:bg-[#D81B79] transition-all"
+                            className="flex-1 bg-[#E85C97] text-white text-xs font-bold py-2 rounded-full hover:bg-[#D8477F] transition-all"
                           >
                             {master ? '編集' : '登録する'}
                           </button>
@@ -333,7 +333,7 @@ export default function ProjectMasterPage() {
                             <button
                               type="button"
                               onClick={() => handleDelete(user.id)}
-                              className="border border-[#EFEFEF] text-[#767676] text-xs font-semibold px-3 py-2 rounded-full hover:bg-[#F7F7F9] transition-all"
+                              className="border border-[#EFEFEF] text-[#6B7280] text-xs font-semibold px-3 py-2 rounded-full hover:bg-[#F8F8FA] transition-all"
                             >
                               削除
                             </button>
