@@ -1,16 +1,46 @@
-import { Resend } from 'resend'
-export const resend = new Resend(process.env.RESEND_API_KEY)
+// ─── メール送信（Xサーバーのメールボックスから SMTP 送信）───────────────────
+// ※ファイル名は resend.ts のままだが、実装は nodemailer + SMTP に移行（importパス互換のため踏襲）。
+// 送信元 sr.keiri@funrix.co.jp は funrix.co.jp のXサーバー管理メール。DNS変更不要でSMTP送信する。
+//
+// 必要な環境変数（Vercel Production / .env.local）:
+//   SMTP_HOST   … Xサーバーの送信サーバー（例: svXXXXX.xserver.jp。サーバーパネル/契約メールで確認）
+//   SMTP_PORT   … 465（SSL）推奨。587（STARTTLS）も可
+//   SMTP_SECURE … '465'なら 'true'、'587'なら 'false'
+//   SMTP_USER   … sr.keiri@funrix.co.jp（メールアドレス全体）
+//   SMTP_PASS   … 上記メールボックスのパスワード
+//   MAIL_FROM   … 'DESIGN BOX <sr.keiri@funrix.co.jp>'（任意・未設定なら既定を使用）
+import nodemailer from 'nodemailer'
 
-// 送信元は sr.keiri@funrix.co.jp（funrix.co.jp ドメイン）。
-// ※Resend で funrix.co.jp のドメイン検証（DNS: SPF/DKIM）が完了して初めて実配信される。
-// 環境変数 MAIL_FROM があればそれを優先（差し替え可能）。
 const FROM = () => process.env.MAIL_FROM || 'DESIGN BOX <sr.keiri@funrix.co.jp>'
+
+let _transporter: nodemailer.Transporter | null = null
+function getTransporter() {
+  if (_transporter) return _transporter
+  _transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT ?? 465),
+    secure: (process.env.SMTP_SECURE ?? 'true') === 'true', // 465=true / 587=false(STARTTLS)
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  })
+  return _transporter
+}
+
+// 共通送信ヘルパー。SMTP未設定時は送信をスキップ（呼び出し側の処理は止めない）。
+async function sendMail({ to, subject, html }: { to: string; subject: string; html: string }) {
+  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+    console.error('[mail] SMTP設定(SMTP_HOST/SMTP_USER/SMTP_PASS)が未設定のため送信をスキップしました')
+    return
+  }
+  await getTransporter().sendMail({ from: FROM(), to, subject, html })
+}
 
 export async function sendWelcomeEmail({ email, loginId, tempPassword }: {
   email: string; loginId: string; tempPassword: string
 }) {
-  await resend.emails.send({
-    from: FROM(),
+  await sendMail({
     to: email,
     subject: '【DESIGN BOX】ログインIDのご案内',
     html: `
@@ -23,7 +53,7 @@ export async function sendWelcomeEmail({ email, loginId, tempPassword }: {
       </ul>
       <p>ご利用開始には決済登録が必要です。<br/>
       決済登録が完了しましたら画像依頼フォームをご利用いただけます。</p>
-    `
+    `,
   })
 }
 
@@ -35,8 +65,7 @@ export async function sendReminderEmail({ user, usedCount, requiredCount, thresh
   billingMonth: string
 }) {
   const [year, month] = billingMonth.split('-')
-  await resend.emails.send({
-    from: FROM(),
+  await sendMail({
     to: user.email,
     subject: '【DESIGN BOX】今月の画像依頼はお済みですか？',
     html: `
@@ -50,15 +79,14 @@ export async function sendReminderEmail({ user, usedCount, requiredCount, thresh
       <p>月額料金に含まれる10回の依頼枠がまだ残っています。<br/>
       未使用分の翌月繰越はできませんので、ぜひご活用ください！</p>
       <p><a href="${process.env.NEXT_PUBLIC_SERVICE_URL}/dashboard">今すぐ依頼する</a></p>
-    `
+    `,
   })
 }
 
 export async function sendFeedbackEmail({ email, companyName, contactName, billingMonth }: {
   email: string; companyName: string; contactName?: string; billingMonth: string
 }) {
-  await resend.emails.send({
-    from: FROM(),
+  await sendMail({
     to: email,
     subject: '【DESIGN BOX】今月のサービスに関するアンケートのお願い',
     html: `
@@ -66,15 +94,14 @@ export async function sendFeedbackEmail({ email, companyName, contactName, billi
       <p>いつもご利用いただきありがとうございます。</p>
       <p>今月（${billingMonth}）のサービスについてアンケートにご協力ください。</p>
       <p><a href="${process.env.NEXT_PUBLIC_SERVICE_URL}/dashboard/feedback?month=${billingMonth}">アンケートに回答する</a></p>
-    `
+    `,
   })
 }
 
 export async function sendDeliveryEmail({ email, companyName, requestId, driveUrl }: {
   email: string; companyName: string; requestId: string; driveUrl?: string | null
 }) {
-  await resend.emails.send({
-    from: FROM(),
+  await sendMail({
     to: email,
     subject: '【DESIGN BOX】納品のご連絡',
     html: `
@@ -83,15 +110,14 @@ export async function sendDeliveryEmail({ email, companyName, requestId, driveUr
       ${driveUrl ? `<p><strong>▼ 納品画像はこちらからご確認ください</strong><br/><a href="${driveUrl}">${driveUrl}</a></p>` : ''}
       <p><a href="${process.env.NEXT_PUBLIC_SERVICE_URL}/dashboard/history">依頼履歴から確認する</a></p>
       <p>依頼ID: ${requestId}</p>
-    `
+    `,
   })
 }
 
 export async function sendDunningEmail({ email, companyName }: {
   email: string; companyName: string
 }) {
-  await resend.emails.send({
-    from: FROM(),
+  await sendMail({
     to: email,
     subject: '【DESIGN BOX】お支払いのご確認',
     html: `
@@ -99,6 +125,6 @@ export async function sendDunningEmail({ email, companyName }: {
       <p>お支払いが確認できていない月が2ヶ月以上続いています。</p>
       <p>ご確認のほどよろしくお願いいたします。</p>
       <p>お心当たりがない場合はサポートまでご連絡ください。</p>
-    `
+    `,
   })
 }
