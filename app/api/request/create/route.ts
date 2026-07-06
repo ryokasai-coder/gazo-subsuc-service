@@ -30,10 +30,10 @@ export async function POST(req: NextRequest) {
     .single()
 
   const usedCount = usageData?.used_count ?? 0
-  const maxCount = usageData?.max_count ?? 10
+  const maxCount = usageData?.total_limit ?? 10  // usage_limits の列名は total_limit（schema準拠）
 
   if (usedCount >= maxCount) {
-    return NextResponse.json({ error: '今月の依頼上限（10回）に達しています' }, { status: 400 })
+    return NextResponse.json({ error: `今月の依頼上限（${maxCount}回）に達しています` }, { status: 400 })
   }
 
   // Insert request
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
   } else {
     await serviceClient
       .from('usage_limits')
-      .insert({ user_id: user.id, billing_month: billingMonth, used_count: 1, max_count: 10 })
+      .insert({ user_id: user.id, billing_month: billingMonth, used_count: 1, total_limit: 10 })
   }
 
   // Slack notification

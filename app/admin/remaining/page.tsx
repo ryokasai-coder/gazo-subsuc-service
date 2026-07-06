@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase'
 interface UserUsage {
   user_id: string
   used_count: number
-  max_count: number
+  total_limit: number
   users: { company_name: string; contact_name: string; email: string }
 }
 
@@ -99,7 +99,7 @@ export default function AdminRemainingPage() {
               <tbody className="divide-y divide-[#F8F8FA]">
                 {usages.map(u => {
                   const status = getStatus(u.used_count)
-                  const pct = (u.used_count / u.max_count) * 100
+                  const pct = (u.used_count / u.total_limit) * 100
                   return (
                     <tr key={u.user_id} className="hover:bg-[#FAFAFA] transition-colors">
                       <td className="px-4 py-3">
@@ -108,7 +108,7 @@ export default function AdminRemainingPage() {
                       </td>
                       <td className="px-4 py-3">
                         <span className="font-black text-[#111111]">{u.used_count}</span>
-                        <span className="text-[#ABABAB]"> / {u.max_count}</span>
+                        <span className="text-[#ABABAB]"> / {u.total_limit}</span>
                       </td>
                       <td className="px-4 py-3 w-44">
                         <div className="w-32 bg-[#F8F8FA] rounded-full h-2">

@@ -44,7 +44,7 @@ export default function AdminPage() {
         supabase.from('image_requests').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
         supabase.from('image_requests').select('*', { count: 'exact', head: true }).eq('status', 'in_progress'),
         supabase.from('image_requests').select('*', { count: 'exact', head: true }).eq('status', 'delivered').eq('billing_month', billingMonth),
-        supabase.from('billing_records').select('*', { count: 'exact', head: true }).eq('status', 'unpaid').eq('billing_month', billingMonth),
+        supabase.from('billing_records').select('*', { count: 'exact', head: true }).eq('clearing_status', '未収').eq('billing_month', billingMonth),
       ])
 
       setStats({

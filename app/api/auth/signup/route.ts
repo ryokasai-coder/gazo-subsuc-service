@@ -19,6 +19,17 @@ export async function POST(req: NextRequest) {
   const { email, password, companyName, contactName, phone } = await req.json()
   const supabase = createServiceClient()
 
+  // サーバ側バリデーション（クライアント検証の迂回・直叩き対策）
+  if (!email || !password || !companyName) {
+    return NextResponse.json({ error: '必須項目が不足しています' }, { status: 400 })
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return NextResponse.json({ error: 'メールアドレスの形式が正しくありません' }, { status: 400 })
+  }
+  if (typeof password !== 'string' || password.length < 8) {
+    return NextResponse.json({ error: 'パスワードは8文字以上で入力してください' }, { status: 400 })
+  }
+
   const loginId = await generateLoginId(supabase)
 
   // Create auth user
@@ -40,7 +51,11 @@ export async function POST(req: NextRequest) {
     is_payment_registered: false,
     is_active: true,
   })
-  if (dbError) return NextResponse.json({ error: dbError.message }, { status: 400 })
+  if (dbError) {
+    // users insert 失敗時は作成済みの auth ユーザーを削除して孤児化を防ぐ
+    await supabase.auth.admin.deleteUser(authData.user.id).catch(() => {})
+    return NextResponse.json({ error: dbError.message }, { status: 400 })
+  }
 
   try {
     await sendWelcomeEmail({ email, loginId, tempPassword: '' })
