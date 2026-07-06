@@ -34,6 +34,9 @@ CREATE TABLE IF NOT EXISTS image_requests (
   delivery_speed TEXT,
   other_requests TEXT,
   template_id UUID,
+  -- 納品関連（本番で「Add Delivered Image Fields」により追加済み。schema同期のため明記）
+  image_type TEXT,
+  delivered_image_url TEXT,
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'delivered', 'cancelled')),
   slack_notified_at TIMESTAMPTZ,
   delivered_at TIMESTAMPTZ,
