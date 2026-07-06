@@ -7,34 +7,27 @@ import { createClient } from '@/lib/supabase'
 
 const STEPS = ['制作内容', 'テンプレート選択', '詳細入力', 'プレビュー・納品']
 
+// ─── 制作内容カテゴリ（画像プロンプト・参考画像 集の内容に合わせて再編） ───
 const PRODUCTION_TYPE_CATEGORIES = [
   {
-    label: 'SNS・動画',
-    types: ['SNS投稿画像', 'ストーリーズ画像', 'リールサムネイル'],
+    label: '新商品・キャンペーン',
+    types: ['新商品告知', 'キャンペーン・セール告知', 'クーポン告知', '季節限定メニュー'],
   },
   {
-    label: 'メニュー・商品',
-    types: ['商品紹介', 'メニュー紹介', '新商品告知', '季節限定メニュー', 'メニュー表作成'],
+    label: '商品・メニュー訴求',
+    types: ['商品ヒーロー訴求', 'SNS投稿画像', 'お客様の声・口コミ風'],
   },
   {
-    label: 'キャンペーン',
-    types: ['キャンペーン紹介', 'クーポン告知'],
+    label: 'メニュー表',
+    types: ['グランドメニュー表', 'ドリンクメニュー表', 'サイド・デザートメニュー表', 'お持ち帰りメニュー表'],
   },
   {
-    label: 'イベント・お知らせ',
-    types: ['イベント告知', '今月の予定・営業カレンダー'],
+    label: '集客・お知らせ',
+    types: ['LINE登録促進', 'Google口コミ依頼', '営業カレンダー・スケジュール', 'イベント告知'],
   },
   {
-    label: '集客・口コミ',
-    types: ['LINE登録促進', 'Google口コミ依頼'],
-  },
-  {
-    label: '採用・店舗',
-    types: ['スタッフ紹介', '求人募集', '店舗紹介'],
-  },
-  {
-    label: '印刷物・Web',
-    types: ['LP風画像', 'POP作成', 'チラシ作成'],
+    label: '店舗紹介・LP',
+    types: ['メニュー表紙・ブランド紹介', '店舗紹介LP', '総合訴求LP'],
   },
 ]
 
@@ -69,52 +62,42 @@ export interface Template {
   sampleUses?: string      // このテンプレで作れる画像の具体例
 }
 
-// ─── テンプレート定義（画像プロンプト・参考画像 集 準拠の7マスターテンプレート） ───
-// 旧テンプレート群は全廃し、DESIGN BOXが提供する下記7種に統一。
-// 各テンプレは「画像プロンプト集」の対応デザイン（参考画像）と紐づく。
+// ─── テンプレート定義（画像プロンプト・参考画像 集 準拠） ───
+// 旧テンプレート群は全廃。プロンプト①の7マスター＋プロンプト②(カフェ・飲食)の
+// 具体例を統合した全11種に統一。各テンプレは同集の対応デザイン（参考画像）と紐づき、
+// layoutTypeはDesignCanvas（顧客が作成した画像がそのまま納品される）の対応レイアウトに対応。
 const TEMPLATES: Template[] = [
   {
     id: 'limited-banner',
     name: '期間限定バナー',
     description: '季節カラーの背景に割引率や価格を大きく強調するセール告知デザイン。',
-    sampleUses: '春の感謝祭20%OFF・期間限定キャンペーン・周年祭セール',
+    sampleUses: '春の感謝祭20%OFF・周年セール・期間限定フェア',
     layoutType: 'banner-limit',
     bgFrom: '#f59e0b', bgTo: '#fbbf24',
     referenceImage: '/templates/tpl-banner-limit.jpg',
-    productionTags: ['キャンペーン紹介', 'クーポン告知', '季節限定メニュー', '新商品告知'],
+    productionTags: ['キャンペーン・セール告知', 'クーポン告知', '季節限定メニュー'],
     designTags: ['インパクト', 'SNS映え', 'お任せ'],
   },
   {
-    id: 'calendar-schedule',
-    name: 'カレンダー・スケジュール表',
-    description: '営業日・定休日・特別イベントをカレンダー形式で伝える月間予定表デザイン。',
-    sampleUses: '営業カレンダー・今月の予定・定休日お知らせ',
-    layoutType: 'calendar',
-    bgFrom: '#eff6ff', bgTo: '#e0e7ff',
-    referenceImage: '/templates/tpl-calendar.jpg',
-    productionTags: ['今月の予定・営業カレンダー', 'イベント告知'],
-    designTags: ['シンプル', 'ナチュラル', 'お任せ'],
-  },
-  {
-    id: 'line-qr',
-    name: 'LINE登録QRコード付き',
-    description: 'LINE友だち追加の特典とQRコードを目立たせる集客・登録促進デザイン。',
-    sampleUses: '友だち追加クーポン・LINE登録特典・Google口コミ依頼',
-    layoutType: 'qr-code',
-    bgFrom: '#22c55e', bgTo: '#10b981',
-    referenceImage: '/templates/tpl-line-qr.jpg',
-    productionTags: ['LINE登録促進', 'クーポン告知', 'Google口コミ依頼'],
-    designTags: ['かわいい', 'SNS映え', 'インパクト', 'お任せ'],
+    id: 'new-product',
+    name: '新商品告知（インパクト）',
+    description: '大きな英字タイトルとシズル感のある商品写真で新商品の登場を訴求するデザイン。',
+    sampleUses: '新商品スムージー・季節限定ドリンク・新メニュー登場',
+    layoutType: 'color-text',
+    bgFrom: '#f97316', bgTo: '#ec4899',
+    referenceImage: '/templates/tpl-new-product.jpg',
+    productionTags: ['新商品告知', '季節限定メニュー', 'SNS投稿画像'],
+    designTags: ['インパクト', 'SNS映え', 'かわいい', 'お任せ'],
   },
   {
     id: 'product-hero',
     name: '商品ヒーロー写真（高級感）',
     description: 'ダーク背景に商品写真を大きく配し、ゴールドのアクセントで高級感を演出。',
-    sampleUses: '看板メニュー・新商品ヒーロー・こだわりの一品訴求',
+    sampleUses: '看板メニュー・こだわりの一品・新商品ヒーロー',
     layoutType: 'product-card',
     bgFrom: '#1c1c1c', bgTo: '#3d3d3d',
     referenceImage: '/templates/tpl-product-hero.jpg',
-    productionTags: ['商品紹介', '新商品告知', 'メニュー紹介', '季節限定メニュー'],
+    productionTags: ['商品ヒーロー訴求', '新商品告知'],
     designTags: ['高級感', 'シンプル', 'お任せ'],
   },
   {
@@ -125,29 +108,84 @@ const TEMPLATES: Template[] = [
     layoutType: 'photo-overlay',
     bgFrom: '#1c1c1c', bgTo: '#2d2d2d',
     referenceImage: '/templates/tpl-sns-callout.jpg',
-    productionTags: ['SNS投稿画像', '商品紹介', 'ストーリーズ画像', 'お客様の声・口コミ紹介'],
+    productionTags: ['SNS投稿画像', 'お客様の声・口コミ風', '商品ヒーロー訴求'],
     designTags: ['SNS映え', 'かわいい', 'お任せ'],
   },
   {
-    id: 'menu-grid-natural',
-    name: 'メニューグリッド（ナチュラル）',
+    id: 'menu-grid',
+    name: 'グランドメニュー表（ナチュラル）',
     description: '人気No.1を大きく、他メニューをグリッドで整理したナチュラルなメニュー表デザイン。',
-    sampleUses: 'おすすめメニュー・ドリンク表・お持ち帰りメニュー表',
+    sampleUses: 'グランドメニュー・おすすめメニュー・お持ち帰りメニュー',
     layoutType: 'menu-list',
     bgFrom: '#f0fdf4', bgTo: '#fef9c3',
     referenceImage: '/templates/tpl-menu-grid.jpg',
-    productionTags: ['メニュー紹介', 'メニュー表作成', '商品紹介'],
+    productionTags: ['グランドメニュー表', 'お持ち帰りメニュー表'],
     designTags: ['ナチュラル', 'シンプル', 'お任せ'],
+  },
+  {
+    id: 'drink-menu',
+    name: 'ドリンクメニュー表',
+    description: 'ドリンクを種類ごとに整理し、価格とともに一覧化するメニュー表デザイン。',
+    sampleUses: 'ドリンクメニュー・カフェメニュー・アルコールメニュー',
+    layoutType: 'menu-list',
+    bgFrom: '#e0f2fe', bgTo: '#f0fdf4',
+    referenceImage: '/templates/tpl-drink-menu.jpg',
+    productionTags: ['ドリンクメニュー表'],
+    designTags: ['ナチュラル', 'シンプル', 'お任せ'],
+  },
+  {
+    id: 'sweets-menu',
+    name: 'サイド・デザートメニュー表',
+    description: 'スイーツやサイドメニューを写真付きグリッドで見せるメニュー表デザイン。',
+    sampleUses: 'スイーツ・サイドメニュー・デザート表',
+    layoutType: 'menu-list',
+    bgFrom: '#fff1f2', bgTo: '#ffe4e6',
+    referenceImage: '/templates/tpl-sweets-menu.jpg',
+    productionTags: ['サイド・デザートメニュー表'],
+    designTags: ['ナチュラル', 'かわいい', 'お任せ'],
+  },
+  {
+    id: 'menu-cover',
+    name: 'メニュー表紙・店舗ブランド紹介（高級感）',
+    description: '店舗の世界観を伝える表紙・ブランド紹介ビジュアル。パンフレットの顔にも。',
+    sampleUses: 'メニュー表紙・店舗紹介・ブランドイメージ',
+    layoutType: 'shop-hero',
+    bgFrom: '#1a1a2e', bgTo: '#16213e',
+    referenceImage: '/templates/tpl-menu-cover.jpg',
+    productionTags: ['メニュー表紙・ブランド紹介', '店舗紹介LP'],
+    designTags: ['高級感', 'シンプル', 'お任せ'],
+  },
+  {
+    id: 'line-qr',
+    name: 'LINE登録QRコード付き',
+    description: 'LINE友だち追加の特典とQRコードを目立たせる集客・登録促進デザイン。',
+    sampleUses: '友だち追加クーポン・LINE登録特典・Google口コミ依頼',
+    layoutType: 'qr-code',
+    bgFrom: '#22c55e', bgTo: '#10b981',
+    referenceImage: '/templates/tpl-line-qr.jpg',
+    productionTags: ['LINE登録促進', 'Google口コミ依頼', 'クーポン告知'],
+    designTags: ['かわいい', 'SNS映え', 'インパクト', 'お任せ'],
+  },
+  {
+    id: 'calendar-schedule',
+    name: 'カレンダー・スケジュール表',
+    description: '営業日・定休日・特別イベントをカレンダー形式で伝える月間予定表デザイン。',
+    sampleUses: '営業カレンダー・今月の予定・定休日お知らせ',
+    layoutType: 'calendar',
+    bgFrom: '#eff6ff', bgTo: '#e0e7ff',
+    referenceImage: '/templates/tpl-calendar.jpg',
+    productionTags: ['営業カレンダー・スケジュール', 'イベント告知'],
+    designTags: ['シンプル', 'ナチュラル', 'お任せ'],
   },
   {
     id: 'vertical-lp',
     name: '縦型LP風（総合訴求）',
     description: 'こだわり・人気メニュー・口コミ・LINE誘導までを1枚にまとめた縦長LPデザイン。',
-    sampleUses: '店舗紹介LP・商品訴求LP・SNSプロフィール用紹介',
+    sampleUses: '店舗紹介LP・商品訴求LP・SNSプロフィール紹介',
     layoutType: 'lp-stack',
     bgFrom: '#1e293b', bgTo: '#475569',
     referenceImage: '/templates/tpl-vertical-lp.jpg',
-    productionTags: ['LP風画像', '店舗紹介', '商品紹介'],
+    productionTags: ['総合訴求LP', '店舗紹介LP', 'メニュー表紙・ブランド紹介'],
     designTags: ['高級感', 'インパクト', 'お任せ'],
   },
 ]
