@@ -44,10 +44,12 @@ export default function AdminRemainingPage() {
     init()
   }, [router, billingMonth])
 
-  const getStatus = (usedCount: number) => {
-    if (usedCount >= 10) return { label: '上限到達', color: 'text-gray-500 bg-gray-100' }
-    if (usedCount >= expectedCount) return { label: 'ペース良好', color: 'text-green-700 bg-green-100' }
-    if (usedCount >= expectedCount - 2) return { label: 'やや遅れ', color: 'text-yellow-700 bg-yellow-100' }
+  // 上限は各ユーザーの total_limit を基準にする（10ハードコードを廃止）
+  const getStatus = (usedCount: number, totalLimit: number) => {
+    const expected = Math.floor(totalLimit * pacingRate)
+    if (usedCount >= totalLimit) return { label: '上限到達', color: 'text-gray-500 bg-gray-100' }
+    if (usedCount >= expected) return { label: 'ペース良好', color: 'text-green-700 bg-green-100' }
+    if (usedCount >= expected - 2) return { label: 'やや遅れ', color: 'text-yellow-700 bg-yellow-100' }
     return { label: 'ペース遅れ', color: 'text-red-700 bg-red-100' }
   }
 
@@ -98,7 +100,7 @@ export default function AdminRemainingPage() {
               </thead>
               <tbody className="divide-y divide-[#F8F8FA]">
                 {usages.map(u => {
-                  const status = getStatus(u.used_count)
+                  const status = getStatus(u.used_count, u.total_limit)
                   const pct = (u.used_count / u.total_limit) * 100
                   return (
                     <tr key={u.user_id} className="hover:bg-[#FAFAFA] transition-colors">

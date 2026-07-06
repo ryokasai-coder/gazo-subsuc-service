@@ -24,7 +24,6 @@ export async function GET(req: NextRequest) {
   const today = new Date()
   const dayOfMonth = today.getDate()
   const billingMonth = today.toISOString().slice(0, 7)
-  const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1).toISOString().slice(0, 7)
 
   // 当日以降の全閾値（その日以前の閾値で未送信のものをまとめて処理）
   const activeThresholds = THRESHOLDS.filter(t => dayOfMonth >= t.day)
@@ -48,13 +47,12 @@ export async function GET(req: NextRequest) {
   const errors: string[] = []
 
   for (const user of users) {
-    // 当月の依頼済み回数を取得
+    // 当月の依頼済み回数を取得（billing_month列で判定＝feedback cronと基準を統一）
     const { count: usedCount } = await service
       .from('image_requests')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', user.id)
-      .gte('created_at', `${billingMonth}-01`)
-      .lt('created_at', `${nextMonth}-01`)
+      .eq('billing_month', billingMonth)
 
     const used = usedCount ?? 0
 

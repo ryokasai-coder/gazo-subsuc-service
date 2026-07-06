@@ -17,23 +17,22 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
-    // login_idからメアドを取得
+    // サーバ側で認証（メールは返らない＝列挙防止）。成功時にセッショントークンを受領。
     const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ loginId }),
+      body: JSON.stringify({ loginId, password }),
     })
     if (!res.ok) {
       setError('お客様番号またはパスワードが正しくありません')
       setLoading(false)
       return
     }
-    const { email } = await res.json()
+    const { access_token, refresh_token } = await res.json()
 
     const supabase = createClient()
-    const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
-
-    if (authError) {
+    const { error: sessionError } = await supabase.auth.setSession({ access_token, refresh_token })
+    if (sessionError) {
       setError('お客様番号またはパスワードが正しくありません')
       setLoading(false)
       return

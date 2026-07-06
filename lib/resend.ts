@@ -1,7 +1,9 @@
 import { Resend } from 'resend'
 export const resend = new Resend(process.env.RESEND_API_KEY)
 
-const FROM = () => 'onboarding@resend.dev'
+// 送信元は環境変数 MAIL_FROM で設定（本番は独自ドメインをResendで検証し MAIL_FROM=DESIGN BOX <noreply@funrix.co.jp> 等を設定）。
+// 未設定時のみ Resend のテスト用アドレスにフォールバック（本番では任意宛先に届かないため要設定）。
+const FROM = () => process.env.MAIL_FROM || 'onboarding@resend.dev'
 
 export async function sendWelcomeEmail({ email, loginId, tempPassword }: {
   email: string; loginId: string; tempPassword: string

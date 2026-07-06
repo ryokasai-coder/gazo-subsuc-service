@@ -71,6 +71,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'imageDataUrl is required' }, { status: 400 })
     }
 
+    // ─── 月10回の使用回数チェック（deliver = 実際の依頼フロー。上限はここで制御）───
+    const usageMonth = new Date().toISOString().slice(0, 7)
+    const { data: usageRow } = await service
+      .from('usage_limits')
+      .select('id, used_count, total_limit')
+      .eq('user_id', user.id)
+      .eq('billing_month', usageMonth)
+      .maybeSingle()
+    const currentUsed = usageRow?.used_count ?? 0
+    const usageLimit = usageRow?.total_limit ?? 10
+    if (currentUsed >= usageLimit) {
+      // 上限到達時はDrive保存に進まず中断
+      return NextResponse.json(
+        { error: `今月の依頼上限（${usageLimit}回）に達しています` },
+        { status: 400 }
+      )
+    }
+
     // Convert base64 to buffer
     const base64Data = imageDataUrl.replace(/^data:image\/\w+;base64,/, '')
     const imageBuffer = Buffer.from(base64Data, 'base64')
@@ -143,6 +161,18 @@ export async function POST(req: NextRequest) {
 
     if (reqError) {
       console.error('DB insert error:', reqError)
+    } else {
+      // ─── 使用回数を加算（レコード保存に成功した場合のみ）───
+      if (usageRow) {
+        await service
+          .from('usage_limits')
+          .update({ used_count: currentUsed + 1, updated_at: new Date().toISOString() })
+          .eq('id', usageRow.id)
+      } else {
+        await service
+          .from('usage_limits')
+          .insert({ user_id: user.id, billing_month: usageMonth, used_count: 1, total_limit: 10 })
+      }
     }
 
     return NextResponse.json({

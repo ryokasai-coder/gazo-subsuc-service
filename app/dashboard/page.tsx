@@ -262,21 +262,20 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Payment modal */}
-      <Modal isOpen={showPaymentModal} onClose={() => setShowPaymentModal(false)} title="決済登録が必要です">
+      {/* Payment modal（お支払いは請求書方式：請求管理ロボ。担当者が設定後に依頼可能になる） */}
+      <Modal isOpen={showPaymentModal} onClose={() => setShowPaymentModal(false)} title="お支払い設定について">
         <div className="text-center py-4">
-          <div className="w-16 h-16 bg-[#FFF0F6] rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">💳</div>
+          <div className="w-16 h-16 bg-[#FFF0F6] rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">🧾</div>
           <p className="text-[#6B7280] mb-6 text-sm leading-relaxed">
-            サービスをご利用いただくには<br />決済情報の登録が必要です。
+            お支払いは<strong className="text-[#111111]">請求書でのご案内</strong>となります。<br />
+            担当者がお支払い設定を行った後、デザイン依頼をご利用いただけます。<br />
+            ご不明点は担当者までお問い合わせください。
           </p>
           <button
-            onClick={() => {
-              alert('決済登録ページへ遷移します（実装時に決済URLを設定してください）')
-              setShowPaymentModal(false)
-            }}
+            onClick={() => setShowPaymentModal(false)}
             className="btn-gradient w-full font-bold py-4 rounded-full"
           >
-            決済登録をする
+            確認しました
           </button>
         </div>
       </Modal>
