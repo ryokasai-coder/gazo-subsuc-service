@@ -1,10 +1,10 @@
 import { Resend } from 'resend'
 export const resend = new Resend(process.env.RESEND_API_KEY)
 
-// 送信元は funrix-sr-systems（申込管理システム）と同じ検証済みドメインを使用。
-// ＝Resendで funrix.co.jp が検証済みの前提（申込フォームで本番稼働実績あり）。
+// 送信元は sr.keiri@funrix.co.jp（funrix.co.jp ドメイン）。
+// ※Resend で funrix.co.jp のドメイン検証（DNS: SPF/DKIM）が完了して初めて実配信される。
 // 環境変数 MAIL_FROM があればそれを優先（差し替え可能）。
-const FROM = () => process.env.MAIL_FROM || 'DESIGN BOX <noreply@funrix.co.jp>'
+const FROM = () => process.env.MAIL_FROM || 'DESIGN BOX <sr.keiri@funrix.co.jp>'
 
 export async function sendWelcomeEmail({ email, loginId, tempPassword }: {
   email: string; loginId: string; tempPassword: string
