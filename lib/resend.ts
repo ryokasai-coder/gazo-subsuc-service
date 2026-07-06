@@ -1,17 +1,18 @@
-// ─── メール送信（Xサーバーのメールボックスから SMTP 送信）───────────────────
-// ※ファイル名は resend.ts のままだが、実装は nodemailer + SMTP に移行（importパス互換のため踏襲）。
-// 送信元 sr.keiri@funrix.co.jp は funrix.co.jp のXサーバー管理メール。DNS変更不要でSMTP送信する。
+// ─── メール送信（Gmail の SMTP 経由）─────────────────────────────────────────
+// ※ファイル名は resend.ts のままだが、実装は nodemailer + SMTP（importパス互換のため踏襲）。
+// 送信元 funlinksapoto@gmail.com から送る（ryo.kasai@funrix.co.jp は使用しない方針）。
 //
 // 必要な環境変数（Vercel Production / .env.local）:
-//   SMTP_HOST   … Xサーバーの送信サーバー（例: svXXXXX.xserver.jp。サーバーパネル/契約メールで確認）
-//   SMTP_PORT   … 465（SSL）推奨。587（STARTTLS）も可
-//   SMTP_SECURE … '465'なら 'true'、'587'なら 'false'
-//   SMTP_USER   … sr.keiri@funrix.co.jp（メールアドレス全体）
-//   SMTP_PASS   … 上記メールボックスのパスワード
-//   MAIL_FROM   … 'DESIGN BOX <sr.keiri@funrix.co.jp>'（任意・未設定なら既定を使用）
+//   SMTP_HOST   … smtp.gmail.com
+//   SMTP_PORT   … 465
+//   SMTP_SECURE … true
+//   SMTP_USER   … funlinksapoto@gmail.com
+//   SMTP_PASS   … Googleアカウントの「アプリパスワード」16文字（要2段階認証ON）
+//   MAIL_FROM   … 'DESIGN BOX <funlinksapoto@gmail.com>'（任意・未設定なら既定を使用）
+// ※Gmail SMTP は From を認証アカウント(funlinksapoto@gmail.com)に一致させる必要がある。
 import nodemailer from 'nodemailer'
 
-const FROM = () => process.env.MAIL_FROM || 'DESIGN BOX <sr.keiri@funrix.co.jp>'
+const FROM = () => process.env.MAIL_FROM || 'DESIGN BOX <funlinksapoto@gmail.com>'
 
 let _transporter: nodemailer.Transporter | null = null
 function getTransporter() {
