@@ -11,18 +11,14 @@ interface Request {
   id: string
   user_id: string
   status: string
-  purpose: string
-  image_type: string
-  image_size: string
-  template_name: string
-  format: string
-  size: string
-  quantity: number
-  style: string
-  color_scheme: string
-  text_content: string
-  reference_url: string
-  notes: string
+  // 本番の実在カラムに合わせる（purpose/template_name/format/size/quantity/style/color_scheme/reference_url/notes は存在しない）
+  production_types: string[] | null
+  design_image: string | null
+  image_type: string | null
+  image_size: string | null
+  text_content: string | null
+  delivery_speed: string | null
+  other_requests: string | null
   billing_month: string
   created_at: string
   delivered_at: string | null
@@ -119,14 +115,14 @@ export default function AdminProjectsPage() {
   }
 
   const exportCSV = () => {
-    const headers = ['依頼ID', 'お客様番号', '会社名', 'ステータス', 'テンプレート', '種類', 'サイズ', 'テキスト', '請求月', '依頼日', '納品日']
+    const headers = ['依頼ID', 'お客様番号', '会社名', 'ステータス', '制作内容', '種類', 'サイズ', 'テキスト', '請求月', '依頼日', '納品日']
     const rows = requests.map(r => [
       r.id,
       r.users?.login_id ?? '',
       r.users?.company_name ?? '',
       r.status,
-      r.template_name ?? '',
-      r.image_type,
+      r.production_types?.join('、') ?? '',
+      r.image_type ?? '',
       r.image_size ?? '',
       r.text_content ?? '',
       r.billing_month ?? '',
@@ -238,7 +234,7 @@ export default function AdminProjectsPage() {
                       <td className={`${tdClass} font-mono text-xs text-[#6B7280]`}>{req.users?.login_id}</td>
                       <td className={`${tdClass} font-semibold text-[#111111]`}>{req.users?.company_name}</td>
                       <td className={`${tdClass} text-[#6B7280] max-w-xs`}>
-                        <p className="font-medium text-[#111111] truncate max-w-[160px]">{req.template_name || req.image_type}</p>
+                        <p className="font-medium text-[#111111] truncate max-w-[160px]">{req.production_types?.join('、') || req.image_type || 'デザイン依頼'}</p>
                         <p className="text-xs text-[#ABABAB]">{req.image_size}</p>
                       </td>
                       <td className={tdClass}><StatusBadge status={req.status} /></td>
@@ -314,11 +310,13 @@ export default function AdminProjectsPage() {
                 ['会社名', selectedRequest.users?.company_name],
                 ['担当者', selectedRequest.users?.contact_name],
                 ['メール', selectedRequest.users?.email],
-                ['テンプレート', selectedRequest.template_name || '-'],
-                ['種類', selectedRequest.image_type],
+                ['制作内容', selectedRequest.production_types?.join('、') || '-'],
+                ['デザインイメージ', selectedRequest.design_image || '-'],
+                ['種類', selectedRequest.image_type || '-'],
                 ['サイズ', selectedRequest.image_size || '-'],
+                ['希望納期', selectedRequest.delivery_speed || '-'],
                 ['テキスト内容', selectedRequest.text_content || '-'],
-                ['備考', selectedRequest.notes || '-'],
+                ['ご要望', selectedRequest.other_requests || '-'],
               ].map(([label, value]) => (
                 <div key={label}
                   className={`${label === '備考' || label === 'テキスト内容' ? 'col-span-2' : ''} bg-[#F8F8FA] rounded-xl p-3`}>
