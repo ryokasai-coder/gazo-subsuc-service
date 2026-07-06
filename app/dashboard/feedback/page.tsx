@@ -48,10 +48,12 @@ function FeedbackContent() {
     const { error } = await supabase.from('feedbacks').insert({
       user_id: userId,
       billing_month: monthParam,
-      overall_rating: form.overallRating,
-      quality_rating: form.qualityRating,
+      // 本番の実カラムは satisfaction_score / design_quality（overall_rating/quality_rating は存在しない）
+      satisfaction_score: form.overallRating,
+      design_quality: form.qualityRating,
       speed_rating: form.speedRating,
       comment: form.comment,
+      submitted_at: new Date().toISOString(),
     })
 
     if (error) {

@@ -8,8 +8,8 @@ import { createClient } from '@/lib/supabase'
 interface Feedback {
   id: string
   billing_month: string
-  overall_rating: number
-  quality_rating: number
+  satisfaction_score: number
+  design_quality: number
   speed_rating: number
   comment: string
   created_at: string
@@ -49,8 +49,8 @@ export default function AdminFeedbackPage() {
 
   const avg = (arr: number[]) => arr.length === 0 ? 0 : arr.reduce((a, b) => a + b, 0) / arr.length
 
-  const overallAvg = avg(feedbacks.map(f => f.overall_rating).filter(Boolean))
-  const qualityAvg = avg(feedbacks.map(f => f.quality_rating).filter(Boolean))
+  const overallAvg = avg(feedbacks.map(f => f.satisfaction_score).filter(Boolean))
+  const qualityAvg = avg(feedbacks.map(f => f.design_quality).filter(Boolean))
   const speedAvg = avg(feedbacks.map(f => f.speed_rating).filter(Boolean))
 
   const Stars = ({ value }: { value: number }) => (
@@ -115,12 +115,12 @@ export default function AdminFeedbackPage() {
                     <p className="text-xs text-[#ABABAB]">{fb.users?.contact_name} • {new Date(fb.created_at).toLocaleDateString('ja-JP')}</p>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Stars value={fb.overall_rating} />
-                    <span className="text-xs text-[#6B7280]">総合 {fb.overall_rating}点</span>
+                    <Stars value={fb.satisfaction_score} />
+                    <span className="text-xs text-[#6B7280]">総合 {fb.satisfaction_score}点</span>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-4 text-xs text-[#6B7280] mb-3">
-                  {fb.quality_rating > 0 && <span>クオリティ: <Stars value={fb.quality_rating} /> {fb.quality_rating}点</span>}
+                  {fb.design_quality > 0 && <span>クオリティ: <Stars value={fb.design_quality} /> {fb.design_quality}点</span>}
                   {fb.speed_rating > 0 && <span>スピード: <Stars value={fb.speed_rating} /> {fb.speed_rating}点</span>}
                 </div>
                 {fb.comment && (

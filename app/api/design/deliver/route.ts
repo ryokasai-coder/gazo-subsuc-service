@@ -133,7 +133,7 @@ export async function POST(req: NextRequest) {
         image_type: imageType || 'SNS投稿',
         image_size: imageSize || '正方形(1080x1080px)',
         text_content: textContent || '',
-        template_name: templateName || '',
+        // template_name 列は本番DBに存在しないため insert から除外（含めると insert 全体が失敗し記録が残らない）
         status: 'pending',
         delivered_image_url: driveUrl,   // 管理画面でプレビュー用
         billing_month: billingMonth,

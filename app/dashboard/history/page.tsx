@@ -9,14 +9,15 @@ import StatusBadge from '@/components/ui/StatusBadge'
 interface ImageRequest {
   id: string
   status: string
-  purpose: string
-  image_type: string
-  format: string
-  size: string
+  // 本番の実カラムに合わせる（purpose/format/size/delivery_file_urls は存在しない）
+  production_types: string[] | null
+  image_type: string | null
+  design_image: string | null
+  image_size: string | null
   billing_month: string
   created_at: string
   delivered_at: string | null
-  delivery_file_urls: string[] | null
+  delivered_image_url: string | null
 }
 
 export default function HistoryPage() {
@@ -106,30 +107,27 @@ export default function HistoryPage() {
                       <StatusBadge status={req.status} />
                       <span className="text-xs text-[#ABABAB]">{req.billing_month.replace('-', '年')}月</span>
                     </div>
-                    <p className="font-semibold text-[#111111] text-sm">{req.purpose}</p>
+                    <p className="font-semibold text-[#111111] text-sm">{req.production_types?.join('、') || 'デザイン依頼'}</p>
                     <div className="flex flex-wrap gap-2 mt-1">
-                      <span className="text-xs text-[#6B7280]">{req.image_type}</span>
-                      {req.format && <span className="text-xs text-[#ABABAB]">• {req.format}</span>}
-                      {req.size && <span className="text-xs text-[#ABABAB]">• {req.size}</span>}
+                      {req.image_type && <span className="text-xs text-[#6B7280]">{req.image_type}</span>}
+                      {req.design_image && <span className="text-xs text-[#ABABAB]">• {req.design_image}</span>}
+                      {req.image_size && <span className="text-xs text-[#ABABAB]">• {req.image_size}</span>}
                     </div>
                     <p className="text-xs text-[#ABABAB] mt-1">依頼日: {new Date(req.created_at).toLocaleDateString('ja-JP')}</p>
                   </div>
                 </div>
-                {req.status === 'delivered' && req.delivery_file_urls && req.delivery_file_urls.length > 0 && (
+                {req.status === 'delivered' && req.delivered_image_url && (
                   <div className="mt-3 pt-3 border-t border-[#F8F8FA]">
                     <p className="text-xs font-semibold text-[#6B7280] mb-2">納品ファイル</p>
                     <div className="flex flex-wrap gap-2">
-                      {req.delivery_file_urls.map((url, i) => (
-                        <a
-                          key={i}
-                          href={url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs bg-[#FFF0F6] text-[#E85C97] px-3 py-1.5 rounded-full hover:bg-red-100 transition-colors font-medium"
-                        >
-                          ファイル {i + 1} をダウンロード
-                        </a>
-                      ))}
+                      <a
+                        href={req.delivered_image_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs bg-[#FFF0F6] text-[#E85C97] px-3 py-1.5 rounded-full hover:bg-red-100 transition-colors font-medium"
+                      >
+                        納品画像をダウンロード
+                      </a>
                     </div>
                   </div>
                 )}
