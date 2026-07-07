@@ -4,6 +4,10 @@ import { useState, useCallback, useEffect } from 'react'
 import { TemplatePreview } from '@/components/ui/TemplatePreview'
 import { DesignCanvas } from '@/components/ui/DesignCanvas'
 import { createClient } from '@/lib/supabase'
+import { TEMPLATE_FIELDS, buildPrompt, mergeFieldDefaults } from '@/lib/design-prompts'
+
+// 1依頼あたりのAI生成回数の上限（初回1＋作り直し2＝計3回）
+const MAX_GENERATIONS = 3
 
 const STEPS = ['制作内容', 'テンプレート選択', '詳細入力', 'プレビュー・納品']
 
@@ -226,6 +230,7 @@ export interface RequestFormData {
   other_requests: string
   materialFiles: File[]
   referenceFiles: File[]
+  template_fields: Record<string, string>  // AI生成テンプレの入力欄値
 }
 
 interface Props {
@@ -253,6 +258,7 @@ const initial: RequestFormData = {
   other_requests: '',
   materialFiles: [],
   referenceFiles: [],
+  template_fields: {},
 }
 
 // ─── UIコンポーネント（関数の外に定義 ─────────────────────────────────
@@ -374,18 +380,68 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
   const [canvasDataUrl, setCanvasDataUrl] = useState<string | null>(null)
   const [delivering, setDelivering] = useState(false)
   const [deliverResult, setDeliverResult] = useState<{ driveUrl: string; previewUrl: string } | null>(null)
+  // ─── AI生成（期間限定バナー等）─────────────────────────────
+  const [generating, setGenerating] = useState(false)
+  const [generationCount, setGenerationCount] = useState(0) // この依頼で生成した回数（最大MAX_GENERATIONS）
 
   const update = <K extends keyof RequestFormData>(key: K, val: RequestFormData[K]) => {
     setForm(prev => ({ ...prev, [key]: val }))
   }
 
+  // AI生成テンプレの入力欄を1つ更新
+  const updateField = (fieldKey: string, val: string) => {
+    setForm(prev => ({ ...prev, template_fields: { ...prev.template_fields, [fieldKey]: val } }))
+  }
+
   const filteredTemplates = getFilteredTemplates(form.production_types, designFilter)
 
   const selectedTemplate = TEMPLATES.find(t => t.id === form.template_id)
+  // 入力欄定義があるテンプレ = AI生成テンプレ（現状は期間限定バナーのみ）。無ければ従来のDesignCanvas。
+  const templateFields = TEMPLATE_FIELDS[form.template_id]
+  const isAITemplate = !!templateFields
 
   const handleCanvasGenerated = useCallback((dataUrl: string) => {
     setCanvasDataUrl(dataUrl)
   }, [])
+
+  const fileToDataUrl = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const r = new FileReader()
+      r.onload = () => resolve(r.result as string)
+      r.onerror = reject
+      r.readAsDataURL(file)
+    })
+
+  // AIで画像を生成（初回＋作り直し。上限MAX_GENERATIONS）
+  const handleGenerate = async () => {
+    if (generationCount >= MAX_GENERATIONS) return
+    setGenerating(true)
+    setError('')
+    try {
+      const merged = mergeFieldDefaults(form.template_id, form.template_fields)
+      const hasPhoto = form.materialFiles.length > 0
+      const prompt = buildPrompt(form.template_id, merged, hasPhoto)
+      // 素材写真は4.5MB制限対策で圧縮してから送る
+      let photoDataUrl: string | undefined
+      if (form.materialFiles[0]) {
+        const raw = await fileToDataUrl(form.materialFiles[0])
+        photoDataUrl = await compressImage(raw, 1200)
+      }
+      const res = await fetch('/api/design/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+        body: JSON.stringify({ prompt, photoDataUrl }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'デザインの制作に失敗しました')
+      setCanvasDataUrl(data.imageDataUrl)
+      setGenerationCount(c => c + 1)
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'デザインの制作に失敗しました')
+    } finally {
+      setGenerating(false)
+    }
+  }
 
   const validate = () => {
     if (step === 0) {
@@ -399,6 +455,14 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
     }
     if (step === 2) {
       if (!form.image_size) { setError('画像サイズを選択してください'); return false }
+      // AI生成テンプレは必須入力欄をチェック
+      if (templateFields) {
+        for (const f of templateFields) {
+          if (f.required && !(form.template_fields[f.key] ?? '').trim()) {
+            setError(`「${f.label}」を入力してください`); return false
+          }
+        }
+      }
     }
     setError(''); return true
   }
@@ -424,7 +488,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
   }
 
   const handleDeliver = async () => {
-    if (!canvasDataUrl) { setError('デザインが生成されていません'); return }
+    if (!canvasDataUrl) { setError('デザインが制作されていません'); return }
     setDelivering(true)
     setError('')
     try {
@@ -440,7 +504,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
         body: JSON.stringify({
           imageDataUrl: compressed,
           templateName: form.template_name,
-          textContent: form.text_content,
+          textContent: isAITemplate ? (form.template_fields.main_title || form.template_name) : form.text_content,
           imageType: form.production_types[0] || 'SNS投稿',
           imageSize: form.image_size,
         }),
@@ -597,20 +661,98 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
             </div>
           </Field>
 
-          <Field label="テキスト内容">
-            <textarea
-              value={form.text_content}
-              onChange={e => update('text_content', e.target.value)}
-              rows={4}
-              placeholder={`画像に入れたい文言、キャッチコピー、日付など\n例：\n夏のキャンペーン実施中！\n7月31日まで20%OFF`}
-              className={textareaClass}
-            />
-            <p className="text-xs text-[#ABABAB] mt-1">
-              1行目がメインキャッチコピー、2行目以降がサブテキストになります
-            </p>
-          </Field>
+          {templateFields ? (
+            /* AI生成テンプレ：テンプレ専用の入力欄 */
+            <>
+              <div className="bg-[#FFF0F6] rounded-xl px-4 py-2.5 text-[11px] text-[#E85C97] font-medium">
+                ご入力内容をもとにデザインを制作します。次の画面で仕上がりイメージをご確認いただけます。
+              </div>
+              {templateFields.map(f => (
+                <Field key={f.key} label={f.label} required={f.required}>
+                  {f.type === 'select' ? (
+                    <div className="flex flex-wrap gap-2">
+                      {(f.options ?? []).map(opt => {
+                        const cur = form.template_fields[f.key] ?? f.default ?? ''
+                        return (
+                          <button
+                            key={opt}
+                            type="button"
+                            onClick={() => updateField(f.key, opt)}
+                            className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                              cur === opt
+                                ? 'bg-[#E85C97] text-white border-[#E85C97] shadow-sm'
+                                : 'bg-white text-[#6B7280] border-[#EFEFEF] hover:border-[#E85C97] hover:text-[#E85C97]'
+                            }`}
+                          >
+                            {opt}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  ) : f.type === 'textarea' ? (
+                    <>
+                      <textarea
+                        value={form.template_fields[f.key] ?? ''}
+                        onChange={e => {
+                          const lines = e.target.value.split('\n')
+                          const capped = (f.maxLines ? lines.slice(0, f.maxLines) : lines)
+                            .map(l => (f.maxLength ? l.slice(0, f.maxLength) : l))
+                            .join('\n')
+                          updateField(f.key, capped)
+                        }}
+                        rows={4}
+                        placeholder={f.placeholder}
+                        className={textareaClass}
+                      />
+                      <p className="text-[10px] text-[#ABABAB] mt-1 text-right">
+                        {(form.template_fields[f.key] ?? '').split('\n').filter(Boolean).length}
+                        {f.maxLines ? ` / ${f.maxLines}行` : '行'}
+                        {f.maxLength ? `・1行${f.maxLength}文字まで` : ''}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <input
+                        type="text"
+                        inputMode={f.numeric ? 'numeric' : undefined}
+                        value={form.template_fields[f.key] ?? ''}
+                        onChange={e => {
+                          let v = e.target.value
+                          if (f.numeric) v = v.replace(/[^0-9]/g, '')
+                          if (f.maxLength) v = v.slice(0, f.maxLength)
+                          updateField(f.key, v)
+                        }}
+                        maxLength={f.maxLength}
+                        placeholder={f.placeholder}
+                        className={inputClass}
+                      />
+                      {f.maxLength && !f.numeric && (
+                        <p className="text-[10px] text-[#ABABAB] mt-1 text-right">
+                          {(form.template_fields[f.key] ?? '').length} / {f.maxLength}文字
+                        </p>
+                      )}
+                    </>
+                  )}
+                  {f.hint && <p className="text-xs text-[#ABABAB] mt-1">{f.hint}</p>}
+                </Field>
+              ))}
+            </>
+          ) : (
+            <Field label="テキスト内容">
+              <textarea
+                value={form.text_content}
+                onChange={e => update('text_content', e.target.value)}
+                rows={4}
+                placeholder={`画像に入れたい文言、キャッチコピー、日付など\n例：\n夏のキャンペーン実施中！\n7月31日まで20%OFF`}
+                className={textareaClass}
+              />
+              <p className="text-xs text-[#ABABAB] mt-1">
+                1行目がメインキャッチコピー、2行目以降がサブテキストになります
+              </p>
+            </Field>
+          )}
 
-          <Field label="素材アップロード（ロゴ・写真など）">
+          <Field label={templateFields ? '商品写真アップロード（推奨）' : '素材アップロード（ロゴ・写真など）'}>
             <input
               type="file"
               multiple
@@ -713,10 +855,51 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
               <div>
                 <p className="text-xs font-bold text-[#111111] mb-1">完成デザインプレビュー</p>
                 <p className="text-[10px] text-[#6B7280] mb-3">
-                  入力したテキストをもとにデザインを自動生成しています。
-                  「納品する」ボタンを押すと、このデザインがGoogleドライブに保存されます。
+                  {isAITemplate
+                    ? 'ご入力内容をもとにデザインを制作します。仕上がりイメージをご確認のうえ、気になる場合は作り直しをご依頼いただけます（1回のご依頼につき最大3回まで）。'
+                    : 'ご入力内容をもとにデザインを制作しています。「依頼する」ボタンを押すと、このデザインで制作を確定します。'}
                 </p>
-                {selectedTemplate && form.image_size ? (
+                {isAITemplate ? (
+                  /* AI生成パネル */
+                  <div className="space-y-3">
+                    {canvasDataUrl ? (
+                      <div className="rounded-2xl overflow-hidden border border-[#EFEFEF] bg-[#F8F8FA]">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={canvasDataUrl} alt="デザインプレビュー" className="w-full" />
+                      </div>
+                    ) : (
+                      <div className="aspect-square rounded-2xl border-2 border-dashed border-[#EFEFEF] bg-[#F8F8FA] flex flex-col items-center justify-center text-center p-6">
+                        <span className="text-4xl mb-2">🎨</span>
+                        <p className="text-sm text-[#6B7280]">下のボタンを押すと<br />デザインを制作します</p>
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={handleGenerate}
+                      disabled={generating || generationCount >= MAX_GENERATIONS}
+                      className="w-full bg-[#111111] text-white font-bold py-3.5 rounded-full hover:bg-[#333333] transition-all disabled:opacity-50"
+                    >
+                      {generating ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                          </svg>
+                          デザインを制作しています…
+                        </span>
+                      ) : canvasDataUrl ? (
+                        `作り直す（残り${MAX_GENERATIONS - generationCount}回）`
+                      ) : (
+                        'デザインを制作する'
+                      )}
+                    </button>
+                    {generationCount >= MAX_GENERATIONS && (
+                      <p className="text-[11px] text-[#ABABAB] text-center">
+                        作り直しは{MAX_GENERATIONS}回まで承っております。このデザインで依頼するか、「戻る」で入力を調整してください。
+                      </p>
+                    )}
+                  </div>
+                ) : selectedTemplate && form.image_size ? (
                   <DesignCanvas
                     layoutType={selectedTemplate.layoutType}
                     bgFrom={selectedTemplate.bgFrom}
@@ -741,7 +924,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                   ['制作内容', [...form.production_types, form.production_types_other ? `その他: ${form.production_types_other}` : ''].filter(Boolean).join('、') || '未選択'],
                   ['テンプレート', form.template_name || '未選択'],
                   ['サイズ', form.image_size || '未選択'],
-                  ['テキスト', form.text_content || 'なし'],
+                  ['内容', isAITemplate ? (form.template_fields.main_title || form.template_name) : (form.text_content || 'なし')],
                   ['素材ファイル', form.materialFiles.length > 0 ? form.materialFiles.map(f => f.name).join(', ') : 'なし'],
                   ['納期', form.delivery_speed],
                 ].map(([label, value]) => (

@@ -42,3 +42,5 @@ next-env.d.ts
 
 # admin utility scripts (contains sensitive operations)
 /scripts/
+
+.vercel
