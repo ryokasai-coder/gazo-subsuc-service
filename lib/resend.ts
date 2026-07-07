@@ -1,41 +1,25 @@
-// ─── メール送信（Gmail の SMTP 経由）─────────────────────────────────────────
-// ※ファイル名は resend.ts のままだが、実装は nodemailer + SMTP（importパス互換のため踏襲）。
-// 送信元 funlinksapoto@gmail.com から送る（ryo.kasai@funrix.co.jp は使用しない方針）。
+// ─── メール送信（Resend）─────────────────────────────────────────────
+// 申込管理システム(funrix-sr-systems)と同じ方式に統一：
+//   Resend ＋ 送信元 noreply@funrix.co.jp（funrix.co.jpをResendでドメイン検証済み）。
+// ※以前のGmail SMTP(nodemailer)から差し替え。関数シグネチャは不変（呼び出し側は無修正）。
 //
 // 必要な環境変数（Vercel Production / .env.local）:
-//   SMTP_HOST   … smtp.gmail.com
-//   SMTP_PORT   … 465
-//   SMTP_SECURE … true
-//   SMTP_USER   … funlinksapoto@gmail.com
-//   SMTP_PASS   … Googleアカウントの「アプリパスワード」16文字（要2段階認証ON）
-//   MAIL_FROM   … 'DESIGN BOX <funlinksapoto@gmail.com>'（任意・未設定なら既定を使用）
-// ※Gmail SMTP は From を認証アカウント(funlinksapoto@gmail.com)に一致させる必要がある。
-import nodemailer from 'nodemailer'
+//   RESEND_API_KEY … Resendダッシュボードのキー（funrix.co.jp検証済みアカウントのもの）
+//   MAIL_FROM      … 任意。未設定なら 'DESIGN BOX <sr.support@funrix.co.jp>' を使用
+import { Resend } from 'resend'
 
-const FROM = () => process.env.MAIL_FROM || 'DESIGN BOX <funlinksapoto@gmail.com>'
+const FROM = () => process.env.MAIL_FROM || 'DESIGN BOX <sr.support@funrix.co.jp>'
 
-let _transporter: nodemailer.Transporter | null = null
-function getTransporter() {
-  if (_transporter) return _transporter
-  _transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT ?? 465),
-    secure: (process.env.SMTP_SECURE ?? 'true') === 'true', // 465=true / 587=false(STARTTLS)
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  })
-  return _transporter
-}
-
-// 共通送信ヘルパー。SMTP未設定時は送信をスキップ（呼び出し側の処理は止めない）。
+// 共通送信ヘルパー。RESEND_API_KEY未設定時は送信をスキップ（呼び出し側の処理は止めない）。
 async function sendMail({ to, subject, html }: { to: string; subject: string; html: string }) {
-  if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.error('[mail] SMTP設定(SMTP_HOST/SMTP_USER/SMTP_PASS)が未設定のため送信をスキップしました')
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) {
+    console.error('[mail] RESEND_API_KEY が未設定のため送信をスキップしました')
     return
   }
-  await getTransporter().sendMail({ from: FROM(), to, subject, html })
+  const resend = new Resend(apiKey)
+  const { error } = await resend.emails.send({ from: FROM(), to, subject, html })
+  if (error) console.error('[mail] 送信エラー:', error)
 }
 
 export async function sendWelcomeEmail({ email, loginId, tempPassword }: {
