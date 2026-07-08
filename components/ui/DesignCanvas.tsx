@@ -937,6 +937,95 @@ function drawImageCover(
   ctx.restore()
 }
 
+// テキストから価格（¥000 / 000円）を抽出
+function extractPrice(text: string): string | null {
+  const m = text.match(/¥\s*([\d,]+)/) || text.match(/([\d,]+)\s*円/)
+  return m ? `¥${m[1].replace(/,/g, '')}` : null
+}
+
+// 角丸ピル（塗り or 枠）
+function pill(ctx: CanvasRenderingContext2D, cx: number, cy: number, text: string, u: number, opt: { bg?: string; fg: string; border?: string; padX?: number }) {
+  ctx.font = `700 ${u}px sans-serif`
+  const tw = ctx.measureText(text).width
+  const padX = opt.padX ?? u * 0.9
+  const w = tw + padX * 2
+  const h = u * 1.9
+  drawRoundRect(ctx, cx - w / 2, cy - h / 2, w, h, h / 2)
+  if (opt.bg) { ctx.fillStyle = opt.bg; ctx.fill() }
+  if (opt.border) { ctx.lineWidth = Math.max(1, u * 0.12); ctx.strokeStyle = opt.border; ctx.stroke() }
+  ctx.fillStyle = opt.fg
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText(text, cx, cy + u * 0.05)
+  ctx.textBaseline = 'alphabetic'
+}
+
+// ─── 写真を主役にしたフルブリード合成（高級感）───
+// 写真を全面に敷き、下部に暗いグラデ、金の細線＋見出し、価格タグ、店名バッジを重ねる。
+function drawPhotoHero(
+  ctx: CanvasRenderingContext2D,
+  W: number, H: number,
+  img: HTMLImageElement,
+  mainText: string, subText: string, company: string, accentHex: string,
+) {
+  const U = Math.min(W, H) / 20
+  const GOLD = '#d9b871'
+  // 1) 全面に写真
+  drawImageCover(ctx, img, 0, 0, W, H)
+  // 2) 上部の軽いスクリム（バッジ可読性）
+  const tg = ctx.createLinearGradient(0, 0, 0, H * 0.28)
+  tg.addColorStop(0, 'rgba(0,0,0,0.42)'); tg.addColorStop(1, 'rgba(0,0,0,0)')
+  ctx.fillStyle = tg; ctx.fillRect(0, 0, W, H * 0.28)
+  // 3) 下部の濃いスクリム（テキスト可読性）
+  const bg = ctx.createLinearGradient(0, H * 0.30, 0, H)
+  bg.addColorStop(0, 'rgba(0,0,0,0)')
+  bg.addColorStop(0.5, 'rgba(0,0,0,0.55)')
+  bg.addColorStop(1, 'rgba(0,0,0,0.90)')
+  ctx.fillStyle = bg; ctx.fillRect(0, H * 0.30, W, H * 0.70)
+
+  // 4) 左上：金枠バッジ（店名 or イチオシ）
+  const badgeText = company ? company : '当店イチオシ'
+  ctx.save()
+  pill(ctx, W * 0.05 + ctx.measureText(badgeText).width / 2 + U * 1.4, H * 0.09, badgeText, U * 0.82, { fg: GOLD, border: GOLD })
+  ctx.restore()
+
+  // 5) 右下：価格タグ（テキストから検出できれば）
+  const price = extractPrice(`${mainText} ${subText}`)
+  if (price) {
+    ctx.save()
+    ctx.font = `900 ${U * 2.1}px sans-serif`
+    ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic'
+    // 金の下線
+    const pw = ctx.measureText(price).width
+    ctx.fillStyle = GOLD
+    ctx.fillRect(W * 0.93 - pw, H * 0.905, pw, U * 0.14)
+    ctx.fillStyle = '#ffffff'
+    ctx.fillText(price, W * 0.93, H * 0.88)
+    ctx.font = `600 ${U * 0.7}px sans-serif`
+    ctx.fillStyle = 'rgba(255,255,255,0.75)'
+    ctx.fillText('(税込)', W * 0.93, H * 0.955)
+    ctx.restore()
+  }
+
+  // 6) 見出し（金の細線＋大タイトル＋サブ）
+  const tx = W * 0.06
+  let ty = H * 0.60
+  // 金の細線
+  ctx.fillStyle = GOLD
+  ctx.fillRect(tx, ty - U * 1.7, U * 2.6, U * 0.16)
+  // メインタイトル（明朝＝高級感）
+  ctx.fillStyle = '#ffffff'
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'
+  ctx.font = `700 ${U * 2.0}px serif`
+  ty = wrapText(ctx, mainText, tx, ty, W * 0.82, U * 2.5)
+  // サブ
+  if (subText) {
+    ctx.font = `400 ${U * 0.95}px sans-serif`
+    ctx.fillStyle = 'rgba(255,255,255,0.82)'
+    wrapText(ctx, subText, tx, ty + U * 0.3, price ? W * 0.55 : W * 0.86, U * 1.3)
+  }
+}
+
 export function DesignCanvas({
   layoutType,
   bgFrom,
@@ -962,6 +1051,16 @@ export function DesignCanvas({
     if (!ctx) return
     const W = width, H = height
     const U = Math.min(W, H) / 20
+
+    // 写真が主役の高級合成：product-card / photo-overlay は写真があればフルブリード
+    const heroLines = (textContent || '').split('\n').map(l => l.trim()).filter(Boolean)
+    const heroMain = heroLines[0] || templateName
+    const heroSub = heroLines[1] || ''
+    if (materialImg && (layoutType === 'product-card' || layoutType === 'photo-overlay')) {
+      drawPhotoHero(ctx, W, H, materialImg, heroMain, heroSub, companyName, bgFrom)
+      onGenerated?.(canvas.toDataURL('image/png'))
+      return
+    }
 
     // ベースデザイン描画
     renderDesign(ctx, W, H, layoutType, bgFrom, bgTo, textContent, templateName, companyName)

@@ -365,7 +365,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
   const filteredTemplates = getFilteredTemplates(form.production_types, designFilter)
 
   const selectedTemplate = TEMPLATES.find(t => t.id === form.template_id)
-  // 入力欄定義があるテンプレ = AI生成テンプレ（現状は期間限定バナーのみ）。無ければ従来のDesignCanvas。
+  // 入力欄定義があるテンプレ = AI生成テンプレ（全テンプレ対応済み）。無ければ従来のDesignCanvas。
   const templateFields = TEMPLATE_FIELDS[form.template_id]
   const isAITemplate = !!templateFields
 
