@@ -1,6 +1,6 @@
 // ─── テンプレ別プロンプト組立（AI画像生成 Nano Banana 2 用）─────────────
 // 出典: H:\マイドライブ\Funrix\DESIGNBOX\designbox_ai_prompt_spec.md（画像プロンプト・参考画像.docx）
-// 現状は①期間限定バナーのみ本実装。残り6テンプレは順次追加する。
+// 全11テンプレ（バナー/新商品/商品ヒーロー/写真オーバーレイ/各種メニュー表/表紙/LINE-QR/カレンダー/縦型LP）実装済み。
 // ★崩れ防止：各項目に文字数・行数・数字のみ等の制限を持たせ、mergeFieldDefaultsで必ず適用する。
 
 export interface PromptField {
@@ -242,7 +242,7 @@ export function buildPrompt(templateId: string, f: Record<string, string>, hasPh
       hasPhoto ? '・右側：添付の商品写真を大きく（湯気や光沢の演出、右端からはみ出す配置）' : '・右側：商品を大きく高級感ある演出で配置',
       `・左上：大型の白文字キャッチ「${f.main_catch}」（明朝体）`,
       f.description ? `・左中：商品説明「${f.description}」（白・小さめ・2行まで）` : '',
-      `・下部：ゴールドのライン＋商品名「${f.product_name}」＋価格「${f.price || ''}」`,
+      `・下部：ゴールドのライン＋商品名「${f.product_name}」${f.price ? `＋価格「${f.price}」` : ''}`,
       `・最下部：3つの黒丸バッジ「${f.feature_1 || '自家製'}」「${f.feature_2 || '特製'}」「${f.feature_3 || '厳選'}」`,
       '■デザイン：フォント=明朝体＋筆記体風。カラー=ブラック・ゴールド・ホワイト。高級感・上質感。',
       '■日本語の文字は正確に描画し、指定以外の文字や見切れは入れないこと。',
@@ -296,7 +296,7 @@ export function buildPrompt(templateId: string, f: Record<string, string>, hasPh
       '■背景：薄いベージュ＋四隅に葉っぱイラスト。うっすら和柄。落ち着いたナチュラル。',
       '■配置（この配置を厳守。文字は各エリア内に収め、はみ出さないこと）',
       `・上部：リーフ装飾＋タイトル「${f.title || 'おすすめメニュー'}」`,
-      f.no1_name ? `・上段（一番人気）：${hasPhoto ? '添付の商品写真＋' : ''}王冠バッジ＋「${f.no1_name}」「${f.no1_price || ''}」「${f.no1_description || ''}」` : '',
+      f.no1_name ? `・上段（一番人気）：${hasPhoto ? '添付の商品写真＋' : ''}王冠バッジ＋「${f.no1_name}」${f.no1_price ? `「${f.no1_price}」` : ''}${f.no1_description ? `「${f.no1_description}」` : ''}` : '',
       menuLines ? `・中段：メニュー一覧（商品名・価格・説明を整理して表示）\n${menuLines}` : '',
       f.special ? `・下部左：ゴールドの丸バッジ「${f.special}」` : '',
       f.other_menus ? `・下部：その他メニュー「${f.other_menus}」` : '',
@@ -349,7 +349,7 @@ export function buildPrompt(templateId: string, f: Record<string, string>, hasPh
       '飲食店向けの縦型LP風の総合訴求デザイン(縦長1080×1350)を作成してください。',
       '■背景：黒〜ダークブラウン基調。上質でまとまりのあるデザイン。',
       '■配置（上から順・この配置を厳守。文字は各エリア内に収め、はみ出さないこと）',
-      `・最上部：店名「${f.store_name}」＋サブキャッチ「${f.sub_catch || ''}」${hasPhoto ? '＋添付写真を横幅いっぱいに' : ''}`,
+      `・最上部：店名「${f.store_name}」${f.sub_catch ? `＋サブキャッチ「${f.sub_catch}」` : ''}${hasPhoto ? '＋添付写真を横幅いっぱいに' : ''}`,
       `・こだわり3つを横並び（アイコン付き）：「${f.feature_1 || '厳選素材'}」「${f.feature_2 || '丁寧な手仕事'}」「${f.feature_3 || '心地よい空間'}」`,
       menuLines ? `・人気メニュー：\n${menuLines}` : '',
       f.review ? `・お客様の声：「${f.review}」＋星評価` : '',
