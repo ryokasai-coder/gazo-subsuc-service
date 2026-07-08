@@ -164,6 +164,31 @@ export const TEMPLATE_FIELDS: Record<string, PromptField[]> = {
     { key: 'coupon', label: 'LINE友だち特典', placeholder: '例：ドリンク1杯無料', maxLength: 18 },
     { key: 'store_info', label: '店舗情報（営業時間・定休日・住所など／最大3行）', type: 'textarea', placeholder: '11:00〜21:00\n定休日：水曜\n東京都〇〇1-2-3', hint: '最大3行', maxLength: 24, maxLines: 3 },
   ],
+  // 店内のご紹介（パンフレット向け・写真グリッド）
+  'shop-interior': [
+    { key: 'title', label: 'タイトル', placeholder: '例：店内のご紹介', default: '店内のご紹介', maxLength: 14 },
+    { key: 'subtitle', label: 'サブタイトル', placeholder: '例：木のぬくもりを感じる、落ち着いた空間。', maxLength: 26 },
+    { key: 'seat1_name', label: '席①の名前', placeholder: '例：ソファ席', maxLength: 12 },
+    { key: 'seat1_desc', label: '席①の説明', placeholder: '例：ゆったりくつろげる人気のお席です。', maxLength: 22 },
+    { key: 'seat2_name', label: '席②の名前', placeholder: '例：窓際のカウンター席', maxLength: 12 },
+    { key: 'seat2_desc', label: '席②の説明', placeholder: '例：おひとり様もお気軽にどうぞ。', maxLength: 22 },
+    { key: 'seat3_name', label: '席③の名前', placeholder: '例：テラス席（ペットOK）', maxLength: 12 },
+    { key: 'seat3_desc', label: '席③の説明', placeholder: '例：緑を感じる開放的なテラス席。', maxLength: 22 },
+    { key: 'note', label: '注記', placeholder: '例：ペット同伴はテラス席のみとなります。', maxLength: 28 },
+  ],
+  // アクセス・店舗情報（パンフレット向け・地図＋QR）
+  'access-info': [
+    { key: 'title', label: 'タイトル', placeholder: '例：アクセス・店舗情報', default: 'アクセス・店舗情報', maxLength: 14 },
+    { key: 'subtitle', label: 'サブタイトル', placeholder: '例：皆さまのご来店を心よりお待ちしております。', maxLength: 28 },
+    { key: 'access', label: '交通アクセス', placeholder: '例：○○駅より車で10分', maxLength: 24 },
+    { key: 'parking', label: '駐車場', placeholder: '例：駐車場：10台完備', maxLength: 20 },
+    { key: 'address', label: '住所', placeholder: '例：〒123-4567 ○○市○○町1-2-3', maxLength: 30 },
+    { key: 'tel', label: '電話番号', placeholder: '例：03-1234-5678', maxLength: 18 },
+    { key: 'business_hours', label: '営業時間', placeholder: '例：11:00〜17:00 (L.O.16:30)', maxLength: 26 },
+    { key: 'closed_day', label: '定休日', placeholder: '例：水曜日', maxLength: 16 },
+    { key: 'instagram', label: 'Instagram', placeholder: '例：@cafe_morinoterrace', maxLength: 24 },
+    { key: 'sns_promo', label: 'SNS誘導文', placeholder: '例：最新情報はInstagramで更新中！', maxLength: 24 },
+  ],
 }
 
 // フォーム入力(fields)＋各欄のdefaultをマージし、必ず入力制限を適用した実効値を返す
@@ -360,5 +385,108 @@ export function buildPrompt(templateId: string, f: Record<string, string>, hasPh
       hasPhoto ? '■添付画像を店舗・商品写真として使用してください。' : '',
     ].filter(Boolean).join('\n')
   }
+  // 店内のご紹介（写真グリッド）
+  if (templateId === 'shop-interior') {
+    const seats = [[f.seat1_name, f.seat1_desc], [f.seat2_name, f.seat2_desc], [f.seat3_name, f.seat3_desc]]
+      .filter(([n]) => n).map(([n, d]) => `「${n}」${d ? `（${d}）` : ''}`).join('／')
+    return [
+      '飲食店の店内紹介ページ(正方形1080×1080)を作成してください。',
+      '■背景：薄いベージュ＋四隅に葉っぱイラスト。落ち着いたナチュラル。',
+      '■配置（この配置を厳守。文字は各エリア内に収め、はみ出さないこと）',
+      `・上部：タイトル「${f.title || '店内のご紹介'}」（明朝体）${f.subtitle ? `＋サブ「${f.subtitle}」` : ''}`,
+      hasPhoto ? '・中央：添付の店内写真を大きく1枚、その下に小さめの写真を3枚グリッド配置' : '・中央：店内イメージを大きく1枚＋小さめ3枚のグリッドで配置',
+      seats ? `・下段の写真キャプション3つ：${seats}` : '',
+      f.note ? `・最下部：注記「${f.note}」（小さめ）` : '',
+      '■デザイン：フォント=明朝体＋細ゴシック。カラー=ベージュ・ダークグリーン・ブラウン。上品でナチュラル。',
+      '■日本語の文字は正確に描画し、指定以外の文字や見切れは入れないこと。',
+      hasPhoto ? '■添付画像を店内写真として使用してください（複数枚あれば席ごとに割り当て）。' : '',
+    ].filter(Boolean).join('\n')
+  }
+  // アクセス・店舗情報（地図＋QR）
+  if (templateId === 'access-info') {
+    const infos = [
+      f.access && `・${f.access}`,
+      f.parking && `・${f.parking}`,
+      f.address && `・住所：${f.address}`,
+      f.tel && `・TEL：${f.tel}`,
+      f.business_hours && `・営業時間：${f.business_hours}`,
+      f.closed_day && `・定休日：${f.closed_day}`,
+      f.instagram && `・Instagram：${f.instagram}`,
+    ].filter(Boolean).join('\n')
+    return [
+      '飲食店のアクセス・店舗情報ページ(正方形1080×1080)を作成してください。',
+      '■背景：薄いベージュ＋四隅に葉っぱイラスト。落ち着いたナチュラル。',
+      '■配置（この配置を厳守。文字は各エリア内に収め、はみ出さないこと）',
+      `・上部：タイトル「${f.title || 'アクセス・店舗情報'}」（明朝体）${f.subtitle ? `＋サブ「${f.subtitle}」` : ''}`,
+      '・左側：店舗情報をアイコン付きで縦に整理：',
+      infos,
+      '・右側：周辺の簡易地図イラスト（店舗位置に目印ピン＋店名ラベル）',
+      hasPhoto ? '・下部：添付のQRコード画像＋店舗外観写真を配置' : '・下部：QRコード枠＋SNS誘導エリアを配置',
+      f.sns_promo ? `・SNS誘導帯：緑帯に「${f.sns_promo}」＋QRコード` : '',
+      '■デザイン：フォント=明朝体＋細ゴシック。カラー=ベージュ・ダークグリーン・ブラウン。整理感・読みやすさ重視。',
+      '■日本語・数字・記号（住所・電話・営業時間）は正確に描画し、指定以外の文字や見切れは入れないこと。',
+      hasPhoto ? '■添付画像をQRコード・外観写真として使用してください。' : '',
+    ].filter(Boolean).join('\n')
+  }
   return ''
+}
+
+// ─── パンフレット一括生成：全ページ統一トーンの指定 ───────────────────
+// 各ページの背景・配色・フォント・装飾・ページ番号バッジを揃え、シリーズ感を出す。
+export interface BrochureTone {
+  label: string
+  bg: string
+  decoration: string
+  font: string
+  palette: string
+  badge: string
+}
+export const BROCHURE_TONES: Record<string, BrochureTone> = {
+  ナチュラル: {
+    label: 'ナチュラル（ベージュ×グリーン）',
+    bg: '薄いベージュ〜クリームの無地',
+    decoration: '手描き風の葉っぱ・枝（ダークグリーン）を余白に上品に配置',
+    font: '見出し=明朝体／本文=細めのゴシック体',
+    palette: 'ベージュ・クリーム・ダークグリーン・ブラウン',
+    badge: 'ダークグリーンの角丸バッジに白文字',
+  },
+  高級感: {
+    label: '高級感（ネイビー×ゴールド）',
+    bg: 'ネイビー〜ダークブルーの上質なテクスチャ',
+    decoration: '細いゴールドのラインと小さな星・キラキラを控えめに配置',
+    font: '見出し=明朝体／英字=セリフ体／本文=細ゴシック',
+    palette: 'ネイビー・ブラック・ゴールド・ホワイト',
+    badge: 'ゴールド枠の角丸バッジに白文字',
+  },
+  ポップ: {
+    label: 'ポップ（明るい×元気）',
+    bg: '明るいクリーム〜パステルの無地',
+    decoration: '丸や吹き出し、手描き風のあしらいを楽しく配置',
+    font: '見出し=丸ゴシック極太／本文=丸ゴシック',
+    palette: 'イエロー・オレンジ・ピンク・ターコイズ',
+    badge: 'ビタミンカラーの丸バッジに白文字',
+  },
+}
+
+// ベースのテンプレプロンプトに、全ページ共通のパンフレット統一デザイン指定を付与する。
+export function buildBrochurePrompt(
+  templateId: string,
+  f: Record<string, string>,
+  hasPhoto: boolean,
+  ctx: { tone: string; pageNo: number; totalPages: number; storeName: string },
+): string {
+  const base = buildPrompt(templateId, f, hasPhoto)
+  const t = BROCHURE_TONES[ctx.tone] || BROCHURE_TONES['ナチュラル']
+  return [
+    base,
+    '',
+    '━━ パンフレット統一デザイン指定（全ページ共通・最優先で厳守）━━',
+    `■これは「${ctx.storeName || 'お店'}」のご案内パンフレット 全${ctx.totalPages}ページのうち ${ctx.pageNo}ページ目です。全ページで背景・配色・フォント・装飾を完全に統一し、シリーズとして違和感のない見た目にしてください。`,
+    `■背景：${t.bg}`,
+    `■装飾：${t.decoration}`,
+    `■フォント：${t.font}`,
+    `■配色：${t.palette}`,
+    `■左上に「${ctx.pageNo}/${ctx.totalPages}」のページ番号バッジ（${t.badge}）を必ず配置。`,
+    '■上記の統一トーンを、各ページ固有の配色指定よりも優先してください（前後ページと余白・帯・見出しスタイルを揃える）。',
+  ].join('\n')
 }

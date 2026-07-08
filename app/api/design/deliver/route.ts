@@ -65,13 +65,21 @@ export async function POST(req: NextRequest) {
     if (!userData) return NextResponse.json({ error: 'User not found' }, { status: 404 })
 
     const body = await req.json()
-    const { imageDataUrl, templateName, textContent, imageType, imageSize } = body
+    const { imageType, imageSize } = body
 
-    if (!imageDataUrl) {
+    // 単一/複数（パンフレット）を正規化。images配列があればそれを、無ければ単一 imageDataUrl を1件として扱う（後方互換）。
+    type PageItem = { imageDataUrl: string; templateName?: string; textContent?: string }
+    const rawImages: PageItem[] = Array.isArray(body.images) && body.images.length > 0
+      ? (body.images as PageItem[])
+      : (body.imageDataUrl
+          ? [{ imageDataUrl: body.imageDataUrl, templateName: body.templateName, textContent: body.textContent }]
+          : [])
+    if (rawImages.length === 0) {
       return NextResponse.json({ error: 'imageDataUrl is required' }, { status: 400 })
     }
 
-    // ─── 月10回の使用回数チェック（deliver = 実際の依頼フロー。上限はここで制御）───
+    // ─── 使用回数チェック（deliver = 実際の依頼フロー。ページ数分を消費）───
+    // 残数 = total_limit - used_count。必要数（ページ数）が残数を超える場合は中断（Drive保存に進まない）。
     const usageMonth = new Date().toISOString().slice(0, 7)
     const { data: usageRow } = await service
       .from('usage_limits')
@@ -81,20 +89,17 @@ export async function POST(req: NextRequest) {
       .maybeSingle()
     const currentUsed = usageRow?.used_count ?? 0
     const usageLimit = usageRow?.total_limit ?? 10
-    if (currentUsed >= usageLimit) {
-      // 上限到達時はDrive保存に進まず中断
+    const remaining = usageLimit - currentUsed
+    const needed = rawImages.length
+    if (needed > remaining) {
       return NextResponse.json(
-        { error: `今月の依頼上限（${usageLimit}回）に達しています` },
+        {
+          error: needed > 1
+            ? `今月の残り回数が不足しています（残り${remaining}回・このパンフレットは${needed}ページ必要です）`
+            : `今月の依頼上限（${usageLimit}回）に達しています`,
+        },
         { status: 400 }
       )
-    }
-
-    // Convert base64 to buffer
-    const base64Data = imageDataUrl.replace(/^data:image\/\w+;base64,/, '')
-    const imageBuffer = Buffer.from(base64Data, 'base64')
-
-    if (imageBuffer.length > 4 * 1024 * 1024) {
-      return NextResponse.json({ error: '画像サイズが大きすぎます' }, { status: 413 })
     }
 
     const parentFolderId = process.env.GOOGLE_DRIVE_PARENT_FOLDER_ID
@@ -107,80 +112,104 @@ export async function POST(req: NextRequest) {
     // お客様番号フォルダを取得または作成（共有ドライブ対応）
     const customerFolderId = await getOrCreateFolder(drive, parentFolderId, userData.login_id)
 
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
-    const safeName = (templateName || 'design').replace(/[\/\\:*?"<>|]/g, '_')
-    const fileName = `${safeName}_${timestamp}.jpg`
+    // パンフレット（複数ページ）はサブフォルダにまとめて保存
+    let targetFolderId = customerFolderId
+    if (needed > 1) {
+      const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 16)
+      const brochureName = `${(body.brochureTitle ? String(body.brochureTitle) : 'パンフレット').replace(/[\/\\:*?"<>|]/g, '_')}_${stamp}`
+      targetFolderId = await getOrCreateFolder(drive, customerFolderId, brochureName)
+    }
 
+    const billingMonth = usageMonth
     const { PassThrough } = await import('stream')
-    const passThrough = new PassThrough()
-    passThrough.end(imageBuffer)
+    const results: Array<{ driveUrl: string; previewUrl: string; fileId: string; requestId?: string }> = []
+    let insertedCount = 0 // 使用回数はDBに記録できた枚数分のみ消費（元仕様を踏襲）
 
-    // ファイルアップロード（共有ドライブ対応）
-    const fileRes = await drive.files.create({
-      requestBody: {
-        name: fileName,
-        parents: [customerFolderId],
-        mimeType: 'image/jpeg',
-      },
-      media: {
-        mimeType: 'image/jpeg',
-        body: passThrough,
-      },
-      fields: 'id',
-      supportsAllDrives: true,
-    })
+    for (let i = 0; i < rawImages.length; i++) {
+      const item = rawImages[i]
+      if (!item?.imageDataUrl) continue
 
-    const fileId = fileRes.data.id!
+      const base64Data = item.imageDataUrl.replace(/^data:image\/\w+;base64,/, '')
+      const imageBuffer = Buffer.from(base64Data, 'base64')
+      if (imageBuffer.length > 4 * 1024 * 1024) {
+        return NextResponse.json({ error: `画像サイズが大きすぎます（${i + 1}枚目）` }, { status: 413 })
+      }
 
-    // 公開アクセス設定（共有ドライブ対応）
-    await drive.permissions.create({
-      fileId,
-      requestBody: { role: 'reader', type: 'anyone' },
-      supportsAllDrives: true,
-    })
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
+      const pageLabel = needed > 1 ? `${String(i + 1).padStart(2, '0')}_` : ''
+      const safeName = (item.templateName || 'design').replace(/[\/\\:*?"<>|]/g, '_')
+      const fileName = `${pageLabel}${safeName}_${timestamp}.jpg`
 
-    const driveUrl = `https://drive.google.com/file/d/${fileId}/view`
-    const previewUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`
+      const passThrough = new PassThrough()
+      passThrough.end(imageBuffer)
 
-    // DBに保存（statusはpending: 管理画面から納品操作するまで納品しない）
-    const billingMonth = new Date().toISOString().slice(0, 7)
-    const { data: requestData, error: reqError } = await service
-      .from('image_requests')
-      .insert({
-        user_id: user.id,
-        image_type: imageType || 'SNS投稿',
-        image_size: imageSize || '正方形(1080x1080px)',
-        text_content: textContent || '',
-        // template_name 列は本番DBに存在しないため insert から除外（含めると insert 全体が失敗し記録が残らない）
-        status: 'pending',
-        delivered_image_url: driveUrl,   // 管理画面でプレビュー用
-        billing_month: billingMonth,
+      // ファイルアップロード（共有ドライブ対応）
+      const fileRes = await drive.files.create({
+        requestBody: { name: fileName, parents: [targetFolderId], mimeType: 'image/jpeg' },
+        media: { mimeType: 'image/jpeg', body: passThrough },
+        fields: 'id',
+        supportsAllDrives: true,
       })
-      .select()
-      .single()
+      const fileId = fileRes.data.id!
 
-    if (reqError) {
-      console.error('DB insert error:', reqError)
-    } else {
-      // ─── 使用回数を加算（レコード保存に成功した場合のみ）───
+      // 公開アクセス設定（共有ドライブ対応）
+      await drive.permissions.create({
+        fileId,
+        requestBody: { role: 'reader', type: 'anyone' },
+        supportsAllDrives: true,
+      })
+
+      const driveUrl = `https://drive.google.com/file/d/${fileId}/view`
+      const previewUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`
+
+      // DBに保存（statusはpending: 管理画面から納品操作するまで納品しない）
+      const { data: requestData, error: reqError } = await service
+        .from('image_requests')
+        .insert({
+          user_id: user.id,
+          image_type: imageType || 'SNS投稿',
+          image_size: imageSize || '正方形(1080x1080px)',
+          text_content: item.textContent || '',
+          // template_name 列は本番DBに存在しないため insert から除外（含めると insert 全体が失敗し記録が残らない）
+          status: 'pending',
+          delivered_image_url: driveUrl,   // 管理画面でプレビュー用
+          billing_month: billingMonth,
+        })
+        .select()
+        .single()
+
+      if (reqError) {
+        console.error('DB insert error:', reqError)
+      } else {
+        insertedCount += 1
+      }
+      results.push({ driveUrl, previewUrl, fileId, requestId: requestData?.id })
+    }
+
+    // ─── 使用回数を加算（DBに記録できた枚数分。加算後も used_count <= total_limit：残数チェック済み）───
+    // 算出式: used_count += insertedCount（保存できたページ数）。端数なし（整数）。
+    if (insertedCount > 0) {
       if (usageRow) {
         await service
           .from('usage_limits')
-          .update({ used_count: currentUsed + 1, updated_at: new Date().toISOString() })
+          .update({ used_count: currentUsed + insertedCount, updated_at: new Date().toISOString() })
           .eq('id', usageRow.id)
       } else {
         await service
           .from('usage_limits')
-          .insert({ user_id: user.id, billing_month: usageMonth, used_count: 1, total_limit: 10 })
+          .insert({ user_id: user.id, billing_month: usageMonth, used_count: insertedCount, total_limit: 10 })
       }
     }
 
     return NextResponse.json({
       success: true,
-      driveUrl,
-      previewUrl,
-      fileId,
-      requestId: requestData?.id,
+      count: results.length,
+      results,
+      // 後方互換：先頭ページを従来のトップレベルフィールドにも入れる
+      driveUrl: results[0]?.driveUrl,
+      previewUrl: results[0]?.previewUrl,
+      fileId: results[0]?.fileId,
+      requestId: results[0]?.requestId,
     })
   } catch (err: unknown) {
     console.error('Deliver error:', err)
