@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { TemplatePreview } from '@/components/ui/TemplatePreview'
 import { DesignCanvas } from '@/components/ui/DesignCanvas'
 import { createClient } from '@/lib/supabase'
-import { TEMPLATE_FIELDS, buildPrompt, mergeFieldDefaults } from '@/lib/design-prompts'
+import { TEMPLATE_FIELDS, buildPrompt, buildBrochurePrompt, BROCHURE_TONES, mergeFieldDefaults } from '@/lib/design-prompts'
 
 // 1依頼あたりのAI生成回数の上限（初回1＋作り直し2＝計3回）
 const MAX_GENERATIONS = 3
@@ -368,6 +368,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
   // ─── AI生成（期間限定バナー等）─────────────────────────────
   const [generating, setGenerating] = useState(false)
   const [generationCount, setGenerationCount] = useState(0) // この依頼で生成した回数（最大MAX_GENERATIONS）
+  const [brochureMode, setBrochureMode] = useState(false) // パンフレット一括制作モード
 
   const update = <K extends keyof RequestFormData>(key: K, val: RequestFormData[K]) => {
     setForm(prev => ({ ...prev, [key]: val }))
@@ -513,6 +514,11 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
   const inputClass = "w-full border border-[#EFEFEF] rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#E85C97]/20 focus:border-[#E85C97] transition-all bg-[#FAFAFA]"
   const textareaClass = `${inputClass} resize-none`
 
+  // パンフレット一括制作モードは専用フローに差し替え
+  if (brochureMode) {
+    return <BrochureBuilder accessToken={accessToken} onCancel={() => setBrochureMode(false)} />
+  }
+
   return (
     <div>
       {/* Step indicator */}
@@ -543,6 +549,26 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
       {/* Step 0: 制作内容 */}
       {step === 0 && (
         <div className="space-y-4">
+          {/* パンフレット一括制作の入口 */}
+          <button
+            type="button"
+            onClick={() => setBrochureMode(true)}
+            className="w-full text-left rounded-2xl border-2 border-[#E85C97]/30 bg-gradient-to-r from-[#FFF0F6] to-[#FFF7FB] px-4 py-3.5 hover:border-[#E85C97] transition-all group"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">📖</span>
+              <div className="flex-1">
+                <p className="text-sm font-bold text-[#111111]">パンフレットをまとめて作る</p>
+                <p className="text-[11px] text-[#6B7280] mt-0.5">表紙・メニュー・店内紹介・アクセスなど、複数ページを統一デザインで一括制作</p>
+              </div>
+              <span className="text-[#E85C97] text-lg group-hover:translate-x-0.5 transition-transform">→</span>
+            </div>
+          </button>
+          <div className="flex items-center gap-3 text-[10px] text-[#ABABAB]">
+            <div className="flex-1 h-px bg-[#EFEFEF]" />
+            または1枚ずつ制作
+            <div className="flex-1 h-px bg-[#EFEFEF]" />
+          </div>
           <div className="flex items-center justify-between">
             <label className="text-xs font-bold text-[#111111]">
               制作内容を選択（1つ） <span className="text-[#E85C97]">*</span>
@@ -1027,6 +1053,294 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
               次へ
             </button>
           )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── パンフレット一括制作 ─────────────────────────────────────────
+const BROCHURE_PAGES = [
+  { id: 'menu-cover',    label: '表紙・ブランド紹介', icon: '📖' },
+  { id: 'menu-grid',     label: 'グランド／ランチメニュー', icon: '🍽️' },
+  { id: 'sweets-menu',   label: 'サイド・デザート', icon: '🍰' },
+  { id: 'drink-menu',    label: 'ドリンクメニュー', icon: '🥤' },
+  { id: 'shop-interior', label: '店内のご紹介', icon: '🪴' },
+  { id: 'access-info',   label: 'アクセス・店舗情報', icon: '🗺️' },
+]
+
+function brochureCompress(dataUrl: string, maxWidth = 1080): Promise<string> {
+  return new Promise(resolve => {
+    const img = new Image()
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      const scale = Math.min(1, maxWidth / img.width)
+      canvas.width = Math.round(img.width * scale)
+      canvas.height = Math.round(img.height * scale)
+      const ctx = canvas.getContext('2d')!
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+      resolve(canvas.toDataURL('image/jpeg', 0.88))
+    }
+    img.onerror = () => resolve(dataUrl)
+    img.src = dataUrl
+  })
+}
+function brochureFileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader()
+    r.onload = () => resolve(r.result as string)
+    r.onerror = reject
+    r.readAsDataURL(file)
+  })
+}
+
+function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null; onCancel: () => void }) {
+  const [phase, setPhase] = useState<'config' | 'input' | 'result' | 'done'>('config')
+  const [tone, setTone] = useState('ナチュラル')
+  const [storeName, setStoreName] = useState('')
+  const [selected, setSelected] = useState<string[]>(BROCHURE_PAGES.map(p => p.id))
+  const [fields, setFields] = useState<Record<string, Record<string, string>>>({})
+  const [materials, setMaterials] = useState<Record<string, File[]>>({})
+  const [images, setImages] = useState<Record<string, string>>({})
+  const [generating, setGenerating] = useState(false)
+  const [progress, setProgress] = useState('')
+  const [delivering, setDelivering] = useState(false)
+  const [doneCount, setDoneCount] = useState(0)
+  const [error, setError] = useState('')
+
+  const pages = BROCHURE_PAGES.filter(p => selected.includes(p.id))
+
+  const toggle = (id: string) =>
+    setSelected(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id])
+  const setField = (pid: string, key: string, val: string) =>
+    setFields(prev => ({ ...prev, [pid]: { ...(prev[pid] || {}), [key]: val } }))
+
+  const goInput = () => {
+    if (!storeName.trim()) { setError('店名を入力してください'); return }
+    if (selected.length === 0) { setError('ページを1つ以上選択してください'); return }
+    setError(''); setPhase('input')
+  }
+
+  const handleGenerateAll = async () => {
+    // 各ページの必須項目チェック
+    for (const p of pages) {
+      for (const f of (TEMPLATE_FIELDS[p.id] || [])) {
+        if (f.required && !(fields[p.id]?.[f.key] ?? '').trim()) {
+          setError(`「${p.label}」の「${f.label}」を入力してください`); return
+        }
+      }
+    }
+    setGenerating(true); setError('')
+    const total = pages.length
+    try {
+      for (let i = 0; i < pages.length; i++) {
+        const pg = pages[i]
+        setProgress(`${i + 1}/${total}ページ目「${pg.label}」を制作中…`)
+        const merged = mergeFieldDefaults(pg.id, fields[pg.id] || {})
+        const files = materials[pg.id] || []
+        const prompt = buildBrochurePrompt(pg.id, merged, files.length > 0, { tone, pageNo: i + 1, totalPages: total, storeName })
+        let photoDataUrl: string | undefined
+        if (files[0]) { photoDataUrl = await brochureCompress(await brochureFileToDataUrl(files[0]), 1200) }
+        const res = await fetch('/api/design/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+          body: JSON.stringify({ prompt, photoDataUrl }),
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error || `${i + 1}ページ目の制作に失敗しました`)
+        setImages(prev => ({ ...prev, [pg.id]: data.imageDataUrl }))
+      }
+      setPhase('result')
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'デザインの制作に失敗しました')
+    } finally { setGenerating(false); setProgress('') }
+  }
+
+  const handleDeliverAll = async () => {
+    setDelivering(true); setError('')
+    try {
+      const items: Array<{ imageDataUrl: string; templateName: string; textContent: string }> = []
+      for (const pg of pages) {
+        if (!images[pg.id]) continue
+        const compressed = await brochureCompress(images[pg.id], 1080)
+        items.push({
+          imageDataUrl: compressed,
+          templateName: pg.label,
+          textContent: Object.values(fields[pg.id] || {}).filter(Boolean).join(' / '),
+        })
+      }
+      if (items.length === 0) throw new Error('納品できるページがありません')
+      const res = await fetch('/api/design/deliver', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+        body: JSON.stringify({
+          images: items,
+          imageType: 'パンフレット',
+          imageSize: '正方形(1080x1080px)',
+          brochureTitle: `${storeName} パンフレット`,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || '納品に失敗しました')
+      setDoneCount(data.count ?? items.length)
+      setPhase('done')
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : '納品に失敗しました')
+    } finally { setDelivering(false) }
+  }
+
+  const inputCls = "w-full border border-[#EFEFEF] rounded-xl px-4 py-3 text-sm text-[#111111] placeholder-[#ABABAB] focus:outline-none focus:ring-2 focus:ring-[#E85C97]/20 focus:border-[#E85C97] transition-all bg-[#FAFAFA]"
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center gap-2">
+        <span className="text-xl">📖</span>
+        <h3 className="text-base font-bold text-[#111111]">パンフレット一括制作</h3>
+      </div>
+
+      {error && <div className="bg-red-50 text-red-600 text-xs rounded-xl px-4 py-2.5">{error}</div>}
+
+      {/* config：トーン・店名・ページ選択 */}
+      {phase === 'config' && (
+        <div className="space-y-5">
+          <div>
+            <label className="text-xs font-bold text-[#111111] block mb-1.5">店名・店舗名 <span className="text-[#E85C97]">*</span></label>
+            <input value={storeName} onChange={e => setStoreName(e.target.value.slice(0, 20))} placeholder="例：カフェ 森のテラス" className={inputCls} />
+          </div>
+          <div>
+            <label className="text-xs font-bold text-[#111111] block mb-1.5">デザインの雰囲気（全ページ共通）</label>
+            <div className="flex flex-wrap gap-2">
+              {Object.entries(BROCHURE_TONES).map(([key, t]) => (
+                <button key={key} type="button" onClick={() => setTone(key)}
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${tone === key ? 'bg-[#E85C97] text-white border-[#E85C97]' : 'bg-white text-[#6B7280] border-[#EFEFEF] hover:border-[#E85C97]'}`}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="text-xs font-bold text-[#111111] block mb-1.5">作るページを選択（{selected.length}ページ）</label>
+            <p className="text-[11px] text-[#6B7280] mb-2">選んだページ数分、今月の制作回数（月10回）を消費します。</p>
+            <div className="space-y-2">
+              {BROCHURE_PAGES.map(p => {
+                const on = selected.includes(p.id)
+                const no = pages.findIndex(x => x.id === p.id) + 1
+                return (
+                  <button key={p.id} type="button" onClick={() => toggle(p.id)}
+                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl border transition-all ${on ? 'border-[#E85C97] bg-[#FFF7FB]' : 'border-[#EFEFEF] bg-white hover:border-[#E85C97]/40'}`}>
+                    <span className="text-lg">{p.icon}</span>
+                    <span className={`flex-1 text-left text-sm font-medium ${on ? 'text-[#111111]' : 'text-[#6B7280]'}`}>{p.label}</span>
+                    {on && <span className="text-[11px] text-white bg-[#E85C97] w-5 h-5 rounded-full flex items-center justify-center font-bold">{no}</span>}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <button type="button" onClick={onCancel} className="flex-1 border border-[#EFEFEF] text-[#6B7280] font-semibold py-3 rounded-full hover:bg-[#F8F8FA]">戻る</button>
+            <button type="button" onClick={goInput} className="flex-1 bg-[#E85C97] text-white font-bold py-3 rounded-full hover:bg-[#D8477F] shadow-md shadow-red-100">次へ（内容入力）</button>
+          </div>
+        </div>
+      )}
+
+      {/* input：各ページの内容入力 */}
+      {phase === 'input' && (
+        <div className="space-y-5">
+          <p className="text-[11px] text-[#6B7280]">各ページの内容を入力してください。全{pages.length}ページを統一デザインで制作します。</p>
+          {pages.map((p, i) => (
+            <div key={p.id} className="border border-[#EFEFEF] rounded-2xl p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] text-white bg-[#E85C97] w-5 h-5 rounded-full flex items-center justify-center font-bold">{i + 1}</span>
+                <span className="text-sm font-bold text-[#111111]">{p.icon} {p.label}</span>
+              </div>
+              {(TEMPLATE_FIELDS[p.id] || []).map(f => (
+                <div key={f.key}>
+                  <label className="text-xs font-semibold text-[#6B7280] block mb-1">{f.label}{f.required && <span className="text-[#E85C97]"> *</span>}</label>
+                  {f.type === 'textarea' ? (
+                    <textarea value={fields[p.id]?.[f.key] ?? ''} rows={3} placeholder={f.placeholder}
+                      onChange={e => {
+                        const lines = e.target.value.split('\n')
+                        const capped = (f.maxLines ? lines.slice(0, f.maxLines) : lines).map(l => f.maxLength ? l.slice(0, f.maxLength) : l).join('\n')
+                        setField(p.id, f.key, capped)
+                      }}
+                      className={`${inputCls} resize-none`} />
+                  ) : f.type === 'select' ? (
+                    <div className="flex flex-wrap gap-2">
+                      {(f.options ?? []).map(opt => (
+                        <button key={opt} type="button" onClick={() => setField(p.id, f.key, opt)}
+                          className={`px-3 py-1 rounded-full text-xs font-medium border ${(fields[p.id]?.[f.key] ?? f.default) === opt ? 'bg-[#E85C97] text-white border-[#E85C97]' : 'bg-white text-[#6B7280] border-[#EFEFEF]'}`}>{opt}</button>
+                      ))}
+                    </div>
+                  ) : (
+                    <input value={fields[p.id]?.[f.key] ?? ''} placeholder={f.placeholder}
+                      onChange={e => setField(p.id, f.key, f.maxLength ? e.target.value.slice(0, f.maxLength) : e.target.value)}
+                      className={inputCls} />
+                  )}
+                </div>
+              ))}
+              <div>
+                <label className="text-xs font-semibold text-[#6B7280] block mb-1">写真・素材（任意・複数可）</label>
+                <input type="file" multiple accept="image/*"
+                  onChange={e => setMaterials(prev => ({ ...prev, [p.id]: Array.from(e.target.files ?? []) }))}
+                  className="w-full text-xs text-[#6B7280] file:mr-2 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#FFF0F6] file:text-[#E85C97]" />
+                {(materials[p.id]?.length ?? 0) > 0 && <p className="text-[10px] text-[#22c55e] mt-1 font-semibold">✓ {materials[p.id].length}件選択済み</p>}
+              </div>
+            </div>
+          ))}
+          {generating ? (
+            <div className="rounded-2xl border-2 border-dashed border-[#EFEFEF] bg-[#F8F8FA] py-6 text-center">
+              <svg className="animate-spin w-7 h-7 text-[#E85C97] mx-auto mb-2" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              <p className="text-sm text-[#6B7280]">{progress}</p>
+              <p className="text-[10px] text-[#ABABAB] mt-1">ページ数によっては少し時間がかかります</p>
+            </div>
+          ) : (
+            <div className="flex gap-3">
+              <button type="button" onClick={() => { setError(''); setPhase('config') }} className="flex-1 border border-[#EFEFEF] text-[#6B7280] font-semibold py-3 rounded-full hover:bg-[#F8F8FA]">戻る</button>
+              <button type="button" onClick={handleGenerateAll} className="flex-1 bg-[#E85C97] text-white font-bold py-3 rounded-full hover:bg-[#D8477F] shadow-md shadow-red-100">{pages.length}ページを一括制作</button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* result：プレビュー＋一括納品 */}
+      {phase === 'result' && (
+        <div className="space-y-5">
+          <p className="text-[11px] text-[#6B7280]">仕上がりをご確認ください。よろしければ一括で依頼できます。</p>
+          <div className="grid grid-cols-2 gap-3">
+            {pages.map((p, i) => (
+              <div key={p.id} className="rounded-xl overflow-hidden border border-[#EFEFEF]">
+                {images[p.id] ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={images[p.id]} alt={p.label} className="w-full" />
+                  </>
+                ) : <div className="aspect-square bg-[#F8F8FA] flex items-center justify-center text-xs text-[#ABABAB]">未生成</div>}
+                <p className="text-[10px] text-[#6B7280] px-2 py-1 font-medium">{i + 1}. {p.label}</p>
+              </div>
+            ))}
+          </div>
+          <div className="bg-[#FFF7FB] rounded-xl px-4 py-2.5 text-[11px] text-[#6B7280]">
+            この{pages.length}ページで今月の制作回数を <b className="text-[#E85C97]">{pages.length}回</b> 消費します。
+          </div>
+          <div className="flex gap-3">
+            <button type="button" onClick={() => setPhase('input')} disabled={delivering} className="flex-1 border border-[#EFEFEF] text-[#6B7280] font-semibold py-3 rounded-full hover:bg-[#F8F8FA] disabled:opacity-50">入力に戻る</button>
+            <button type="button" onClick={handleDeliverAll} disabled={delivering} className="flex-1 bg-[#E85C97] text-white font-bold py-3 rounded-full hover:bg-[#D8477F] shadow-md shadow-red-100 disabled:opacity-50">
+              {delivering ? 'Googleドライブに保存中...' : `📤 ${pages.length}ページを一括で依頼する`}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* done：完了 */}
+      {phase === 'done' && (
+        <div className="text-center py-8 space-y-3">
+          <div className="text-4xl">🎉</div>
+          <p className="text-base font-bold text-[#111111]">パンフレット{doneCount}ページを納品しました</p>
+          <p className="text-xs text-[#6B7280]">Googleドライブのお客様番号フォルダ内に、パンフレット用フォルダとして保存されました。</p>
+          <button type="button" onClick={onCancel} className="mt-2 bg-[#E85C97] text-white font-bold px-8 py-3 rounded-full hover:bg-[#D8477F] shadow-md shadow-red-100">完了</button>
         </div>
       )}
     </div>
