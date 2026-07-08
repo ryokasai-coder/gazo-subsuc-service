@@ -1107,6 +1107,7 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
   const [delivering, setDelivering] = useState(false)
   const [doneCount, setDoneCount] = useState(0)
   const [error, setError] = useState('')
+  const [regenId, setRegenId] = useState<string | null>(null) // 個別作り直し中のページID
 
   const pages = BROCHURE_PAGES.filter(p => selected.includes(p.id))
 
@@ -1154,6 +1155,36 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'デザインの制作に失敗しました')
     } finally { setGenerating(false); setProgress('') }
+  }
+
+  // 個別作り直し：指定ページだけを（修正後の入力で）再生成する
+  const regenerateOne = async (pid: string) => {
+    const idx = pages.findIndex(p => p.id === pid)
+    if (idx < 0) return
+    const pg = pages[idx]
+    for (const f of (TEMPLATE_FIELDS[pg.id] || [])) {
+      if (f.required && !(fields[pg.id]?.[f.key] ?? '').trim()) {
+        setError(`「${pg.label}」の「${f.label}」を入力してください`); return
+      }
+    }
+    setRegenId(pid); setError('')
+    try {
+      const merged = mergeFieldDefaults(pg.id, fields[pg.id] || {})
+      const files = materials[pg.id] || []
+      const prompt = buildBrochurePrompt(pg.id, merged, files.length > 0, { tone, pageNo: idx + 1, totalPages: pages.length, storeName })
+      let photoDataUrl: string | undefined
+      if (files[0]) { photoDataUrl = await brochureCompress(await brochureFileToDataUrl(files[0]), 1200) }
+      const res = await fetch('/api/design/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+        body: JSON.stringify({ prompt, photoDataUrl }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || '作り直しに失敗しました')
+      setImages(prev => ({ ...prev, [pg.id]: data.imageDataUrl }))
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : '作り直しに失敗しました')
+    } finally { setRegenId(null) }
   }
 
   const handleDeliverAll = async () => {
@@ -1285,6 +1316,17 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
                   className="w-full text-xs text-[#6B7280] file:mr-2 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#FFF0F6] file:text-[#E85C97]" />
                 {(materials[p.id]?.length ?? 0) > 0 && <p className="text-[10px] text-[#22c55e] mt-1 font-semibold">✓ {materials[p.id].length}件選択済み</p>}
               </div>
+              {images[p.id] && (
+                <div className="pt-3 border-t border-[#F3F3F3]">
+                  <p className="text-[10px] text-[#6B7280] mb-1.5 font-semibold">現在の仕上がり（上の内容を直して作り直せます）</p>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={images[p.id]} alt={p.label} className="w-full rounded-lg border border-[#EFEFEF]" />
+                  <button type="button" onClick={() => regenerateOne(p.id)} disabled={regenId !== null || generating}
+                    className="mt-2 w-full border border-[#E85C97] text-[#E85C97] text-xs font-bold py-2 rounded-full hover:bg-[#FFF0F6] disabled:opacity-50">
+                    {regenId === p.id ? '作り直し中…' : '🔄 このページだけ作り直す'}
+                  </button>
+                </div>
+              )}
             </div>
           ))}
           {generating ? (
@@ -1297,9 +1339,18 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
               <p className="text-[10px] text-[#ABABAB] mt-1">ページ数によっては少し時間がかかります</p>
             </div>
           ) : (
-            <div className="flex gap-3">
-              <button type="button" onClick={() => { setError(''); setPhase('config') }} className="flex-1 border border-[#EFEFEF] text-[#6B7280] font-semibold py-3 rounded-full hover:bg-[#F8F8FA]">戻る</button>
-              <button type="button" onClick={handleGenerateAll} className="flex-1 bg-[#E85C97] text-white font-bold py-3 rounded-full hover:bg-[#D8477F] shadow-md shadow-red-100">{pages.length}ページを一括制作</button>
+            <div className="space-y-3">
+              <div className="flex gap-3">
+                <button type="button" onClick={() => { setError(''); setPhase('config') }} className="flex-1 border border-[#EFEFEF] text-[#6B7280] font-semibold py-3 rounded-full hover:bg-[#F8F8FA]">戻る</button>
+                <button type="button" onClick={handleGenerateAll} disabled={regenId !== null} className="flex-1 bg-[#E85C97] text-white font-bold py-3 rounded-full hover:bg-[#D8477F] shadow-md shadow-red-100 disabled:opacity-50">
+                  {pages.some(p => images[p.id]) ? `すべて作り直す（全${pages.length}ページ）` : `${pages.length}ページを一括制作`}
+                </button>
+              </div>
+              {pages.length > 0 && pages.every(p => images[p.id]) && (
+                <button type="button" onClick={() => { setError(''); setPhase('result') }} className="w-full bg-[#111111] text-white font-bold py-3 rounded-full hover:bg-[#333333] transition-all">
+                  プレビュー・納品へ進む →
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -1319,15 +1370,25 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
                   </>
                 ) : <div className="aspect-square bg-[#F8F8FA] flex items-center justify-center text-xs text-[#ABABAB]">未生成</div>}
                 <p className="text-[10px] text-[#6B7280] px-2 py-1 font-medium">{i + 1}. {p.label}</p>
+                <button type="button" onClick={() => regenerateOne(p.id)} disabled={regenId !== null || delivering}
+                  className="w-full text-[11px] text-[#E85C97] font-bold py-1.5 border-t border-[#F3F3F3] hover:bg-[#FFF0F6] disabled:opacity-50">
+                  {regenId === p.id ? '作り直し中…' : '🔄 作り直す'}
+                </button>
               </div>
             ))}
           </div>
+          {regenId && <p className="text-[11px] text-[#E85C97] text-center font-semibold">「{pages.find(p => p.id === regenId)?.label}」を作り直しています…</p>}
           <div className="bg-[#FFF7FB] rounded-xl px-4 py-2.5 text-[11px] text-[#6B7280]">
-            この{pages.length}ページで今月の制作回数を <b className="text-[#E85C97]">{pages.length}回</b> 消費します。
+            この{pages.length}ページで今月の制作回数を <b className="text-[#E85C97]">{pages.length}回</b> 消費します。<br />
+            気に入らないページは各画像の「🔄作り直す」で個別に、下の「すべて作り直す」で一括で作り直せます（作り直しは無料・回数は納品時のみ消費）。
           </div>
+          <button type="button" onClick={handleGenerateAll} disabled={delivering || regenId !== null || generating}
+            className="w-full border border-[#E85C97] text-[#E85C97] font-bold py-2.5 rounded-full hover:bg-[#FFF0F6] disabled:opacity-50">
+            {generating ? (progress || '全ページを作り直し中…') : `🔄 すべて作り直す（全${pages.length}ページ）`}
+          </button>
           <div className="flex gap-3">
-            <button type="button" onClick={() => setPhase('input')} disabled={delivering} className="flex-1 border border-[#EFEFEF] text-[#6B7280] font-semibold py-3 rounded-full hover:bg-[#F8F8FA] disabled:opacity-50">入力に戻る</button>
-            <button type="button" onClick={handleDeliverAll} disabled={delivering} className="flex-1 bg-[#E85C97] text-white font-bold py-3 rounded-full hover:bg-[#D8477F] shadow-md shadow-red-100 disabled:opacity-50">
+            <button type="button" onClick={() => setPhase('input')} disabled={delivering || regenId !== null} className="flex-1 border border-[#EFEFEF] text-[#6B7280] font-semibold py-3 rounded-full hover:bg-[#F8F8FA] disabled:opacity-50">✏️ 内容を修正</button>
+            <button type="button" onClick={handleDeliverAll} disabled={delivering || regenId !== null} className="flex-1 bg-[#E85C97] text-white font-bold py-3 rounded-full hover:bg-[#D8477F] shadow-md shadow-red-100 disabled:opacity-50">
               {delivering ? 'Googleドライブに保存中...' : `📤 ${pages.length}ページを一括で依頼する`}
             </button>
           </div>
