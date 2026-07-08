@@ -194,6 +194,22 @@ const TEMPLATES: Template[] = [
   },
 ]
 
+// テンプレ別の素材アップロード欄のラベル・説明。未定義なら汎用ラベル。
+// needed: false のテンプレ（カレンダー等）はアップロード欄自体を非表示にする。
+const MATERIAL_UPLOAD: Record<string, { label: string; hint: string; needed?: boolean }> = {
+  'limited-banner':        { label: '商品写真アップロード（任意）', hint: '割引・セール対象の商品写真があれば添付' },
+  'new-product':           { label: '商品写真アップロード（推奨）', hint: 'シズル感のある新商品の写真' },
+  'product-hero':          { label: '商品写真アップロード（推奨・1点）', hint: '主役となる商品写真を1枚' },
+  'photo-overlay-callout': { label: '料理写真アップロード（推奨）', hint: '写真を全面の背景として使用します' },
+  'menu-grid':             { label: '一番人気の商品写真（任意）', hint: '一番人気メニューの写真があれば添付' },
+  'drink-menu':            { label: '商品写真アップロード（任意）', hint: 'ドリンクの写真があれば添付' },
+  'sweets-menu':           { label: '商品写真アップロード（任意）', hint: 'スイーツ・サイドの写真があれば添付' },
+  'menu-cover':            { label: '店舗・スタッフ写真／ロゴ（任意）', hint: '店舗イメージ・スタッフ写真・ロゴがあれば添付' },
+  'line-qr':              { label: 'QRコード画像アップロード（必須）', hint: 'LINE友だち追加用のQRコード画像を1枚アップロードしてください' },
+  'calendar-schedule':     { label: '', hint: '', needed: false },
+  'vertical-lp':           { label: '店舗・商品写真アップロード（推奨）', hint: '店舗や商品の写真があれば添付' },
+}
+
 function getFilteredTemplates(productionTypes: string[], designFilter: string): Template[] {
   // デザインイメージ条件
   const byDesign = (t: Template) =>
@@ -750,24 +766,33 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
             </Field>
           )}
 
-          <Field label={templateFields ? '商品写真アップロード（推奨）' : '素材アップロード（ロゴ・写真など）'}>
-            <input
-              type="file"
-              multiple
-              accept="image/*,.pdf,.ai"
-              onChange={e => {
-                const files = Array.from(e.target.files ?? [])
-                update('materialFiles', files)
-              }}
-              className="w-full text-sm text-[#6B7280] file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FFF0F6] file:text-[#E85C97] hover:file:bg-red-100"
-            />
-            {form.materialFiles.length > 0 && (
-              <p className="text-xs text-[#22c55e] mt-1 font-semibold">
-                ✓ {form.materialFiles.length}件のファイルを選択済み：{form.materialFiles.map(f => f.name).join(', ')}
-              </p>
-            )}
-            <p className="text-xs text-[#ABABAB] mt-1">jpg/png/ai/pdf・最大10MB</p>
-          </Field>
+          {(() => {
+            const mu = MATERIAL_UPLOAD[form.template_id]
+            // カレンダー等の画像不要テンプレはアップロード欄を非表示
+            if (mu?.needed === false) return null
+            const label = mu?.label || (templateFields ? '商品写真アップロード（推奨）' : '素材アップロード（ロゴ・写真など）')
+            return (
+              <Field label={label}>
+                {mu?.hint && <p className="text-xs text-[#6B7280] mb-1.5">{mu.hint}</p>}
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*,.pdf,.ai"
+                  onChange={e => {
+                    const files = Array.from(e.target.files ?? [])
+                    update('materialFiles', files)
+                  }}
+                  className="w-full text-sm text-[#6B7280] file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FFF0F6] file:text-[#E85C97] hover:file:bg-red-100"
+                />
+                {form.materialFiles.length > 0 && (
+                  <p className="text-xs text-[#22c55e] mt-1 font-semibold">
+                    ✓ {form.materialFiles.length}件のファイルを選択済み：{form.materialFiles.map(f => f.name).join(', ')}
+                  </p>
+                )}
+                <p className="text-xs text-[#ABABAB] mt-1">jpg/png/ai/pdf・最大10MB</p>
+              </Field>
+            )
+          })()}
 
           <Field label="希望納期">
             <div className="space-y-2">
@@ -866,7 +891,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                         </svg>
-                        <p className="text-sm text-[#6B7280]">デザインを制作しています…<br />（十数秒お待ちください）</p>
+                        <p className="text-sm text-[#6B7280]">デザインを制作しています…</p>
                       </div>
                     ) : canvasDataUrl ? (
                       <div className="rounded-2xl overflow-hidden border border-[#EFEFEF] bg-[#F8F8FA]">
