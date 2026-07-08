@@ -473,7 +473,7 @@ export function buildBrochurePrompt(
   templateId: string,
   f: Record<string, string>,
   hasPhoto: boolean,
-  ctx: { tone: string; pageNo: number; totalPages: number; storeName: string },
+  ctx: { tone: string; pageNo: number; totalPages: number; storeName: string; size?: string },
 ): string {
   const base = buildPrompt(templateId, f, hasPhoto)
   const t = BROCHURE_TONES[ctx.tone] || BROCHURE_TONES['ナチュラル']
@@ -482,6 +482,7 @@ export function buildBrochurePrompt(
     '',
     '━━ パンフレット統一デザイン指定（全ページ共通・最優先で厳守）━━',
     `■これは「${ctx.storeName || 'お店'}」のご案内パンフレット 全${ctx.totalPages}ページのうち ${ctx.pageNo}ページ目です。全ページで背景・配色・フォント・装飾を完全に統一し、シリーズとして違和感のない見た目にしてください。`,
+    ...(ctx.size ? [`■出力サイズ：${ctx.size} に統一（全ページ同じサイズ・アスペクト比で作成すること。ベース指定より優先）。`] : []),
     `■背景：${t.bg}`,
     `■装飾：${t.decoration}`,
     `■フォント：${t.font}`,

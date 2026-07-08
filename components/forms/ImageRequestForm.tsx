@@ -1097,6 +1097,7 @@ function brochureFileToDataUrl(file: File): Promise<string> {
 function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null; onCancel: () => void }) {
   const [phase, setPhase] = useState<'config' | 'input' | 'result' | 'done'>('config')
   const [tone, setTone] = useState('ナチュラル')
+  const [brochureSize, setBrochureSize] = useState('正方形(1080x1080px)') // 全ページ共通の画像サイズ
   const [storeName, setStoreName] = useState('')
   const [selected, setSelected] = useState<string[]>(BROCHURE_PAGES.map(p => p.id))
   const [fields, setFields] = useState<Record<string, Record<string, string>>>({})
@@ -1139,7 +1140,7 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
         setProgress(`${i + 1}/${total}ページ目「${pg.label}」を制作中…`)
         const merged = mergeFieldDefaults(pg.id, fields[pg.id] || {})
         const files = materials[pg.id] || []
-        const prompt = buildBrochurePrompt(pg.id, merged, files.length > 0, { tone, pageNo: i + 1, totalPages: total, storeName })
+        const prompt = buildBrochurePrompt(pg.id, merged, files.length > 0, { tone, pageNo: i + 1, totalPages: total, storeName, size: brochureSize })
         let photoDataUrl: string | undefined
         if (files[0]) { photoDataUrl = await brochureCompress(await brochureFileToDataUrl(files[0]), 1200) }
         const res = await fetch('/api/design/generate', {
@@ -1171,7 +1172,7 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
     try {
       const merged = mergeFieldDefaults(pg.id, fields[pg.id] || {})
       const files = materials[pg.id] || []
-      const prompt = buildBrochurePrompt(pg.id, merged, files.length > 0, { tone, pageNo: idx + 1, totalPages: pages.length, storeName })
+      const prompt = buildBrochurePrompt(pg.id, merged, files.length > 0, { tone, pageNo: idx + 1, totalPages: pages.length, storeName, size: brochureSize })
       let photoDataUrl: string | undefined
       if (files[0]) { photoDataUrl = await brochureCompress(await brochureFileToDataUrl(files[0]), 1200) }
       const res = await fetch('/api/design/generate', {
@@ -1207,7 +1208,7 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
         body: JSON.stringify({
           images: items,
           imageType: 'パンフレット',
-          imageSize: '正方形(1080x1080px)',
+          imageSize: brochureSize,
           brochureTitle: `${storeName} パンフレット`,
         }),
       })
@@ -1250,18 +1251,38 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
             </div>
           </div>
           <div>
-            <label className="text-xs font-bold text-[#111111] block mb-1.5">作るページを選択（{selected.length}ページ）</label>
-            <p className="text-[11px] text-[#6B7280] mb-2">選んだページ数分、今月の制作回数（月10回）を消費します。</p>
+            <label className="text-xs font-bold text-[#111111] block mb-1.5">画像サイズ（全ページ共通）</label>
+            <div className="flex flex-wrap gap-2">
+              {IMAGE_SIZES.map(s => (
+                <button key={s.value} type="button" onClick={() => setBrochureSize(s.value)}
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${brochureSize === s.value ? 'bg-[#E85C97] text-white border-[#E85C97]' : 'bg-white text-[#6B7280] border-[#EFEFEF] hover:border-[#E85C97]'}`}>
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="text-xs font-bold text-[#111111] block mb-1.5">作るページ・テンプレートを選択（{selected.length}ページ）</label>
+            <p className="text-[11px] text-[#6B7280] mb-2">各ページの見本を確認して選んでください。選んだページ数分、今月の制作回数（月10回）を消費します。</p>
             <div className="space-y-2">
               {BROCHURE_PAGES.map(p => {
                 const on = selected.includes(p.id)
                 const no = pages.findIndex(x => x.id === p.id) + 1
+                const ref = TEMPLATES.find(t => t.id === p.id)?.referenceImage
                 return (
                   <button key={p.id} type="button" onClick={() => toggle(p.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl border transition-all ${on ? 'border-[#E85C97] bg-[#FFF7FB]' : 'border-[#EFEFEF] bg-white hover:border-[#E85C97]/40'}`}>
-                    <span className="text-lg">{p.icon}</span>
-                    <span className={`flex-1 text-left text-sm font-medium ${on ? 'text-[#111111]' : 'text-[#6B7280]'}`}>{p.label}</span>
-                    {on && <span className="text-[11px] text-white bg-[#E85C97] w-5 h-5 rounded-full flex items-center justify-center font-bold">{no}</span>}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border transition-all ${on ? 'border-[#E85C97] bg-[#FFF7FB]' : 'border-[#EFEFEF] bg-white hover:border-[#E85C97]/40'}`}>
+                    {ref ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={ref} alt={p.label} className="w-14 h-14 rounded-lg object-cover border border-[#EFEFEF] flex-shrink-0" />
+                    ) : <span className="text-lg w-14 text-center flex-shrink-0">{p.icon}</span>}
+                    <span className="flex-1 text-left">
+                      <span className={`block text-sm font-medium ${on ? 'text-[#111111]' : 'text-[#6B7280]'}`}>{p.icon} {p.label}</span>
+                      <span className="block text-[10px] text-[#ABABAB] mt-0.5">テンプレート見本</span>
+                    </span>
+                    {on
+                      ? <span className="text-[11px] text-white bg-[#E85C97] w-5 h-5 rounded-full flex items-center justify-center font-bold flex-shrink-0">{no}</span>
+                      : <span className="text-[10px] text-[#ABABAB] flex-shrink-0">選ぶ</span>}
                   </button>
                 )
               })}
