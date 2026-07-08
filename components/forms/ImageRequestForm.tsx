@@ -654,7 +654,23 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
 
       {/* Step 2: 詳細入力 */}
       {step === 2 && (
-        <div className="space-y-5">
+        <div className="md:flex md:gap-6 md:items-start">
+          {/* 選択中テンプレの見本（PC=左サイド固定表示／スマホ=上部）。どんなデザインを作っているか常に見える */}
+          {selectedTemplate?.referenceImage && (
+            <div className="md:w-[38%] md:flex-shrink-0 mb-5 md:mb-0 md:sticky md:top-4">
+              <p className="text-xs font-bold text-[#111111] mb-2">📋 選択中のテンプレート：{selectedTemplate.name}</p>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={selectedTemplate.referenceImage}
+                alt={selectedTemplate.name}
+                className="w-full rounded-xl border border-[#EFEFEF] shadow-sm"
+              />
+              <p className="text-[10px] text-[#ABABAB] mt-1.5 leading-relaxed">
+                ※ 仕上がりの見本イメージです。実際のデザインは、入力いただいた内容をもとにAIが制作します。
+              </p>
+            </div>
+          )}
+          <div className="flex-1 min-w-0 space-y-5">
           <Field label="画像サイズ" required>
             <div className="space-y-2">
               {IMAGE_SIZES.map(s => (
@@ -823,6 +839,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
               className={textareaClass}
             />
           </Field>
+          </div>
         </div>
       )}
 
