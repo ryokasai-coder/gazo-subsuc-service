@@ -195,20 +195,16 @@ const TEMPLATES: Template[] = [
 ]
 
 function getFilteredTemplates(productionTypes: string[], designFilter: string): Template[] {
-  return TEMPLATES.filter(t => {
-    if (designFilter) {
-      if (!t.designTags.includes(designFilter) && !t.designTags.includes('お任せ')) return false
-    }
-    return true
-  }).sort((a, b) => {
-    const aMatch = productionTypes.filter(pt =>
-      a.productionTags.some(tag => pt.includes(tag) || tag.includes(pt))
-    ).length
-    const bMatch = productionTypes.filter(pt =>
-      b.productionTags.some(tag => pt.includes(tag) || tag.includes(pt))
-    ).length
-    return bMatch - aMatch
-  })
+  // デザインイメージ条件
+  const byDesign = (t: Template) =>
+    !designFilter || t.designTags.includes(designFilter) || t.designTags.includes('お任せ')
+  // 制作内容条件（選択した制作内容に一致するテンプレのみ）
+  const byProduction = (t: Template) =>
+    productionTypes.length === 0 ||
+    productionTypes.some(pt => t.productionTags.some(tag => pt.includes(tag) || tag.includes(pt)))
+  const matched = TEMPLATES.filter(t => byDesign(t) && byProduction(t))
+  // 制作内容に一致するテンプレが1件も無い場合のみ、デザイン条件のみの全件にフォールバック（0件回避）
+  return matched.length > 0 ? matched : TEMPLATES.filter(byDesign)
 }
 
 export interface RequestFormData {
@@ -279,33 +275,6 @@ function Field({ label, required, children }: {
   )
 }
 
-function CheckGroup({ options, selected, onChange }: {
-  options: string[]
-  selected: string[]
-  onChange: (v: string[]) => void
-}) {
-  const toggle = (val: string) => {
-    onChange(selected.includes(val) ? selected.filter(x => x !== val) : [...selected, val])
-  }
-  return (
-    <div className="flex flex-wrap gap-2">
-      {options.map(opt => (
-        <button
-          key={opt}
-          type="button"
-          onClick={() => toggle(opt)}
-          className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
-            selected.includes(opt)
-              ? 'bg-[#E85C97] text-white border-[#E85C97] shadow-sm'
-              : 'bg-white text-[#6B7280] border-[#EFEFEF] hover:border-[#E85C97] hover:text-[#E85C97]'
-          }`}
-        >
-          {opt}
-        </button>
-      ))}
-    </div>
-  )
-}
 
 function TemplateCard({ template, selected, onSelect }: {
   template: Template
@@ -467,7 +436,13 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
     setError(''); return true
   }
 
-  const handleNext = () => { if (validate()) setStep(s => s + 1) }
+  const handleNext = () => {
+    if (!validate()) return
+    // AI制作テンプレは、詳細入力(step2)→プレビュー(step3)に進む時点で自動的に制作を開始する
+    const startGeneration = step === 2 && isAITemplate
+    setStep(s => s + 1)
+    if (startGeneration) handleGenerate()
+  }
 
   // 画像を圧縮してVercel 4.5MB制限に対応
   const compressImage = (dataUrl: string, maxWidth = 1080): Promise<string> => {
@@ -554,11 +529,11 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <label className="text-xs font-bold text-[#111111]">
-              制作内容を選択（複数可） <span className="text-[#E85C97]">*</span>
+              制作内容を選択（1つ） <span className="text-[#E85C97]">*</span>
             </label>
-            {form.production_types.length > 0 && (
+            {form.production_types[0] && (
               <span className="text-xs text-[#E85C97] font-semibold bg-[#FFF0F6] px-2 py-0.5 rounded-full">
-                {form.production_types.length}件選択中
+                {form.production_types[0]}
               </span>
             )}
           </div>
@@ -568,18 +543,41 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                 <p className="text-[10px] font-bold text-[#ABABAB] uppercase tracking-widest mb-1.5">
                   {cat.label}
                 </p>
-                <CheckGroup
-                  options={cat.types}
-                  selected={form.production_types}
-                  onChange={v => update('production_types', v)}
-                />
+                <div className="flex flex-wrap gap-2">
+                  {cat.types.map(opt => (
+                    <button
+                      key={opt}
+                      type="button"
+                      onClick={() => setForm(prev => ({
+                        ...prev,
+                        production_types: [opt],
+                        production_types_other: '',
+                        template_id: '',
+                        template_name: '',
+                      }))}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                        form.production_types[0] === opt
+                          ? 'bg-[#E85C97] text-white border-[#E85C97] shadow-sm'
+                          : 'bg-white text-[#6B7280] border-[#EFEFEF] hover:border-[#E85C97] hover:text-[#E85C97]'
+                      }`}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
           <input
             type="text"
             value={form.production_types_other}
-            onChange={e => update('production_types_other', e.target.value)}
+            onChange={e => setForm(prev => ({
+              ...prev,
+              production_types_other: e.target.value,
+              production_types: [],
+              template_id: '',
+              template_name: '',
+            }))}
             placeholder="その他（上記にない場合は自由入力）"
             className={inputClass}
           />
@@ -856,13 +854,21 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                 <p className="text-xs font-bold text-[#111111] mb-1">完成デザインプレビュー</p>
                 <p className="text-[10px] text-[#6B7280] mb-3">
                   {isAITemplate
-                    ? 'ご入力内容をもとにデザインを制作します。仕上がりイメージをご確認のうえ、気になる場合は作り直しをご依頼いただけます（1回のご依頼につき最大3回まで）。'
+                    ? 'ご入力内容をもとにデザインを制作しています。仕上がりイメージをご確認のうえ、気になる場合は作り直せます（1回のご依頼につき最大3回まで）。'
                     : 'ご入力内容をもとにデザインを制作しています。「依頼する」ボタンを押すと、このデザインで制作を確定します。'}
                 </p>
                 {isAITemplate ? (
-                  /* AI生成パネル */
+                  /* AI制作パネル：詳細入力の「次へ」で自動的に制作開始 */
                   <div className="space-y-3">
-                    {canvasDataUrl ? (
+                    {generating ? (
+                      <div className="aspect-square rounded-2xl border-2 border-dashed border-[#EFEFEF] bg-[#F8F8FA] flex flex-col items-center justify-center text-center p-6">
+                        <svg className="animate-spin w-8 h-8 text-[#E85C97] mb-3" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        <p className="text-sm text-[#6B7280]">デザインを制作しています…<br />（十数秒お待ちください）</p>
+                      </div>
+                    ) : canvasDataUrl ? (
                       <div className="rounded-2xl overflow-hidden border border-[#EFEFEF] bg-[#F8F8FA]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={canvasDataUrl} alt="デザインプレビュー" className="w-full" />
@@ -870,29 +876,27 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                     ) : (
                       <div className="aspect-square rounded-2xl border-2 border-dashed border-[#EFEFEF] bg-[#F8F8FA] flex flex-col items-center justify-center text-center p-6">
                         <span className="text-4xl mb-2">🎨</span>
-                        <p className="text-sm text-[#6B7280]">下のボタンを押すと<br />デザインを制作します</p>
+                        <p className="text-sm text-[#6B7280] mb-3">デザインがまだ制作されていません</p>
+                        <button
+                          type="button"
+                          onClick={handleGenerate}
+                          disabled={generationCount >= MAX_GENERATIONS}
+                          className="bg-[#111111] text-white font-bold px-6 py-2.5 rounded-full hover:bg-[#333333] transition-all disabled:opacity-50 text-sm"
+                        >
+                          デザインを制作する
+                        </button>
                       </div>
                     )}
-                    <button
-                      type="button"
-                      onClick={handleGenerate}
-                      disabled={generating || generationCount >= MAX_GENERATIONS}
-                      className="w-full bg-[#111111] text-white font-bold py-3.5 rounded-full hover:bg-[#333333] transition-all disabled:opacity-50"
-                    >
-                      {generating ? (
-                        <span className="flex items-center justify-center gap-2">
-                          <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                          </svg>
-                          デザインを制作しています…
-                        </span>
-                      ) : canvasDataUrl ? (
-                        `作り直す（残り${MAX_GENERATIONS - generationCount}回）`
-                      ) : (
-                        'デザインを制作する'
-                      )}
-                    </button>
+                    {canvasDataUrl && !generating && (
+                      <button
+                        type="button"
+                        onClick={handleGenerate}
+                        disabled={generationCount >= MAX_GENERATIONS}
+                        className="w-full bg-white border border-[#EFEFEF] text-[#111111] font-bold py-3 rounded-full hover:bg-[#F8F8FA] transition-all disabled:opacity-50"
+                      >
+                        作り直す（残り{MAX_GENERATIONS - generationCount}回）
+                      </button>
+                    )}
                     {generationCount >= MAX_GENERATIONS && (
                       <p className="text-[11px] text-[#ABABAB] text-center">
                         作り直しは{MAX_GENERATIONS}回まで承っております。このデザインで依頼するか、「戻る」で入力を調整してください。
