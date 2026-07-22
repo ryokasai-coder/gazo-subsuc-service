@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
   company_name TEXT NOT NULL,
   contact_name TEXT,
   phone TEXT,
+  address TEXT,                    -- 店舗住所（画像制作時の自動入力に使用）
   plan_type TEXT DEFAULT 'basic',
   is_payment_registered BOOLEAN DEFAULT FALSE,
   is_active BOOLEAN DEFAULT TRUE,

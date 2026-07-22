@@ -61,6 +61,7 @@ export default function ApplyPage() {
     email: '',
     emailConfirm: '',
     phone: '',
+    address: '',
     password: '',
     passwordConfirm: '',
   })
@@ -120,6 +121,7 @@ export default function ApplyPage() {
           companyName: form.companyName,
           contactName: form.contactName,
           phone: form.phone,
+          address: form.address,
         }),
       })
       const data = await res.json()
@@ -192,16 +194,21 @@ export default function ApplyPage() {
               )}
               <div className="space-y-4">
                 {[
-                  { name: 'companyName', label: '会社名・屋号', placeholder: '株式会社〇〇', type: 'text' },
+                  { name: 'companyName', label: '会社名・屋号（店舗名）', placeholder: '株式会社〇〇', type: 'text' },
                   { name: 'contactName', label: '担当者名', placeholder: '山田 太郎', type: 'text' },
                   { name: 'email', label: 'メールアドレス', placeholder: 'example@company.com', type: 'email' },
                   { name: 'emailConfirm', label: 'メールアドレス（確認）', placeholder: 'example@company.com', type: 'email' },
                   { name: 'phone', label: '電話番号', placeholder: '090-1234-5678', type: 'tel' },
+                  { name: 'address', label: '店舗住所', placeholder: '例：東京都〇〇区〇〇1-2-3', type: 'text', optional: true },
                   { name: 'password', label: 'パスワード', placeholder: '8文字以上', type: 'password' },
                   { name: 'passwordConfirm', label: 'パスワード（確認）', placeholder: 'パスワードを再入力', type: 'password' },
-                ].map(({ name, label, placeholder, type }) => (
+                ].map(({ name, label, placeholder, type, optional }) => (
                   <div key={name}>
-                    <label className={labelClass}>{label} <span className="text-[#E85C97]">*</span></label>
+                    <label className={labelClass}>
+                      {label} {optional
+                        ? <span className="text-[#ABABAB] font-normal">（任意）</span>
+                        : <span className="text-[#E85C97]">*</span>}
+                    </label>
                     <input
                       type={type}
                       name={name}
@@ -210,6 +217,11 @@ export default function ApplyPage() {
                       placeholder={placeholder}
                       className={inputClass}
                     />
+                    {name === 'address' && (
+                      <p className="text-[11px] text-[#ABABAB] mt-1">
+                        画像制作時に、住所を自動入力できるようになります（後から変更も可能）。
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>

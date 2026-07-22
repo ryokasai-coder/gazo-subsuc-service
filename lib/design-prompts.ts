@@ -189,6 +189,80 @@ export const TEMPLATE_FIELDS: Record<string, PromptField[]> = {
     { key: 'instagram', label: 'Instagram', placeholder: '例：@cafe_morinoterrace', maxLength: 24 },
     { key: 'sns_promo', label: 'SNS誘導文', placeholder: '例：最新情報はInstagramで更新中！', maxLength: 24 },
   ],
+  // ─── サロン系（美容・リラク）─────────────────────────────────────
+  // スパ・サロン新規オープン告知（高級感）
+  'spa-open': [
+    { key: 'salon_name', label: 'サロン名・店名', placeholder: '例：SPA & MASSAGE セカンドハウス', required: true, maxLength: 18 },
+    { key: 'catch_copy', label: 'キャッチコピー', placeholder: '例：極上のスパ＆マッサージを体験', required: true, maxLength: 28 },
+    { key: 'status', label: '大きく見せる文言', placeholder: '例：OPEN', default: 'OPEN', maxLength: 12 },
+    { key: 'open_date', label: 'オープン日', placeholder: '例：10.31 THU', maxLength: 16 },
+    { key: 'strength_1', label: '強み①（丸バッジ）', placeholder: '例：駅徒歩5分', default: '通いやすい', maxLength: 14 },
+    { key: 'strength_2', label: '強み②（丸バッジ）', placeholder: '例：会員制で安心', default: '安心できる', maxLength: 14 },
+    { key: 'strength_3', label: '強み③（丸バッジ）', placeholder: '例：確かな技術', default: '満足できる', maxLength: 14 },
+    { key: 'lead_text', label: '案内文（最大2行）', type: 'textarea', placeholder: '例：オープンを記念してお得なキャンペーンをご用意しました。', maxLength: 30, maxLines: 2 },
+    { key: 'offer_1', label: '特典①（内容）', placeholder: '例：初回50%OFF', maxLength: 20 },
+    { key: 'offer_2', label: '特典②（内容）', placeholder: '例：ペア予約でドリンク無料', maxLength: 20 },
+    { key: 'offer_deadline', label: '特典の期限', placeholder: '例：11月末まで', maxLength: 18 },
+    { key: 'reservation_label', label: 'ご予約の案内文', placeholder: '例：ご予約専用（QRから）', default: 'ご予約はこちら', maxLength: 16 },
+  ],
+  // エステ・サロン集客キャンペーン
+  'salon-campaign': [
+    { key: 'color_theme', label: '配色', type: 'select', options: ['ピンク系', 'ベージュ・ゴールド系'], default: 'ピンク系' },
+    { key: 'salon_name', label: 'サロン名', placeholder: '例：ビューティーサロン ルミエ', required: true, maxLength: 18 },
+    { key: 'target_copy', label: '上部の一言（誰向けか）', placeholder: '例：大人女性のための', default: '大人女性のための', maxLength: 16 },
+    { key: 'main_title', label: 'メインタイトル', placeholder: '例：エステで叶える', required: true, maxLength: 18 },
+    { key: 'sub_title', label: '強調サブタイトル', placeholder: '例：うるおい肌と自信あふれる毎日へ', maxLength: 26 },
+    { key: 'feature_1', label: '特徴①', placeholder: '例：完全個室のプライベート空間', default: '完全個室', maxLength: 20 },
+    { key: 'feature_2', label: '特徴②', placeholder: '例：経験豊富なエステティシャン', default: '経験豊富な担当者', maxLength: 20 },
+    { key: 'feature_3', label: '特徴③', placeholder: '例：肌質に合わせたオーダーメイド', default: 'オーダーメイド施術', maxLength: 20 },
+    { key: 'course_name', label: '初回限定コース名', placeholder: '例：フェイシャル体験コース', maxLength: 20 },
+    { key: 'regular_price', label: '通常価格', placeholder: '例：¥11,000', maxLength: 12 },
+    { key: 'special_price', label: '特別価格', placeholder: '例：¥3,300', maxLength: 12 },
+    { key: 'price_note', label: '価格の注記', placeholder: '例：お一人様1回限り・併用不可', maxLength: 24 },
+    { key: 'tel', label: '電話番号', placeholder: '例：03-1234-5678', maxLength: 18 },
+    { key: 'open_hours', label: '受付時間', placeholder: '例：10:00〜20:00', maxLength: 22 },
+    { key: 'closed_day', label: '定休日', placeholder: '例：不定休', maxLength: 16 },
+    { key: 'address', label: '住所', placeholder: '例：東京都〇〇区〇〇1-2-3', maxLength: 30 },
+  ],
+  // ─── テイクアウト・宅配系 ─────────────────────────────────────
+  // お弁当・テイクアウトメニュー（和風・高級感）
+  'bento-menu': [
+    { key: 'shop_name', label: '店名', placeholder: '例：和み亭', required: true, maxLength: 16 },
+    { key: 'item_type', label: '種別の見出し', placeholder: '例：お弁当メニュー', default: 'お弁当メニュー', maxLength: 14 },
+    { key: 'menu_items', label: 'お弁当（1行に「商品名 価格 説明」／最大4行）', type: 'textarea', placeholder: '特上カルビ弁当 2200 カルビの旨みを贅沢に\n幕の内弁当 1200 彩り豊かな定番', hint: '1行1商品・最大4行', maxLength: 30, maxLines: 4 },
+    { key: 'note_text', label: '補足（任意）', placeholder: '例：※ご飯は白米・もち麦米が選べます', maxLength: 30 },
+    { key: 'reception_time', label: '受付時間', placeholder: '例：10:00〜19:00', maxLength: 20 },
+    { key: 'handoff_time', label: 'お渡し時間', placeholder: '例：11:00〜20:00', maxLength: 20 },
+    { key: 'tel', label: '電話番号', placeholder: '例：03-1234-5678', maxLength: 18 },
+    { key: 'closed_day', label: '定休日', placeholder: '例：日曜', maxLength: 16 },
+    { key: 'address', label: '住所', placeholder: '例：東京都〇〇区〇〇1-2-3', maxLength: 30 },
+  ],
+  // 宅配弁当メニュー（ナチュラル）
+  'bento-delivery': [
+    { key: 'shop_name', label: '店名', placeholder: '例：和みごはん', required: true, maxLength: 16 },
+    { key: 'main_catch', label: 'メインキャッチ', placeholder: '例：できたて手作りお弁当はじめました', required: true, maxLength: 22 },
+    { key: 'delivery_note', label: '宅配バッジの文言', placeholder: '例：1個から宅配承ります', default: '1個から宅配承ります', maxLength: 18 },
+    { key: 'lead_text', label: '説明文（最大2行）', type: 'textarea', placeholder: '例：栄養バランスを考えた手作り弁当をお届け。会議用にも。', maxLength: 30, maxLines: 2 },
+    { key: 'menu_items', label: 'お弁当（1行に「商品名 価格」／最大6行）', type: 'textarea', placeholder: '日替わり弁当 650\n唐揚げ弁当 700', hint: '1行1商品・最大6行', maxLength: 24, maxLines: 6 },
+    { key: 'info_1', label: '案内①', placeholder: '例：配達エリア：店舗から3km以内', default: '配達エリアあり', maxLength: 24 },
+    { key: 'info_2', label: '案内②', placeholder: '例：定期割引あります', default: '定期割引あり', maxLength: 24 },
+    { key: 'info_3', label: '案内③', placeholder: '例：週5日以上のご注文で1個無料', maxLength: 24 },
+    { key: 'tel', label: '電話番号', placeholder: '例：03-1234-5678', maxLength: 18 },
+    { key: 'open_hours', label: '営業時間', placeholder: '例：9:00〜18:00', maxLength: 20 },
+    { key: 'closed_day', label: '定休日', placeholder: '例：土日祝', maxLength: 16 },
+    { key: 'address', label: '住所', placeholder: '例：東京都〇〇区〇〇1-2-3', maxLength: 30 },
+  ],
+  // LINE公式アカウント 友だち登録案内（手順説明）
+  'line-register-guide': [
+    { key: 'account_id', label: 'LINE ID（@から）', placeholder: '例：@sample_salon', required: true, maxLength: 24 },
+    { key: 'benefit_text', label: '登録メリットの一言', placeholder: '例：イベント情報やプレゼントをGET！', default: 'お得な情報やクーポンをGET！', maxLength: 24 },
+    { key: 'cta_text', label: '呼びかけ文', placeholder: '例：友だち登録募集中！', default: '友だち登録募集中！', maxLength: 18 },
+    { key: 'step1_title', label: '手順①の見出し', placeholder: '例：「QRコード」で登録', default: '「QRコード」で登録', maxLength: 20 },
+    { key: 'step1_desc', label: '手順①の説明（最大2行）', type: 'textarea', placeholder: '例：友だち追加→QRコードを選び、右のコードを読み取る', maxLength: 28, maxLines: 2 },
+    { key: 'step2_title', label: '手順②の見出し', placeholder: '例：「ID検索」で登録', default: '「ID検索」で登録', maxLength: 20 },
+    { key: 'step2_desc', label: '手順②の説明（最大2行）', type: 'textarea', placeholder: '例：友だち追加→検索を選び、上のIDで検索する', maxLength: 28, maxLines: 2 },
+    { key: 'company_name', label: '店舗名・企業名', placeholder: '例：ビューティーサロン ルミエ', maxLength: 20 },
+  ],
 }
 
 // フォーム入力(fields)＋各欄のdefaultをマージし、必ず入力制限を適用した実効値を返す
@@ -428,6 +502,131 @@ export function buildPrompt(templateId: string, f: Record<string, string>, hasPh
       hasPhoto ? '■添付画像をQRコード・外観写真として使用してください。' : '',
     ].filter(Boolean).join('\n')
   }
+  // ─── サロン系：スパ・サロン新規オープン告知（高級感）───
+  if (templateId === 'spa-open') {
+    const strengths = [f.strength_1 || '通いやすい', f.strength_2 || '安心できる', f.strength_3 || '満足できる']
+    const offers = [f.offer_1, f.offer_2].filter(Boolean)
+    return [
+      'サロン・スパ向けの新規オープン告知ポスター(正方形1080×1080)を作成してください。',
+      hasPhoto ? '■背景：添付の上質な内装・施術写真を全面に使用（白基調・清潔感）。' : '■背景：白いカーテンや木製家具、キャンドル、観葉植物のある上質で清潔感のあるサロン内装。',
+      '■配置（この配置を厳守。文字は各エリア内に収め、はみ出さないこと）',
+      `・右上：丸型ロゴバッジ「${f.salon_name}」`,
+      `・左上：縦書きの上品なキャッチコピー「${f.catch_copy}」`,
+      `・右側：円形バッジ3つ（強み訴求）「${strengths[0]}」「${strengths[1]}」「${strengths[2]}」`,
+      `・中央〜左下：超大型文字「${f.status || 'OPEN'}」${f.open_date ? `＋オープン日「${f.open_date}」` : ''}`,
+      `・オレンジの角丸バッジ「${f.reservation_label || 'ご予約はこちら'}」＋QRアイコン`,
+      f.lead_text ? `・案内文「${f.lead_text}」（明朝系・2行まで）` : '',
+      offers.length ? `・最下部：特典カード（グレーヘッダー＋番号バッジ）：${offers.map((o, i) => `特典${i + 1}「${o}」`).join('／')}${f.offer_deadline ? `（期間限定：${f.offer_deadline}まで）` : ''}` : '',
+      '■デザイン：フォント=見出し英字はセリフ細字（高級感）・日本語は明朝系・数字は極太。カラー=ベージュ・グレージュ・オレンジ（アクセント）・ホワイト。上質・落ち着き・非日常・女性向けリラクゼーション。',
+      '■日本語・数字・記号は正確に描画し、指定以外の文字や見切れは入れないこと。',
+      hasPhoto ? '■添付画像をサロンの内装・施術イメージ写真として使用してください。' : '',
+    ].filter(Boolean).join('\n')
+  }
+  // ─── サロン系：エステ・サロン集客キャンペーン ───
+  if (templateId === 'salon-campaign') {
+    const isPink = (f.color_theme || 'ピンク系') === 'ピンク系'
+    const palette = isPink ? 'やわらかいピンク・白・ローズ' : 'ベージュ・ゴールド・白・ブラウン'
+    const infos = [
+      f.tel && `TEL：${f.tel}`,
+      f.open_hours && `受付：${f.open_hours}`,
+      f.closed_day && `定休：${f.closed_day}`,
+      f.address && `住所：${f.address}`,
+    ].filter(Boolean).join(' ／ ')
+    return [
+      'エステ・美容サロン向けの新規集客キャンペーンポスター(縦長1080×1350)を作成してください。',
+      hasPhoto ? '■背景：上部に添付のフェイシャル施術を受ける女性の写真を大きく配置。下地は単色。' : '■背景：上部にフェイシャルエステを受ける女性のクローズアップ。下地はやわらかい単色。',
+      `■配色テーマ：${palette}（${f.color_theme || 'ピンク系'}）。`,
+      '■配置（上から順・この配置を厳守。文字は各エリア内に収め、はみ出さないこと）',
+      `・上部リボン：「${f.target_copy || '大人女性のための'}」`,
+      `・メインタイトル「${f.main_title}」${f.sub_title ? `＋強調大文字「${f.sub_title}」` : ''}`,
+      `・サロン名帯「${f.salon_name}」`,
+      `・丸アイコン3点：「${f.feature_1 || '完全個室'}」「${f.feature_2 || '経験豊富な担当者'}」「${f.feature_3 || 'オーダーメイド施術'}」`,
+      f.course_name ? `・キャンペーン帯：「初めての方限定」＋コース名「${f.course_name}」` : '・キャンペーン帯：「初めての方限定」',
+      (f.regular_price || f.special_price) ? `・価格：${f.regular_price ? `通常価格「${f.regular_price}」→` : ''}特別価格「${f.special_price || ''}」を大きく強調` : '',
+      f.price_note ? `・注記「${f.price_note}」（小さめ）` : '',
+      infos ? `・最下部：店舗情報「${infos}」＋予約QRコード` : '・最下部：予約QRコード',
+      '■デザイン：フォント=見出しは丸ゴシック太字・英字ロゴはセリフ細字。上質・清潔感・女性向け・信頼感。',
+      '■日本語・数字・記号（価格・電話・住所）は正確に描画し、指定以外の文字や見切れは入れないこと。',
+      hasPhoto ? '■添付画像を施術イメージ写真として使用してください。' : '',
+    ].filter(Boolean).join('\n')
+  }
+  // ─── テイクアウト系：お弁当・テイクアウトメニュー（和風・高級感）───
+  if (templateId === 'bento-menu') {
+    const menuLines = (f.menu_items || '')
+      .split('\n').map(l => l.trim()).filter(Boolean).slice(0, 4)
+      .map(l => {
+        const p = l.split(/\s+/)
+        return p.length >= 3 ? `${p[0]}／${p[1]}円／${p.slice(2).join(' ')}` : l
+      }).map(l => `・${l}`).join('\n')
+    const infos = [
+      f.tel && `TEL：${f.tel}`,
+      f.reception_time && `受付：${f.reception_time}`,
+      f.handoff_time && `お渡し：${f.handoff_time}`,
+      f.closed_day && `定休：${f.closed_day}`,
+      f.address && `住所：${f.address}`,
+    ].filter(Boolean).join(' ／ ')
+    return [
+      'テイクアウト向けの和風・高級感あるお弁当メニュー表(正方形1080×1080)を作成してください。',
+      '■背景：黒基調＋和のテクスチャ。落ち着いた重厚感。',
+      hasPhoto ? '■中央〜右：添付のお弁当写真を大きく（複数あれば斜めに配置し、それぞれ美味しそうに）。' : '■中央〜右：お弁当を美味しそうに大きく配置。',
+      '■配置（この配置を厳守。文字は各エリア内に収め、はみ出さないこと）',
+      `・左上：筆文字風の店名「${f.shop_name}」＋見出し「${f.item_type || 'お弁当メニュー'}」`,
+      menuLines ? `・商品リスト（商品名・価格・説明を整理して表示）：\n${menuLines}` : '',
+      f.note_text ? `・補足「${f.note_text}」（小さめ）` : '',
+      infos ? `・最下部帯：店舗情報「${infos}」＋注文QRコード` : '・最下部帯：注文QRコード',
+      '■デザイン：フォント=店名は筆文字風・メニュー名はゴシック太字・価格は赤系ボックス。カラー=黒・金・赤茶。高級焼肉・職人・重厚感・食欲喚起。',
+      '■日本語・数字・記号（商品名・価格・電話・住所）は正確に描画し、指定以外の文字や見切れは入れないこと。',
+      hasPhoto ? '■添付画像をお弁当写真として使用してください。' : '',
+    ].filter(Boolean).join('\n')
+  }
+  // ─── テイクアウト系：宅配弁当メニュー（ナチュラル）───
+  if (templateId === 'bento-delivery') {
+    const menuLines = (f.menu_items || '')
+      .split('\n').map(l => l.trim()).filter(Boolean).slice(0, 6)
+      .map(l => {
+        const p = l.split(/\s+/)
+        return p.length >= 2 ? `${p[0]}／${p.slice(1).join(' ')}円` : l
+      }).map(l => `・${l}`).join('\n')
+    const infos = [
+      f.tel && `TEL：${f.tel}`,
+      f.open_hours && `営業：${f.open_hours}`,
+      f.closed_day && `定休：${f.closed_day}`,
+      f.address && `住所：${f.address}`,
+    ].filter(Boolean).join(' ／ ')
+    return [
+      '宅配・テイクアウト向けのナチュラルな手作り弁当メニュー(正方形1080×1080)を作成してください。',
+      '■背景：クリーム〜ブラウン系のあたたかい配色。木目テーブルの雰囲気。',
+      '■配置（この配置を厳守。文字は各エリア内に収め、はみ出さないこと）',
+      `・中央帯：デリバリーのアイコン＋メインキャッチ「${f.main_catch}」${f.delivery_note ? `＋黒帯バッジ「${f.delivery_note}」` : ''}`,
+      f.lead_text ? `・説明文「${f.lead_text}」（2行まで）` : '',
+      hasPhoto ? '・中央グリッド：添付のお弁当写真を並べて配置（3×2程度）' : '・中央グリッド：お弁当を並べて配置',
+      menuLines ? `・各弁当名・価格：\n${menuLines}` : '',
+      `・アイコン行：「${f.info_1 || '配達エリアあり'}」「${f.info_2 || '定期割引あり'}」${f.info_3 ? `「${f.info_3}」` : ''}`,
+      infos ? `・最下部帯：店舗情報「${infos}」＋注文QRコード` : '・最下部帯：注文QRコード',
+      '■デザイン：フォント=見出しは太めゴシック・メニュー名は丸ゴシック。カラー=ブラウン・アイボリー・グリーン（アクセント）。手作り・あたたかみ・健康・オフィスランチ向け。',
+      '■日本語・数字・記号（商品名・価格・電話・住所）は正確に描画し、指定以外の文字や見切れは入れないこと。',
+      hasPhoto ? '■添付画像をお弁当写真として使用してください。' : '',
+    ].filter(Boolean).join('\n')
+  }
+  // ─── LINE公式アカウント 友だち登録案内（手順説明）───
+  if (templateId === 'line-register-guide') {
+    return [
+      'LINE公式アカウントの友だち登録案内(正方形1080×1080)を作成してください。',
+      '■背景：上段はLINEグリーンの帯、下段は白背景＋フラットな山・家・木・車のイラスト。',
+      '■配置（この配置を厳守。文字は各エリア内に収め、はみ出さないこと）',
+      `・上段中央：大見出し「LINE公式アカウント」＋ID「${f.account_id}」`,
+      `・上段右：吹き出しバッジ「${f.benefit_text || 'お得な情報やクーポンをGET！'}」`,
+      `・上段下部：帯見出し「${f.cta_text || '友だち登録募集中！'}」`,
+      '・中段左：手順見出し「LINE友だち追加の方法」',
+      `　- 手順1（丸番号①）：「${f.step1_title || '「QRコード」で登録'}」${f.step1_desc ? `／${f.step1_desc}` : ''}`,
+      `　- 手順2（丸番号②）：「${f.step2_title || '「ID検索」で登録'}」${f.step2_desc ? `／${f.step2_desc}` : ''}`,
+      hasPhoto ? '・中段右：スマートフォン画面のモックアップ内に添付のQRコード画像＋ID表示' : '・中段右：スマートフォン画面のモックアップ内にQRコード枠＋ID表示',
+      f.company_name ? `・最下部：店舗名・企業名「${f.company_name}」` : '',
+      '■デザイン：フォント=見出しは太字ゴシック・ハイライトはマーカー風の黄色背景。カラー=LINEグリーン＋白＋黄色アクセント。親しみやすく・シンプル・分かりやすい操作案内。',
+      '■日本語・英数字（ID・手順）は正確に描画し、指定以外の文字や見切れは入れないこと。',
+      hasPhoto ? '■添付画像をQRコードとして使用してください。' : '',
+    ].filter(Boolean).join('\n')
+  }
   return ''
 }
 
@@ -480,14 +679,18 @@ export function buildBrochurePrompt(
   return [
     base,
     '',
-    '━━ パンフレット統一デザイン指定（全ページ共通・最優先で厳守）━━',
-    `■これは「${ctx.storeName || 'お店'}」のご案内パンフレット 全${ctx.totalPages}ページのうち ${ctx.pageNo}ページ目です。全ページで背景・配色・フォント・装飾を完全に統一し、シリーズとして違和感のない見た目にしてください。`,
+    '━━ パンフレット統一デザイン指定（このページ＝1枚に対する指定・最優先で厳守）━━',
+    // ★混在防止：統一するのは「トーン（背景・配色・フォント・装飾）」のみ。
+    //   中身（テキスト・写真・構成）は上記で指定したこのページ分だけを描画させる。
+    `■この画像は「${ctx.storeName || 'お店'}」のご案内パンフレットの ${ctx.pageNo}ページ目（全${ctx.totalPages}ページ中）を、1枚だけ描画したものです。`,
+    '■【最重要】1枚の画像に、このページ用に上で指定した内容だけを描画してください。他のページのメニュー・文言・写真・レイアウトを、この画像に取り込んだり、並べて表示したり、混ぜたりしないこと。1枚に複数ページ分を詰め込まないこと。',
+    '■全ページで「統一」するのは、背景・配色・フォント・装飾（＝下記トーン）だけです。各ページの中身（テキスト・写真・構成）は、そのページ専用に指定されたものだけを使い、他ページのものは一切持ち込まないこと。',
     ...(ctx.size ? [`■出力サイズ：${ctx.size} に統一（全ページ同じサイズ・アスペクト比で作成すること。ベース指定より優先）。`] : []),
     `■背景：${t.bg}`,
     `■装飾：${t.decoration}`,
     `■フォント：${t.font}`,
     `■配色：${t.palette}`,
     `■左上に「${ctx.pageNo}/${ctx.totalPages}」のページ番号バッジ（${t.badge}）を必ず配置。`,
-    '■上記の統一トーンを、各ページ固有の配色指定よりも優先してください（前後ページと余白・帯・見出しスタイルを揃える）。',
+    '■上記の統一トーンは、各ページ固有の配色指定よりも優先してください（余白・帯・見出しスタイルを他ページと揃える）。ただし優先するのはトーンのみで、他ページの「中身」を混ぜる意味ではありません。',
   ].join('\n')
 }

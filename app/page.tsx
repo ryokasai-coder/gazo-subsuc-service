@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import Header from '@/components/ui/Header'
+import HeroShowcase from '@/components/ui/HeroShowcase'
 
 const faqs = [
   { q: '月10回とはどういう意味ですか？', a: '1ヶ月（毎月1日〜末日）の間に画像制作を依頼できる回数が10回です。1回につき1種類の画像制作となります。' },
@@ -46,39 +47,47 @@ export default function HomePage() {
 
       {/* ─── Hero ─── */}
       <section className="relative overflow-hidden bg-[#F8F8FA] bg-brand-glow pt-20 pb-28 px-4">
-        <div className="relative max-w-3xl mx-auto text-center">
-          <span className="inline-flex items-center gap-1.5 bg-white text-[#E85C97] text-xs font-semibold px-4 py-1.5 rounded-full mb-8 shadow-sm ring-1 ring-[#FFE3F0]">
-            <span className="w-1.5 h-1.5 bg-brand-gradient rounded-full animate-pulse" />
-            月額5,000円のデザインサブスク
-          </span>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#111111] leading-[1.12] mb-6 tracking-tight">
-            デザインを、<br />
-            もっと<span className="text-gradient">自由</span>に。
-          </h1>
-          <p className="text-lg text-[#6B7280] max-w-xl mx-auto mb-10 leading-relaxed">
-            月額5,000円で、月10回までデザイン依頼。<br className="hidden sm:block" />
-            SNS投稿・広告バナー・販促物を、プロのデザイナーが最短3営業日でお届け。
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/apply" className="btn-gradient inline-flex items-center justify-center gap-2 font-bold px-8 py-4 rounded-full text-base">
-              無料で始める
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-            <a href="#gallery" className="inline-flex items-center justify-center bg-white text-[#111111] font-semibold px-8 py-4 rounded-full border border-[#EAEAEA] hover:border-[#D4D4D4] hover:shadow-md transition-all text-base">
-              制作実績を見る
-            </a>
+        <div className="relative max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 lg:gap-10 items-center">
+          {/* 左：見出し・CTA */}
+          <div className="text-center lg:text-left">
+            <span className="inline-flex items-center gap-1.5 bg-white text-[#E85C97] text-xs font-semibold px-4 py-1.5 rounded-full mb-8 shadow-sm ring-1 ring-[#FFE3F0]">
+              <span className="w-1.5 h-1.5 bg-brand-gradient rounded-full animate-pulse" />
+              月額5,000円のデザインサブスク
+            </span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#111111] leading-[1.12] mb-6 tracking-tight">
+              デザインを、<br />
+              もっと<span className="text-gradient">自由</span>に。
+            </h1>
+            <p className="text-lg text-[#6B7280] max-w-xl mx-auto lg:mx-0 mb-10 leading-relaxed">
+              月額5,000円で、月10回までデザイン依頼。<br className="hidden sm:block" />
+              SNS投稿・広告バナー・販促物を、プロのデザイナーが最短3営業日でお届け。
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+              <Link href="/apply" className="btn-gradient inline-flex items-center justify-center gap-2 font-bold px-8 py-4 rounded-full text-base">
+                無料で始める
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+              <a href="#gallery" className="inline-flex items-center justify-center bg-white text-[#111111] font-semibold px-8 py-4 rounded-full border border-[#EAEAEA] hover:border-[#D4D4D4] hover:shadow-md transition-all text-base">
+                制作実績を見る
+              </a>
+            </div>
+
+            {/* Stats */}
+            <div className="mt-14 grid grid-cols-3 gap-4 max-w-md mx-auto lg:mx-0">
+              {[['月10回', '依頼可能'], ['¥5,000', '月額（税抜）'], ['3営業日', '最短で初稿']].map(([val, label]) => (
+                <div key={label} className="bg-white rounded-2xl p-4 shadow-sm ring-1 ring-black/[0.03]">
+                  <div className="text-xl font-black text-[#111111]">{val}</div>
+                  <div className="text-xs text-[#6B7280] mt-0.5">{label}</div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Stats */}
-          <div className="mt-14 grid grid-cols-3 gap-4 max-w-md mx-auto">
-            {[['月10回', '依頼可能'], ['¥5,000', '月額（税抜）'], ['3営業日', '最短で初稿']].map(([val, label]) => (
-              <div key={label} className="bg-white rounded-2xl p-4 shadow-sm ring-1 ring-black/[0.03]">
-                <div className="text-xl font-black text-[#111111]">{val}</div>
-                <div className="text-xs text-[#6B7280] mt-0.5">{label}</div>
-              </div>
-            ))}
+          {/* 右：制作イメージ（「デザインをもっと自由に」の横に画像を追加） */}
+          <div className="lg:pl-4">
+            <HeroShowcase />
           </div>
         </div>
       </section>

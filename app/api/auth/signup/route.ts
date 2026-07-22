@@ -16,7 +16,7 @@ async function generateLoginId(supabase: ReturnType<typeof createServiceClient>)
 }
 
 export async function POST(req: NextRequest) {
-  const { email, password, companyName, contactName, phone } = await req.json()
+  const { email, password, companyName, contactName, phone, address } = await req.json()
   const supabase = createServiceClient()
 
   // サーバ側バリデーション（クライアント検証の迂回・直叩き対策）
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
   if (authError) return NextResponse.json({ error: authError.message }, { status: 400 })
 
   // Create user record
-  const { error: dbError } = await supabase.from('users').insert({
+  const baseRecord = {
     id: authData.user.id,
     email,
     login_id: loginId,
@@ -50,7 +50,13 @@ export async function POST(req: NextRequest) {
     phone,
     is_payment_registered: false,
     is_active: true,
-  })
+  }
+  // address列は追加マイグレーション（add-address-column.sql）。未適用環境でも
+  // 申し込みが失敗しないよう、address列が無いエラー時はaddressを除いて再挿入する。
+  let dbError = (await supabase.from('users').insert({ ...baseRecord, address })).error
+  if (dbError && /address/i.test(dbError.message)) {
+    dbError = (await supabase.from('users').insert(baseRecord)).error
+  }
   if (dbError) {
     // users insert 失敗時は作成済みの auth ユーザーを削除して孤児化を防ぐ
     await supabase.auth.admin.deleteUser(authData.user.id).catch(() => {})

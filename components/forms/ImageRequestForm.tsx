@@ -27,11 +27,19 @@ const PRODUCTION_TYPE_CATEGORIES = [
   },
   {
     label: '集客・お知らせ',
-    types: ['LINE登録促進', 'Google口コミ依頼', '営業カレンダー・スケジュール', 'イベント告知'],
+    types: ['LINE登録促進', 'LINE友だち登録案内', 'Google口コミ依頼', '営業カレンダー・スケジュール', 'イベント告知'],
   },
   {
     label: '店舗紹介・LP',
     types: ['メニュー表紙・ブランド紹介', '店舗紹介LP', '総合訴求LP'],
+  },
+  {
+    label: 'テイクアウト・宅配',
+    types: ['お弁当・テイクアウトメニュー', '宅配弁当メニュー'],
+  },
+  {
+    label: 'サロン・美容',
+    types: ['サロン新規オープン告知', 'エステ・サロン集客'],
   },
 ]
 
@@ -192,6 +200,58 @@ const TEMPLATES: Template[] = [
     productionTags: ['総合訴求LP', '店舗紹介LP', 'メニュー表紙・ブランド紹介'],
     designTags: ['高級感', 'インパクト', 'お任せ'],
   },
+  // ─── サロン・美容系（プロンプト③準拠） ───
+  {
+    id: 'spa-open',
+    name: 'サロン新規オープン告知（高級感）',
+    description: '上質な内装写真に大きくOPENを配し、強み・特典・予約QRを訴求するサロン開店告知デザイン。',
+    sampleUses: 'スパ・マッサージ・エステの新規オープン告知',
+    layoutType: 'event-banner',
+    bgFrom: '#e7ddd0', bgTo: '#c9a063',
+    productionTags: ['サロン新規オープン告知', '新規オープン', 'イベント告知'],
+    designTags: ['高級感', 'シンプル', 'お任せ'],
+  },
+  {
+    id: 'salon-campaign',
+    name: 'エステ・サロン集客キャンペーン',
+    description: '施術写真とキャンペーン価格・特徴・予約情報をまとめた美容サロンの集客デザイン。',
+    sampleUses: 'エステ・脱毛・ネイル・美容サロンの初回キャンペーン',
+    layoutType: 'lp-stack',
+    bgFrom: '#f9a8d4', bgTo: '#f472b6',
+    productionTags: ['エステ・サロン集客', 'サロン新規オープン告知', 'キャンペーン・セール告知'],
+    designTags: ['かわいい', '高級感', 'お任せ'],
+  },
+  // ─── テイクアウト・宅配系（プロンプト③準拠） ───
+  {
+    id: 'bento-menu',
+    name: 'お弁当・テイクアウトメニュー（和風）',
+    description: '黒×金の和風高級感で、お弁当のラインナップと受取・注文情報を見せるテイクアウトメニュー。',
+    sampleUses: '焼肉弁当・仕出し・テイクアウト弁当メニュー',
+    layoutType: 'menu-list',
+    bgFrom: '#26201a', bgTo: '#4a3728',
+    productionTags: ['お弁当・テイクアウトメニュー', 'お持ち帰りメニュー表', 'グランドメニュー表'],
+    designTags: ['高級感', 'ナチュラル', 'お任せ'],
+  },
+  {
+    id: 'bento-delivery',
+    name: '宅配弁当メニュー（ナチュラル）',
+    description: '手作り弁当の写真グリッドと配達案内をあたたかいトーンでまとめた宅配メニューデザイン。',
+    sampleUses: '宅配弁当・オフィスランチ・仕出し弁当',
+    layoutType: 'grid-2x2',
+    bgFrom: '#f5ede1', bgTo: '#c8a97e',
+    productionTags: ['宅配弁当メニュー', 'お弁当・テイクアウトメニュー', 'お持ち帰りメニュー表'],
+    designTags: ['ナチュラル', 'シンプル', 'お任せ'],
+  },
+  {
+    id: 'line-register-guide',
+    name: 'LINE友だち登録案内（手順説明）',
+    description: 'QRコード・ID検索の登録手順をイラスト付きで分かりやすく案内するLINE登録ガイド。',
+    sampleUses: 'LINE公式アカウントの友だち登録・操作手順の案内',
+    layoutType: 'steps-3',
+    bgFrom: '#22c55e', bgTo: '#16a34a',
+    productionTags: ['LINE友だち登録案内', 'LINE登録促進', 'Google口コミ依頼'],
+    designTags: ['シンプル', 'かわいい', 'お任せ'],
+  },
 ]
 
 // テンプレ別の素材アップロード欄のラベル・説明。未定義なら汎用ラベル。
@@ -208,6 +268,46 @@ const MATERIAL_UPLOAD: Record<string, { label: string; hint: string; needed?: bo
   'line-qr':              { label: 'QRコード画像アップロード（必須）', hint: 'LINE友だち追加用のQRコード画像を1枚アップロードしてください' },
   'calendar-schedule':     { label: '', hint: '', needed: false },
   'vertical-lp':           { label: '店舗・商品写真アップロード（推奨）', hint: '店舗や商品の写真があれば添付' },
+  'spa-open':              { label: '内装・施術写真アップロード（推奨）', hint: 'サロンの内装や施術シーンの写真があれば添付' },
+  'salon-campaign':        { label: '施術写真アップロード（推奨）', hint: 'フェイシャル等の施術写真・女性の写真があれば添付' },
+  'bento-menu':            { label: 'お弁当写真アップロード（推奨・複数可）', hint: 'お弁当の写真を添付（複数枚あると見栄えします）' },
+  'bento-delivery':        { label: 'お弁当写真アップロード（推奨・複数可）', hint: 'お弁当の写真を添付（グリッド表示に使用）' },
+  'line-register-guide':   { label: 'QRコード画像アップロード（必須）', hint: 'LINE友だち追加用のQRコード画像を1枚アップロードしてください' },
+}
+
+// ─── 登録情報の自動入力 ───────────────────────────────────────────
+// テンプレの入力欄キー → お客様の登録情報（プロフィール）のどの項目を入れるか。
+// 店舗名（company_name）・電話番号（phone）・住所（address）を、対応する空欄に自動入力する。
+type ProfileKey = 'storeName' | 'phone' | 'address'
+export interface StoreProfile { storeName: string; phone: string; address: string }
+const STORE_INFO_MAP: Record<string, ProfileKey> = {
+  store_name: 'storeName',
+  salon_name: 'storeName',
+  shop_name: 'storeName',
+  company_name: 'storeName',
+  tel: 'phone',
+  address: 'address',
+  store_info: 'address',
+}
+const hasProfileData = (p: StoreProfile | null): p is StoreProfile =>
+  !!p && !!(p.storeName || p.phone || p.address)
+
+// 対象テンプレの入力欄のうち、登録情報で自動入力できる空欄だけを埋めた新しい値を返す。
+function fillStoreFields(
+  fieldDefs: { key: string; maxLength?: number }[] | undefined,
+  current: Record<string, string>,
+  profile: StoreProfile,
+): Record<string, string> {
+  const next = { ...current }
+  for (const f of fieldDefs ?? []) {
+    const src = STORE_INFO_MAP[f.key]
+    if (!src) continue
+    const val = profile[src]
+    if (val && !(next[f.key] ?? '').trim()) {
+      next[f.key] = f.maxLength ? val.slice(0, f.maxLength) : val
+    }
+  }
+  return next
 }
 
 function getFilteredTemplates(productionTypes: string[], designFilter: string): Template[] {
@@ -352,11 +452,24 @@ function TemplateCard({ template, selected, onSelect }: {
 export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props) {
   const [accessToken, setAccessToken] = useState<string | null>(null)
   const [step, setStep] = useState(0)
+  // お客様の登録情報（店舗名・電話番号・住所）＝自動入力の元データ
+  const [profile, setProfile] = useState<StoreProfile | null>(null)
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setAccessToken(session?.access_token ?? null)
+      if (session?.user?.id) {
+        // select('*')でaddress列が未追加の環境でもエラーにならないようにする
+        const { data } = await supabase.from('users').select('*').eq('id', session.user.id).single()
+        if (data) {
+          setProfile({
+            storeName: data.company_name ?? '',
+            phone: data.phone ?? '',
+            address: data.address ?? '',
+          })
+        }
+      }
     })
   }, [])
   const [form, setForm] = useState<RequestFormData>(initial)
@@ -385,6 +498,13 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
   // 入力欄定義があるテンプレ = AI生成テンプレ（全テンプレ対応済み）。無ければ従来のDesignCanvas。
   const templateFields = TEMPLATE_FIELDS[form.template_id]
   const isAITemplate = !!templateFields
+
+  // 登録情報（店舗名・住所・電話番号）で自動入力できる欄があるか＆その実行
+  const canAutofill = (templateFields ?? []).some(f => f.key in STORE_INFO_MAP) && hasProfileData(profile)
+  const applyStoreAutofill = () => {
+    if (!profile) return
+    setForm(prev => ({ ...prev, template_fields: fillStoreFields(templateFields, prev.template_fields, profile) }))
+  }
 
   const handleCanvasGenerated = useCallback((dataUrl: string) => {
     setCanvasDataUrl(dataUrl)
@@ -516,7 +636,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
 
   // パンフレット一括制作モードは専用フローに差し替え
   if (brochureMode) {
-    return <BrochureBuilder accessToken={accessToken} onCancel={() => setBrochureMode(false)} />
+    return <BrochureBuilder accessToken={accessToken} profile={profile} onCancel={() => setBrochureMode(false)} />
   }
 
   return (
@@ -723,6 +843,16 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
               <div className="bg-[#FFF0F6] rounded-xl px-4 py-2.5 text-[11px] text-[#E85C97] font-medium">
                 ご入力内容をもとにデザインを制作します。次の画面で仕上がりイメージをご確認いただけます。
               </div>
+              {/* 登録情報の自動入力（店舗名・住所・電話番号） */}
+              {canAutofill && (
+                <button
+                  type="button"
+                  onClick={applyStoreAutofill}
+                  className="w-full flex items-center justify-center gap-2 border border-[#E85C97]/40 text-[#E85C97] bg-[#FFF7FB] text-xs font-bold py-2.5 rounded-full hover:bg-[#FFF0F6] transition-all"
+                >
+                  🏪 登録情報を自動入力（店舗名・住所・電話番号）
+                </button>
+              )}
               {templateFields.map(f => (
                 <Field key={f.key} label={f.label} required={f.required}>
                   {f.type === 'select' ? (
@@ -1094,11 +1224,19 @@ function brochureFileToDataUrl(file: File): Promise<string> {
   })
 }
 
-function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null; onCancel: () => void }) {
+function BrochureBuilder({ accessToken, profile, onCancel }: { accessToken: string | null; profile: StoreProfile | null; onCancel: () => void }) {
   const [phase, setPhase] = useState<'config' | 'input' | 'result' | 'done'>('config')
   const [tone, setTone] = useState('ナチュラル')
   const [brochureSize, setBrochureSize] = useState('正方形(1080x1080px)') // 全ページ共通の画像サイズ
-  const [storeName, setStoreName] = useState('')
+  // 店名は登録情報（店舗名）で初期化。パンフレット制作に入る時点でプロフィールは
+  // 読み込み済みのため、初期値として反映すれば十分（未入力なら手入力も可能）。
+  const [storeName, setStoreName] = useState(profile?.storeName ?? '')
+
+  // 指定ページの店舗情報欄（店名・住所・電話番号）を登録情報で自動入力
+  const autofillPage = (pid: string) => {
+    if (!profile) return
+    setFields(prev => ({ ...prev, [pid]: fillStoreFields(TEMPLATE_FIELDS[pid], prev[pid] || {}, profile) }))
+  }
   const [selected, setSelected] = useState<string[]>(BROCHURE_PAGES.map(p => p.id))
   const [fields, setFields] = useState<Record<string, Record<string, string>>>({})
   const [materials, setMaterials] = useState<Record<string, File[]>>({})
@@ -1305,6 +1443,12 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
                 <span className="text-[11px] text-white bg-[#E85C97] w-5 h-5 rounded-full flex items-center justify-center font-bold">{i + 1}</span>
                 <span className="text-sm font-bold text-[#111111]">{p.icon} {p.label}</span>
               </div>
+              {(TEMPLATE_FIELDS[p.id] || []).some(f => f.key in STORE_INFO_MAP) && hasProfileData(profile) && (
+                <button type="button" onClick={() => autofillPage(p.id)}
+                  className="w-full flex items-center justify-center gap-2 border border-[#E85C97]/40 text-[#E85C97] bg-[#FFF7FB] text-[11px] font-bold py-2 rounded-full hover:bg-[#FFF0F6] transition-all">
+                  🏪 登録情報を自動入力（店舗名・住所・電話番号）
+                </button>
+              )}
               {(TEMPLATE_FIELDS[p.id] || []).map(f => (
                 <div key={f.key}>
                   <label className="text-xs font-semibold text-[#6B7280] block mb-1">{f.label}{f.required && <span className="text-[#E85C97]"> *</span>}</label>
