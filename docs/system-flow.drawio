@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- ========== PAGE 1: ユーザー登録・ログイン ========== -->
+
+    <!-- スイムレーン外枠 -->
+    <mxCell id="100" value="画像作成サブスクサービス ― ユーザー登録・ログインフロー" style="shape=pool;startSize=30;horizontal=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="40" y="40" width="1560" height="520" as="geometry" />
+    </mxCell>
+
+    <!-- レーン1: ユーザー -->
+    <mxCell id="101" value="👤 ユーザー" style="swimlane;startSize=30;horizontal=0;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="100">
+      <mxGeometry x="0" y="30" width="1560" height="160" as="geometry" />
+    </mxCell>
+
+    <!-- レーン2: API -->
+    <mxCell id="102" value="⚙️ API / サーバー" style="swimlane;startSize=30;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" vertex="1" parent="100">
+      <mxGeometry x="0" y="190" width="1560" height="160" as="geometry" />
+    </mxCell>
+
+    <!-- レーン3: 外部サービス -->
+    <mxCell id="103" value="🔌 外部サービス" style="swimlane;startSize=30;horizontal=0;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;" vertex="1" parent="100">
+      <mxGeometry x="0" y="350" width="1560" height="160" as="geometry" />
+    </mxCell>
+
+    <!-- ユーザーレーン内ノード -->
+    <!-- START -->
+    <mxCell id="110" value="開始" style="ellipse;whiteSpace=wrap;html=1;fillColor=#1a1a2e;fontColor=#ffffff;strokeColor=#1a1a2e;fontSize=11;fontStyle=1;" vertex="1" parent="101">
+      <mxGeometry x="50" y="60" width="80" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- トップページ -->
+    <mxCell id="111" value="🌐 トップページ&#xa;(/)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" vertex="1" parent="101">
+      <mxGeometry x="200" y="50" width="120" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- 申し込みページ -->
+    <mxCell id="112" value="📝 申し込みページ&#xa;(/apply)&#xa;会社名・担当者・メール入力" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="101">
+      <mxGeometry x="400" y="50" width="140" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- ログインページ -->
+    <mxCell id="113" value="🔐 ログインページ&#xa;(/login)&#xa;ログインID + PW入力" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="101">
+      <mxGeometry x="650" y="50" width="140" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- 分岐: adminか -->
+    <mxCell id="114" value="管理者&#xa;ロール？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;fontStyle=1;" vertex="1" parent="101">
+      <mxGeometry x="870" y="45" width="100" height="70" as="geometry" />
+    </mxCell>
+
+    <!-- ユーザーダッシュボード -->
+    <mxCell id="115" value="🏠 ユーザー&#xa;ダッシュボード&#xa;(/dashboard)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;fontStyle=1;" vertex="1" parent="101">
+      <mxGeometry x="1070" y="50" width="130" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- 管理ダッシュボード -->
+    <mxCell id="116" value="🔧 管理ダッシュボード&#xa;(/admin)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;fontStyle=1;" vertex="1" parent="101">
+      <mxGeometry x="1070" y="90" width="130" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- 決済登録確認 -->
+    <mxCell id="117" value="決済登録&#xa;済み？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;fontStyle=1;" vertex="1" parent="101">
+      <mxGeometry x="1290" y="45" width="100" height="70" as="geometry" />
+    </mxCell>
+
+    <!-- 画像依頼フォームへ -->
+    <mxCell id="118" value="🎨 画像依頼フォームへ&#xa;(次フロー参照)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;fontStyle=1;" vertex="1" parent="101">
+      <mxGeometry x="1460" y="50" width="70" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- APIレーン内ノード -->
+    <!-- signup API -->
+    <mxCell id="120" value="⚙️ POST /api/auth/signup&#xa;Supabaseユーザー作成&#xa;login_id・仮PW自動生成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="102">
+      <mxGeometry x="370" y="50" width="170" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- login API -->
+    <mxCell id="121" value="⚙️ POST /api/auth/login&#xa;login_id → email 変換&#xa;Supabase Auth 認証" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="102">
+      <mxGeometry x="620" y="50" width="170" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- 認証失敗 -->
+    <mxCell id="122" value="❌ エラー表示&#xa;ページに戻る" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="102">
+      <mxGeometry x="850" y="50" width="120" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- 外部サービスレーン -->
+    <!-- Supabase -->
+    <mxCell id="130" value="⚡ Supabase Auth&#xa;ユーザーDB登録" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="103">
+      <mxGeometry x="370" y="50" width="140" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- Resend: welcome -->
+    <mxCell id="131" value="📧 Resend&#xa;ウェルカムメール送信&#xa;login_id・仮PW通知" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="103">
+      <mxGeometry x="560" y="50" width="150" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- DB -->
+    <mxCell id="132" value="💾 users テーブル&#xa;login_id / email / role&#xa;company_name 保存" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="103">
+      <mxGeometry x="760" y="40" width="140" height="70" as="geometry" />
+    </mxCell>
+
+    <!-- 矢印 (ユーザーレーン内) -->
+    <mxCell id="200" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="110" target="111" parent="101"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="201" value="「申し込む」" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="111" target="112" parent="101"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="202" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="113" target="114" parent="101"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="203" value="user" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="114" target="115" parent="101"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="204" value="admin" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="114" target="116" parent="101"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="205" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="115" target="117" parent="101"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="206" value="済み" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="117" target="118" parent="101"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- レーン間矢印 -->
+    <mxCell id="210" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="112" target="120" parent="100"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="211" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="113" target="121" parent="100"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="212" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="120" target="130" parent="100"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="213" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="120" target="131" parent="100"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="214" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="130" target="132" parent="100"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="215" value="メール受信後" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="131" target="113" parent="100"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="216" value="認証失敗" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;" edge="1" source="121" target="122" parent="100"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="217" value="認証成功" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="121" target="113" parent="100"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- ========== PAGE 2: 画像依頼フロー ========== -->
+    <mxCell id="p2" value="" style=";" vertex="1" parent="0">
+      <mxGeometry x="0" y="0" width="0" height="0" as="geometry" />
+    </mxCell>
+
+    <!-- スイムレーン外枠 -->
+    <mxCell id="300" value="画像作成サブスクサービス ― 画像依頼フロー（4ステップ）" style="shape=pool;startSize=30;horizontal=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="40" y="620" width="1560" height="620" as="geometry" />
+    </mxCell>
+
+    <!-- レーン: ユーザー -->
+    <mxCell id="301" value="👤 ユーザー操作" style="swimlane;startSize=30;horizontal=0;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=11;" vertex="1" parent="300">
+      <mxGeometry x="0" y="30" width="1560" height="160" as="geometry" />
+    </mxCell>
+
+    <!-- レーン: Canvas -->
+    <mxCell id="302" value="🖥️ HTML Canvas (クライアント)" style="swimlane;startSize=30;horizontal=0;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;" vertex="1" parent="300">
+      <mxGeometry x="0" y="190" width="1560" height="130" as="geometry" />
+    </mxCell>
+
+    <!-- レーン: API -->
+    <mxCell id="303" value="⚙️ API /api/design/deliver" style="swimlane;startSize=30;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" vertex="1" parent="300">
+      <mxGeometry x="0" y="320" width="1560" height="130" as="geometry" />
+    </mxCell>
+
+    <!-- レーン: Drive/DB -->
+    <mxCell id="304" value="🔌 Google Drive / Supabase DB" style="swimlane;startSize=30;horizontal=0;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;" vertex="1" parent="300">
+      <mxGeometry x="0" y="450" width="1560" height="160" as="geometry" />
+    </mxCell>
+
+    <!-- ユーザーレーン -->
+    <mxCell id="310" value="STEP 1&#xa;制作内容選択&#xa;SNS/バナー/チラシ等" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;fontStyle=1;" vertex="1" parent="301">
+      <mxGeometry x="80" y="50" width="130" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="311" value="STEP 2&#xa;テンプレート選択&#xa;フィルター+24種から選択" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;fontStyle=1;" vertex="1" parent="301">
+      <mxGeometry x="290" y="50" width="140" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="312" value="STEP 3&#xa;詳細入力&#xa;テキスト・素材アップロード" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;fontStyle=1;" vertex="1" parent="301">
+      <mxGeometry x="510" y="50" width="140" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="313" value="STEP 4&#xa;プレビュー確認&#xa;デザインを確認" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;fontStyle=1;" vertex="1" parent="301">
+      <mxGeometry x="730" y="50" width="130" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="314" value="📤「このデザインで&#xa;依頼する」クリック&#xa;compressImage() JPEG変換" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#82b366;fontColor=#ffffff;strokeColor=#82b366;fontSize=10;fontStyle=1;" vertex="1" parent="301">
+      <mxGeometry x="940" y="50" width="150" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- Canvas レーン -->
+    <mxCell id="320" value="DesignCanvas.tsx&#xa;テンプレート描画&#xa;24種レイアウト対応" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="302">
+      <mxGeometry x="510" y="35" width="140" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="321" value="素材画像を&#xa;drawImageCover()で&#xa;フォト枠に描画" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="302">
+      <mxGeometry x="700" y="35" width="140" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- API レーン -->
+    <mxCell id="330" value="Bearer token 認証&#xa;Base64受信→Buffer変換&#xa;4.5MB制限チェック" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="303">
+      <mxGeometry x="940" y="30" width="160" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="331" value="getOrCreateFolder()&#xa;お客様番号フォルダ&#xa;確認 / 新規作成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="303">
+      <mxGeometry x="1140" y="30" width="160" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="332" value="PassThrough Stream&#xa;画像アップロード&#xa;supportsAllDrives:true" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="303">
+      <mxGeometry x="1340" y="30" width="160" height="70" as="geometry" />
+    </mxCell>
+
+    <!-- Drive/DB レーン -->
+    <mxCell id="340" value="📁 Google Drive&#xa;共有ドライブ内に&#xa;お客様番号フォルダ作成" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="304">
+      <mxGeometry x="1140" y="40" width="160" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="341" value="💾 image_requests DB保存&#xa;status = 'pending'&#xa;delivered_image_url = Drive URL" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="304">
+      <mxGeometry x="1340" y="30" width="170" height="80" as="geometry" />
+    </mxCell>
+
+    <!-- 矢印 -->
+    <mxCell id="400" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="310" target="311" parent="301"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="401" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="311" target="312" parent="301"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="402" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="312" target="313" parent="301"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="403" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="313" target="314" parent="301"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="404" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="312" target="320" parent="300"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="405" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="320" target="321" parent="302"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="406" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="314" target="330" parent="300"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="407" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="330" target="331" parent="303"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="408" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="331" target="332" parent="303"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="409" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="331" target="340" parent="300"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="410" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="332" target="341" parent="300"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- ========== PAGE 3: 管理者・納品フロー ========== -->
+    <mxCell id="500" value="画像作成サブスクサービス ― 管理者・納品フロー" style="shape=pool;startSize=30;horizontal=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="40" y="1300" width="1560" height="580" as="geometry" />
+    </mxCell>
+
+    <!-- レーン: 管理者 -->
+    <mxCell id="501" value="🔧 管理者操作" style="swimlane;startSize=30;horizontal=0;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;fontSize=11;" vertex="1" parent="500">
+      <mxGeometry x="0" y="30" width="1560" height="160" as="geometry" />
+    </mxCell>
+
+    <!-- レーン: API -->
+    <mxCell id="502" value="⚙️ API /api/admin/projects" style="swimlane;startSize=30;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" vertex="1" parent="500">
+      <mxGeometry x="0" y="190" width="1560" height="150" as="geometry" />
+    </mxCell>
+
+    <!-- レーン: 外部通知 -->
+    <mxCell id="503" value="📤 通知 / DB更新" style="swimlane;startSize=30;horizontal=0;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;" vertex="1" parent="500">
+      <mxGeometry x="0" y="340" width="1560" height="230" as="geometry" />
+    </mxCell>
+
+    <!-- 管理者レーン -->
+    <mxCell id="510" value="⏰ 依頼受信&#xa;（status=pending）" style="ellipse;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;fontStyle=1;" vertex="1" parent="501">
+      <mxGeometry x="50" y="60" width="120" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="511" value="📁 案件管理ページ&#xa;(/admin/projects)&#xa;フィルター・Drive確認" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;fontStyle=1;" vertex="1" parent="501">
+      <mxGeometry x="240" y="50" width="150" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="512" value="Drive確認？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;fontStyle=1;" vertex="1" parent="501">
+      <mxGeometry x="460" y="50" width="110" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="513" value="🔵「制作開始」ボタン&#xa;pending → in_progress" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;fontStyle=1;" vertex="1" parent="501">
+      <mxGeometry x="660" y="50" width="150" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="514" value="📤「納品する」ボタン&#xa;(Drive URL確認後)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#82b366;fontColor=#ffffff;strokeColor=#82b366;fontSize=10;fontStyle=1;" vertex="1" parent="501">
+      <mxGeometry x="900" y="50" width="150" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="515" value="確認ダイアログ&#xa;OK？" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;fontStyle=1;" vertex="1" parent="501">
+      <mxGeometry x="1130" y="45" width="110" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="516" value="中断" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="501">
+      <mxGeometry x="1310" y="100" width="80" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- APIレーン -->
+    <mxCell id="520" value="PATCH /api/admin/projects&#xa;status = in_progress 更新" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="502">
+      <mxGeometry x="650" y="45" width="170" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="521" value="POST action=deliver&#xa;image_requests取得&#xa;users JOIN" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="502">
+      <mxGeometry x="1100" y="45" width="160" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- 通知レーン -->
+    <mxCell id="530" value="📧 sendDeliveryEmail()&#xa;お客様メールへ&#xa;Drive URLリンク付き" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;fontStyle=1;" vertex="1" parent="503">
+      <mxGeometry x="1100" y="30" width="160" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="531" value="💬 notifySlack()&#xa;管理者へ納品完了通知" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="503">
+      <mxGeometry x="1100" y="120" width="160" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="532" value="💾 image_requests 更新&#xa;status = 'delivered'&#xa;delivered_at = 現在時刻" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;fontStyle=1;" vertex="1" parent="503">
+      <mxGeometry x="1310" y="30" width="180" height="80" as="geometry" />
+    </mxCell>
+    <mxCell id="533" value="✅ 納品完了" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E60023;fontColor=#ffffff;strokeColor=#E60023;fontSize=11;fontStyle=1;" vertex="1" parent="503">
+      <mxGeometry x="1340" y="140" width="120" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- 矢印 -->
+    <mxCell id="600" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="510" target="511" parent="501"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="601" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="511" target="512" parent="501"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="602" value="確認後" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="512" target="513" parent="501"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="603" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="513" target="514" parent="501"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="604" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="514" target="515" parent="501"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="605" value="No" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;" edge="1" source="515" target="516" parent="501"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="610" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="513" target="520" parent="500"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="611" value="Yes" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="515" target="521" parent="500"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="612" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="521" target="530" parent="500"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="613" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="530" target="531" parent="503"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="614" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="521" target="532" parent="500"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="615" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="532" target="533" parent="503"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+    <!-- ========== PAGE 4: Cron自動処理 ========== -->
+    <mxCell id="700" value="画像作成サブスクサービス ― Cron 自動処理フロー" style="shape=pool;startSize=30;horizontal=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=13;" vertex="1" parent="1">
+      <mxGeometry x="40" y="1940" width="1560" height="600" as="geometry" />
+    </mxCell>
+
+    <!-- レーン: Vercel Cron -->
+    <mxCell id="701" value="⏰ Vercel Cron Jobs" style="swimlane;startSize=30;horizontal=0;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;fontSize=11;" vertex="1" parent="700">
+      <mxGeometry x="0" y="30" width="1560" height="130" as="geometry" />
+    </mxCell>
+
+    <!-- レーン: API -->
+    <mxCell id="702" value="⚙️ API処理" style="swimlane;startSize=30;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=11;" vertex="1" parent="700">
+      <mxGeometry x="0" y="160" width="1560" height="160" as="geometry" />
+    </mxCell>
+
+    <!-- レーン: 通知/DB -->
+    <mxCell id="703" value="📤 通知 / DB" style="swimlane;startSize=30;horizontal=0;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=11;" vertex="1" parent="700">
+      <mxGeometry x="0" y="320" width="1560" height="270" as="geometry" />
+    </mxCell>
+
+    <!-- Cron起動ノード -->
+    <mxCell id="710" value="📅 毎月15・20日&#xa;リマインダーCron" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d6b656;fontColor=#000;strokeColor=#d6b656;fontSize=10;fontStyle=1;" vertex="1" parent="701">
+      <mxGeometry x="100" y="35" width="160" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="711" value="📅 毎月末日&#xa;フィードバックCron" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d6b656;fontColor=#000;strokeColor=#d6b656;fontSize=10;fontStyle=1;" vertex="1" parent="701">
+      <mxGeometry x="600" y="35" width="160" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="712" value="📅 毎月1日&#xa;請求チェックCron" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d6b656;fontColor=#000;strokeColor=#d6b656;fontSize=10;fontStyle=1;" vertex="1" parent="701">
+      <mxGeometry x="1100" y="35" width="160" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- APIレーン -->
+    <mxCell id="720" value="/api/cron/reminder&#xa;CRON_SECRET認証&#xa;依頼数が少ないユーザー抽出" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="702">
+      <mxGeometry x="60" y="40" width="200" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="721" value="/api/cron/feedback&#xa;CRON_SECRET認証&#xa;全アクティブユーザー取得" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="702">
+      <mxGeometry x="560" y="40" width="200" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="722" value="/api/cron/billing-check&#xa;CRON_SECRET認証&#xa;2ヶ月連続未払い検出" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="702">
+      <mxGeometry x="1060" y="40" width="200" height="70" as="geometry" />
+    </mxCell>
+
+    <!-- 通知/DBレーン -->
+    <mxCell id="730" value="📧 リマインドメール送信&#xa;今月の依頼状況・残り枠通知&#xa;(Resend)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="703">
+      <mxGeometry x="60" y="40" width="200" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="731" value="📧 フィードバックメール送信&#xa;アンケートリンク&#xa;/dashboard/feedback?month=" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="703">
+      <mxGeometry x="460" y="40" width="200" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="732" value="💾 feedbacks テーブル保存&#xa;ユーザー回答後&#xa;score / comment" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="703">
+      <mxGeometry x="700" y="40" width="180" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="733" value="💾 billing_records 新規作成&#xa;当月分を全ユーザー分生成" style="shape=cylinder3;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="703">
+      <mxGeometry x="1000" y="40" width="200" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="734" value="📧 督促メール送信&#xa;sendDunningEmail()&#xa;(2ヶ月連続未払い)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="703">
+      <mxGeometry x="1240" y="40" width="200" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="735" value="管理者が請求管理で確認&#xa;CSV取込 / 決済リンク発行&#xa;billing_records 更新" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="703">
+      <mxGeometry x="1100" y="160" width="200" height="70" as="geometry" />
+    </mxCell>
+
+    <!-- Cron矢印 -->
+    <mxCell id="800" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="710" target="720" parent="700"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="801" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="711" target="721" parent="700"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="802" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="712" target="722" parent="700"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="803" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="720" target="730" parent="700"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="804" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="721" target="731" parent="700"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="805" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="731" target="732" parent="700"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="806" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="722" target="733" parent="700"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="807" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="722" target="734" parent="700"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="808" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="733" target="735" parent="700"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+  </root>
+</mxGraphModel>

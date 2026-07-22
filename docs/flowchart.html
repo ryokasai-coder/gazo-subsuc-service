@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>システムフローチャート — 画像作成サブスクサービス</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', 'Hiragino Sans', sans-serif; background: #F0F2F5; }
+
+.page-header {
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  color: white; padding: 24px 40px;
+  display: flex; align-items: center; gap: 14px;
+}
+.page-header-icon {
+  width: 42px; height: 42px; background: #E60023;
+  border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;
+}
+.page-header h1 { font-size: 20px; font-weight: 800; }
+.page-header p { font-size: 12px; color: #a0aec0; margin-top: 3px; }
+
+/* タブ切替 */
+.tabs { display: flex; gap: 0; background: white; border-bottom: 2px solid #E2E8F0; padding: 0 32px; position: sticky; top: 0; z-index: 100; }
+.tab {
+  padding: 14px 22px; font-size: 13px; font-weight: 600; color: #718096;
+  cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px;
+  transition: all 0.2s; white-space: nowrap;
+}
+.tab:hover { color: #E60023; }
+.tab.active { color: #E60023; border-bottom-color: #E60023; }
+
+.tab-content { display: none; padding: 32px; }
+.tab-content.active { display: block; }
+
+/* SVGキャンバス */
+svg { display: block; overflow: visible; }
+
+/* フローチャートノード */
+.fc-wrap { display: flex; justify-content: center; overflow-x: auto; }
+
+/* ノードスタイル（HTML上） */
+.node-start, .node-end {
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50px; padding: 10px 24px; font-size: 12px; font-weight: 800;
+  color: white; letter-spacing: 0.04em;
+}
+.node-start { background: #1a1a2e; }
+.node-end { background: #E60023; }
+
+/* 凡例 */
+.legend { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
+.legend-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: #4a5568; font-weight: 600; }
+.legend-box { width: 18px; height: 14px; border-radius: 3px; }
+.legend-diamond { width: 16px; height: 16px; transform: rotate(45deg); border-radius: 2px; }
+
+/* カラーパレット */
+:root {
+  --c-start:  #1a1a2e;
+  --c-end:    #E60023;
+  --c-user:   #3182CE;
+  --c-admin:  #805AD5;
+  --c-api:    #2F855A;
+  --c-drive:  #1A73E8;
+  --c-db:     #319795;
+  --c-mail:   #DD6B20;
+  --c-cron:   #D69E2E;
+  --c-decide: #744210;
+}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="page-header-icon">🔀</div>
+  <div>
+    <h1>システムフローチャート</h1>
+    <p>画像作成サブスクサービス（Next.js 14 + Supabase + Google Drive）</p>
+  </div>
+</div>
+
+<!-- タブ -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('user')">👤 ユーザー登録・ログイン</div>
+  <div class="tab" onclick="switchTab('request')">🎨 画像依頼フロー</div>
+  <div class="tab" onclick="switchTab('admin')">🗂️ 管理者・納品フロー</div>
+  <div class="tab" onclick="switchTab('cron')">⏰ Cron自動処理</div>
+  <div class="tab" onclick="switchTab('full')">🗺️ 全体俯瞰</div>
+</div>
+
+<!-- ===== TAB 1: ユーザー登録・ログイン ===== -->
+<div id="tab-user" class="tab-content active">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-box" style="background:#3182CE;"></div> ユーザー操作</div>
+    <div class="legend-item"><div class="legend-box" style="background:#2F855A;"></div> API処理</div>
+    <div class="legend-item"><div class="legend-diamond" style="background:#D69E2E;"></div> 条件分岐</div>
+    <div class="legend-item"><div class="legend-box" style="background:#319795;"></div> DB操作</div>
+    <div class="legend-item"><div class="legend-box" style="background:#DD6B20;"></div> メール送信</div>
+  </div>
+  <div class="fc-wrap">
+  <svg width="860" height="1060" viewBox="0 0 860 1060">
+    <defs>
+      <marker id="arr1" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+      </marker>
+      <filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#00000018"/></filter>
+    </defs>
+
+    <!-- ===== 新規申込フロー（左列） ===== -->
+    <!-- START -->
+    <ellipse cx="220" cy="44" rx="90" ry="24" fill="#1a1a2e" filter="url(#shadow)"/>
+    <text x="220" y="49" text-anchor="middle" fill="white" font-size="12" font-weight="800">スタート</text>
+
+    <!-- トップページ -->
+    <rect x="140" y="88" width="160" height="44" rx="10" fill="#3182CE" filter="url(#shadow)"/>
+    <text x="220" y="107" text-anchor="middle" fill="white" font-size="12" font-weight="700">🌐 トップページ</text>
+    <text x="220" y="122" text-anchor="middle" fill="#BEE3F8" font-size="10">/ にアクセス</text>
+    <line x1="220" y1="68" x2="220" y2="88" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr1)"/>
+
+    <!-- 申し込みページ -->
+    <rect x="140" y="162" width="160" height="44" rx="10" fill="#3182CE" filter="url(#shadow)"/>
+    <text x="220" y="181" text-anchor="middle" fill="white" font-size="12" font-weight="700">📝 申し込みページ</text>
+    <text x="220" y="196" text-anchor="middle" fill="#BEE3F8" font-size="10">/apply で情報入力</text>
+    <line x1="220" y1="132" x2="220" y2="162" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr1)"/>
+    <text x="234" y="150" fill="#64748b" font-size="10">「申し込む」クリック</text>
+
+    <!-- POST /api/auth/signup -->
+    <rect x="130" y="236" width="180" height="44" rx="10" fill="#2F855A" filter="url(#shadow)"/>
+    <text x="220" y="255" text-anchor="middle" fill="white" font-size="11" font-weight="700">⚙️ POST /api/auth/signup</text>
+    <text x="220" y="270" text-anchor="middle" fill="#C6F6D5" font-size="10">Supabase Authユーザー作成</text>
+    <line x1="220" y1="206" x2="220" y2="236" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr1)"/>
+
+    <!-- DB: usersテーブル -->
+    <rect x="130" y="310" width="180" height="44" rx="10" fill="#319795" filter="url(#shadow)"/>
+    <text x="220" y="329" text-anchor="middle" fill="white" font-size="11" font-weight="700">💾 users テーブル作成</text>
+    <text x="220" y="344" text-anchor="middle" fill="#E6FFFA" font-size="10">login_id・仮PW 自動生成</text>
+    <line x1="220" y1="280" x2="220" y2="310" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr1)"/>
+
+    <!-- メール送信 -->
+    <rect x="130" y="384" width="180" height="44" rx="10" fill="#DD6B20" filter="url(#shadow)"/>
+    <text x="220" y="403" text-anchor="middle" fill="white" font-size="11" font-weight="700">📧 ウェルカムメール送信</text>
+    <text x="220" y="418" text-anchor="middle" fill="#FEEBC8" font-size="10">login_id・仮PW を通知 (Resend)</text>
+    <line x1="220" y1="354" x2="220" y2="384" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr1)"/>
+
+    <!-- ログインページへ -->
+    <rect x="140" y="458" width="160" height="44" rx="10" fill="#3182CE" filter="url(#shadow)"/>
+    <text x="220" y="477" text-anchor="middle" fill="white" font-size="12" font-weight="700">🔐 ログインページ</text>
+    <text x="220" y="492" text-anchor="middle" fill="#BEE3F8" font-size="10">/login</text>
+    <line x1="220" y1="428" x2="220" y2="458" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr1)"/>
+
+    <!-- ===== 右列: ログインフロー ===== -->
+    <line x1="300" y1="480" x2="380" y2="480" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr1)"/>
+    <text x="332" y="472" fill="#64748b" font-size="10">ID入力</text>
+
+    <!-- POST /api/auth/login -->
+    <rect x="380" y="458" width="200" height="44" rx="10" fill="#2F855A" filter="url(#shadow)"/>
+    <text x="480" y="477" text-anchor="middle" fill="white" font-size="11" font-weight="700">⚙️ POST /api/auth/login</text>
+    <text x="480" y="492" text-anchor="middle" fill="#C6F6D5" font-size="10">login_id → email 変換</text>
+
+    <!-- Supabase認証 -->
+    <rect x="380" y="532" width="200" height="44" rx="10" fill="#2F855A" filter="url(#shadow)"/>
+    <text x="480" y="551" text-anchor="middle" fill="white" font-size="11" font-weight="700">🔑 Supabase Auth 認証</text>
+    <text x="480" y="566" text-anchor="middle" fill="#C6F6D5" font-size="10">email + password で検証</text>
+    <line x1="480" y1="502" x2="480" y2="532" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr1)"/>
+
+    <!-- 分岐: 認証成功？ -->
+    <polygon points="480,606 560,636 480,666 400,636" fill="#D69E2E" filter="url(#shadow)"/>
+    <text x="480" y="632" text-anchor="middle" fill="white" font-size="11" font-weight="700">認証</text>
+    <text x="480" y="647" text-anchor="middle" fill="white" font-size="11" font-weight="700">成功？</text>
+    <line x1="480" y1="576" x2="480" y2="606" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr1)"/>
+
+    <!-- 失敗 -->
+    <rect x="620" y="614" width="140" height="44" rx="10" fill="#E53E3E" filter="url(#shadow)"/>
+    <text x="690" y="633" text-anchor="middle" fill="white" font-size="11" font-weight="700">❌ エラー表示</text>
+    <text x="690" y="648" text-anchor="middle" fill="#FED7D7" font-size="10">ログインページへ戻る</text>
+    <line x1="560" y1="636" x2="620" y2="636" stroke="#E53E3E" stroke-width="1.5" marker-end="url(#arr1)"/>
+    <text x="578" y="628" fill="#E53E3E" font-size="10" font-weight="700">失敗</text>
+
+    <!-- 分岐: admin？ -->
+    <polygon points="480,706 560,736 480,766 400,736" fill="#D69E2E" filter="url(#shadow)"/>
+    <text x="480" y="732" text-anchor="middle" fill="white" font-size="11" font-weight="700">管理者</text>
+    <text x="480" y="747" text-anchor="middle" fill="white" font-size="11" font-weight="700">ロール？</text>
+    <line x1="480" y1="666" x2="480" y2="706" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr1)"/>
+    <text x="492" y="692" fill="#64748b" font-size="10">成功</text>
+
+    <!-- admin → 管理ダッシュボード -->
+    <rect x="620" y="714" width="160" height="44" rx="10" fill="#805AD5" filter="url(#shadow)"/>
+    <text x="700" y="733" text-anchor="middle" fill="white" font-size="12" font-weight="700">🔧 管理ダッシュボード</text>
+    <text x="700" y="748" text-anchor="middle" fill="#E9D8FD" font-size="10">/admin</text>
+    <line x1="560" y1="736" x2="620" y2="736" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr1)"/>
+    <text x="575" y="728" fill="#805AD5" font-size="10" font-weight="700">admin</text>
+
+    <!-- user → ダッシュボード -->
+    <rect x="380" y="806" width="200" height="44" rx="10" fill="#3182CE" filter="url(#shadow)"/>
+    <text x="480" y="825" text-anchor="middle" fill="white" font-size="12" font-weight="700">🏠 ユーザーダッシュボード</text>
+    <text x="480" y="840" text-anchor="middle" fill="#BEE3F8" font-size="10">/dashboard</text>
+    <line x1="480" y1="766" x2="480" y2="806" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr1)"/>
+    <text x="492" y="790" fill="#3182CE" font-size="10" font-weight="700">user</text>
+
+    <!-- 分岐: 決済登録済み？ -->
+    <polygon points="480,890 580,920 480,950 380,920" fill="#D69E2E" filter="url(#shadow)"/>
+    <text x="480" y="916" text-anchor="middle" fill="white" font-size="11" font-weight="700">決済</text>
+    <text x="480" y="931" text-anchor="middle" fill="white" font-size="11" font-weight="700">登録済み？</text>
+    <line x1="480" y1="850" x2="480" y2="890" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr1)"/>
+
+    <!-- 未登録 -->
+    <rect x="620" y="898" width="160" height="44" rx="10" fill="#DD6B20" filter="url(#shadow)"/>
+    <text x="700" y="917" text-anchor="middle" fill="white" font-size="11" font-weight="700">⚠️ 決済登録を促す</text>
+    <text x="700" y="932" text-anchor="middle" fill="#FEEBC8" font-size="10">依頼フォーム制限</text>
+    <line x1="580" y1="920" x2="620" y2="920" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr1)"/>
+    <text x="585" y="912" fill="#DD6B20" font-size="10" font-weight="700">未登録</text>
+
+    <!-- 登録済み → 依頼フォームへ -->
+    <rect x="380" y="990" width="200" height="44" rx="10" fill="#3182CE" filter="url(#shadow)"/>
+    <text x="480" y="1009" text-anchor="middle" fill="white" font-size="12" font-weight="700">🎨 画像依頼フォーム</text>
+    <text x="480" y="1024" text-anchor="middle" fill="#BEE3F8" font-size="10">次フロー参照 →</text>
+    <line x1="480" y1="950" x2="480" y2="990" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr1)"/>
+    <text x="492" y="974" fill="#2F855A" font-size="10" font-weight="700">登録済み</text>
+
+    <!-- セクション区切り線 -->
+    <line x1="350" y1="60" x2="350" y2="1040" stroke="#E2E8F0" stroke-width="1" stroke-dasharray="6,4"/>
+    <text x="175" y="30" text-anchor="middle" fill="#718096" font-size="11" font-weight="700">[ 新規申込フロー ]</text>
+    <text x="570" y="430" text-anchor="middle" fill="#718096" font-size="11" font-weight="700">[ ログインフロー ]</text>
+  </svg>
+  </div>
+</div>
+
+<!-- ===== TAB 2: 画像依頼フロー ===== -->
+<div id="tab-request" class="tab-content">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-box" style="background:#3182CE;"></div> ユーザー操作</div>
+    <div class="legend-item"><div class="legend-box" style="background:#2F855A;"></div> API処理</div>
+    <div class="legend-item"><div class="legend-diamond" style="background:#D69E2E;"></div> 条件分岐</div>
+    <div class="legend-item"><div class="legend-box" style="background:#1A73E8;"></div> Google Drive</div>
+    <div class="legend-item"><div class="legend-box" style="background:#319795;"></div> DB操作</div>
+  </div>
+  <div class="fc-wrap">
+  <svg width="920" height="1080" viewBox="0 0 920 1080">
+    <defs>
+      <marker id="arr2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+      </marker>
+      <filter id="sh2"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#00000018"/></filter>
+    </defs>
+
+    <!-- Step1: ダッシュボード -->
+    <ellipse cx="460" cy="44" rx="130" ry="24" fill="#1a1a2e" filter="url(#sh2)"/>
+    <text x="460" y="49" text-anchor="middle" fill="white" font-size="12" font-weight="800">🏠 ダッシュボード (/dashboard)</text>
+
+    <!-- 「画像を依頼する」 -->
+    <rect x="360" y="88" width="200" height="44" rx="10" fill="#3182CE" filter="url(#sh2)"/>
+    <text x="460" y="107" text-anchor="middle" fill="white" font-size="12" font-weight="700">🖱️ 「画像を依頼する」</text>
+    <text x="460" y="122" text-anchor="middle" fill="#BEE3F8" font-size="10">ボタンクリック → モーダル表示</text>
+    <line x1="460" y1="68" x2="460" y2="88" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+    <!-- STEP 1 BOX -->
+    <rect x="30" y="168" width="860" height="70" rx="12" fill="#EBF8FF" stroke="#90CDF4" stroke-width="1.5"/>
+    <text x="50" y="192" fill="#2B6CB0" font-size="11" font-weight="800">STEP 1 — 制作内容選択</text>
+    <text x="50" y="212" fill="#4A5568" font-size="11">何を作りたいか選択: SNS投稿 / バナー広告 / チラシ / 名刺 / サムネイル / ストーリーズ / DM など</text>
+    <text x="50" y="228" fill="#718096" font-size="10">選択内容に応じて STEP 2 のテンプレートがフィルタリングされる</text>
+    <line x1="460" y1="132" x2="460" y2="168" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+    <!-- STEP 2 BOX -->
+    <rect x="30" y="268" width="860" height="80" rx="12" fill="#FAF5FF" stroke="#D6BCFA" stroke-width="1.5"/>
+    <text x="50" y="292" fill="#553C9A" font-size="11" font-weight="800">STEP 2 — テンプレート選択</text>
+    <text x="50" y="312" fill="#4A5568" font-size="11">フィルター: 高級感 / シンプル / インパクト / SNS映え / かわいい / ナチュラル</text>
+    <text x="50" y="330" fill="#718096" font-size="10">24種類のテンプレートからHTMLCanvasでリアルタイムプレビュー。選択すると STEP 3 へ</text>
+    <line x1="460" y1="238" x2="460" y2="268" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+    <!-- STEP 3 BOX -->
+    <rect x="30" y="378" width="860" height="80" rx="12" fill="#F0FFF4" stroke="#9AE6B4" stroke-width="1.5"/>
+    <text x="50" y="402" fill="#276749" font-size="11" font-weight="800">STEP 3 — 詳細入力</text>
+    <text x="50" y="422" fill="#4A5568" font-size="11">テキスト内容（複数行入力可） / 素材アップロード（ロゴ・写真など） / 備考・要望</text>
+    <text x="50" y="440" fill="#718096" font-size="10">アップロードした素材画像はCanvasのフォト枠にリアルタイム反映される</text>
+    <line x1="460" y1="348" x2="460" y2="378" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+    <!-- STEP 4 BOX -->
+    <rect x="30" y="488" width="860" height="80" rx="12" fill="#FFFBEA" stroke="#FAF089" stroke-width="1.5"/>
+    <text x="50" y="512" fill="#744210" font-size="11" font-weight="800">STEP 4 — プレビュー確認</text>
+    <text x="50" y="532" fill="#4A5568" font-size="11">DesignCanvas.tsx が HTML Canvas API でデザインをレンダリング → 完成イメージ表示</text>
+    <text x="50" y="550" fill="#718096" font-size="10">素材画像あり → drawImageCover() で写真枠にカバー表示。「📤 このデザインで依頼する」ボタン</text>
+    <line x1="460" y1="458" x2="460" y2="488" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+    <!-- 依頼ボタン押下 -->
+    <rect x="360" y="598" width="200" height="44" rx="10" fill="#3182CE" filter="url(#sh2)"/>
+    <text x="460" y="617" text-anchor="middle" fill="white" font-size="12" font-weight="700">📤 「依頼する」クリック</text>
+    <text x="460" y="632" text-anchor="middle" fill="#BEE3F8" font-size="10">compressImage() でJPEG圧縮（max1080px）</text>
+    <line x1="460" y1="568" x2="460" y2="598" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+    <!-- POST /api/design/deliver -->
+    <rect x="320" y="672" width="280" height="56" rx="10" fill="#2F855A" filter="url(#sh2)"/>
+    <text x="460" y="693" text-anchor="middle" fill="white" font-size="12" font-weight="700">⚙️ POST /api/design/deliver</text>
+    <text x="460" y="710" text-anchor="middle" fill="#C6F6D5" font-size="11">Bearer token 認証 → Base64受信 → Buffer変換</text>
+    <line x1="460" y1="642" x2="460" y2="672" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+    <!-- Google Drive: フォルダ確認 -->
+    <rect x="60" y="760" width="220" height="56" rx="10" fill="#1A73E8" filter="url(#sh2)"/>
+    <text x="170" y="781" text-anchor="middle" fill="white" font-size="11" font-weight="700">📁 お客様番号フォルダ</text>
+    <text x="170" y="797" text-anchor="middle" fill="#D2E3FC" font-size="10">getOrCreateFolder()</text>
+    <text x="170" y="811" text-anchor="middle" fill="#D2E3FC" font-size="10">共有ドライブ内を検索/作成</text>
+    <line x1="460" y1="728" x2="250" y2="760" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)" stroke-dasharray="6,3"/>
+    <text x="330" y="746" fill="#64748b" font-size="10">Drive API</text>
+
+    <!-- Google Drive: アップロード -->
+    <rect x="60" y="848" width="220" height="44" rx="10" fill="#1A73E8" filter="url(#sh2)"/>
+    <text x="170" y="867" text-anchor="middle" fill="white" font-size="11" font-weight="700">⬆️ ファイルアップロード</text>
+    <text x="170" y="882" text-anchor="middle" fill="#D2E3FC" font-size="10">PassThrough Stream で送信</text>
+    <line x1="170" y1="816" x2="170" y2="848" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+    <!-- 公開設定 -->
+    <rect x="60" y="922" width="220" height="44" rx="10" fill="#1A73E8" filter="url(#sh2)"/>
+    <text x="170" y="941" text-anchor="middle" fill="white" font-size="11" font-weight="700">🔓 公開アクセス設定</text>
+    <text x="170" y="956" text-anchor="middle" fill="#D2E3FC" font-size="10">role=reader, type=anyone</text>
+    <line x1="170" y1="892" x2="170" y2="922" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+    <!-- DB保存 -->
+    <rect x="350" y="760" width="220" height="56" rx="10" fill="#319795" filter="url(#sh2)"/>
+    <text x="460" y="781" text-anchor="middle" fill="white" font-size="11" font-weight="700">💾 image_requests 保存</text>
+    <text x="460" y="797" text-anchor="middle" fill="#E6FFFA" font-size="10">status = 'pending'</text>
+    <text x="460" y="812" text-anchor="middle" fill="#E6FFFA" font-size="10">delivered_image_url = Drive URL</text>
+    <line x1="460" y1="728" x2="460" y2="760" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+    <!-- 完了レスポンス -->
+    <rect x="350" y="848" width="220" height="44" rx="10" fill="#319795" filter="url(#sh2)"/>
+    <text x="460" y="867" text-anchor="middle" fill="white" font-size="11" font-weight="700">✅ 完了レスポンス</text>
+    <text x="460" y="882" text-anchor="middle" fill="#E6FFFA" font-size="10">driveUrl / previewUrl を返す</text>
+    <line x1="460" y1="816" x2="460" y2="848" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+    <!-- 依頼履歴 -->
+    <rect x="350" y="922" width="220" height="44" rx="10" fill="#3182CE" filter="url(#sh2)"/>
+    <text x="460" y="941" text-anchor="middle" fill="white" font-size="12" font-weight="700">📋 依頼履歴に反映</text>
+    <text x="460" y="956" text-anchor="middle" fill="#BEE3F8" font-size="10">/dashboard/history</text>
+    <line x1="460" y1="892" x2="460" y2="922" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+    <!-- END -->
+    <ellipse cx="460" cy="1016" rx="90" ry="24" fill="#E60023" filter="url(#sh2)"/>
+    <text x="460" y="1021" text-anchor="middle" fill="white" font-size="12" font-weight="800">依頼完了（管理者待ち）</text>
+    <line x1="460" y1="966" x2="460" y2="992" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+    <!-- 注釈 -->
+    <rect x="640" y="760" width="230" height="150" rx="10" fill="#FFFBEA" stroke="#F6E05E" stroke-width="1"/>
+    <text x="660" y="782" fill="#744210" font-size="11" font-weight="800">📌 技術的注意点</text>
+    <text x="660" y="800" fill="#744210" font-size="10">• supportsAllDrives: true 必須</text>
+    <text x="660" y="818" fill="#744210" font-size="10">  (共有ドライブ対応)</text>
+    <text x="660" y="836" fill="#744210" font-size="10">• Vercel 4.5MB制限 → JPEG圧縮</text>
+    <text x="660" y="854" fill="#744210" font-size="10">• Field コンポーネントは関数外</text>
+    <text x="660" y="872" fill="#744210" font-size="10">  定義（1文字バグ対策）</text>
+    <text x="660" y="890" fill="#744210" font-size="10">• メール送信は管理者操作後</text>
+  </svg>
+  </div>
+</div>
+
+<!-- ===== TAB 3: 管理者・納品フロー ===== -->
+<div id="tab-admin" class="tab-content">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-box" style="background:#805AD5;"></div> 管理者操作</div>
+    <div class="legend-item"><div class="legend-box" style="background:#2F855A;"></div> API処理</div>
+    <div class="legend-item"><div class="legend-diamond" style="background:#D69E2E;"></div> 条件分岐</div>
+    <div class="legend-item"><div class="legend-box" style="background:#DD6B20;"></div> メール送信</div>
+    <div class="legend-item"><div class="legend-box" style="background:#319795;"></div> DB更新</div>
+  </div>
+  <div class="fc-wrap">
+  <svg width="860" height="1020" viewBox="0 0 860 1020">
+    <defs>
+      <marker id="arr3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+      </marker>
+      <filter id="sh3"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#00000018"/></filter>
+    </defs>
+
+    <!-- START -->
+    <ellipse cx="430" cy="44" rx="160" ry="24" fill="#1a1a2e" filter="url(#sh3)"/>
+    <text x="430" y="49" text-anchor="middle" fill="white" font-size="12" font-weight="800">お客様から「依頼する」を受信（status=pending）</text>
+
+    <!-- 管理者ログイン -->
+    <rect x="330" y="88" width="200" height="44" rx="10" fill="#805AD5" filter="url(#sh3)"/>
+    <text x="430" y="107" text-anchor="middle" fill="white" font-size="12" font-weight="700">🔑 管理者ログイン</text>
+    <text x="430" y="122" text-anchor="middle" fill="#E9D8FD" font-size="10">/admin/login</text>
+    <line x1="430" y1="68" x2="430" y2="88" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+    <!-- 案件管理ページ -->
+    <rect x="310" y="162" width="240" height="56" rx="10" fill="#805AD5" filter="url(#sh3)"/>
+    <text x="430" y="183" text-anchor="middle" fill="white" font-size="12" font-weight="700">📁 案件管理ページ</text>
+    <text x="430" y="199" text-anchor="middle" fill="#E9D8FD" font-size="10">/admin/projects</text>
+    <text x="430" y="213" text-anchor="middle" fill="#E9D8FD" font-size="10">ステータス・月でフィルター、サマリーカード表示</text>
+    <line x1="430" y1="132" x2="430" y2="162" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+    <!-- Drive確認 -->
+    <rect x="100" y="256" width="200" height="56" rx="10" fill="#1A73E8" filter="url(#sh3)"/>
+    <text x="200" y="277" text-anchor="middle" fill="white" font-size="11" font-weight="700">🔍 Drive URL確認</text>
+    <text x="200" y="293" text-anchor="middle" fill="#D2E3FC" font-size="10">「Drive確認」リンクをクリック</text>
+    <text x="200" y="307" text-anchor="middle" fill="#D2E3FC" font-size="10">Googleドライブで画像をプレビュー</text>
+    <line x1="310" y1="200" x2="230" y2="256" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr3)" stroke-dasharray="5,3"/>
+    <text x="232" y="232" fill="#64748b" font-size="10">任意</text>
+
+    <!-- 分岐: アクション選択 -->
+    <polygon points="430,288 540,318 430,348 320,318" fill="#D69E2E" filter="url(#sh3)"/>
+    <text x="430" y="314" text-anchor="middle" fill="white" font-size="11" font-weight="700">アクション</text>
+    <text x="430" y="329" text-anchor="middle" fill="white" font-size="11" font-weight="700">選択</text>
+    <line x1="430" y1="218" x2="430" y2="288" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+    <!-- 制作開始 -->
+    <rect x="90" y="392" width="200" height="44" rx="10" fill="#2B6CB0" filter="url(#sh3)"/>
+    <text x="190" y="411" text-anchor="middle" fill="white" font-size="11" font-weight="700">🔵 「制作開始」ボタン</text>
+    <text x="190" y="426" text-anchor="middle" fill="#BEE3F8" font-size="10">PATCH /api/admin/projects</text>
+    <line x1="350" y1="318" x2="230" y2="392" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr3)"/>
+    <text x="248" y="360" fill="#2B6CB0" font-size="10" font-weight="700">制作開始</text>
+
+    <!-- in_progress更新 -->
+    <rect x="90" y="466" width="200" height="44" rx="10" fill="#319795" filter="url(#sh3)"/>
+    <text x="190" y="485" text-anchor="middle" fill="white" font-size="11" font-weight="700">💾 status = in_progress</text>
+    <text x="190" y="500" text-anchor="middle" fill="#E6FFFA" font-size="10">DB更新のみ（通知なし）</text>
+    <line x1="190" y1="436" x2="190" y2="466" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+    <!-- 納品ボタン -->
+    <rect x="560" y="392" width="200" height="44" rx="10" fill="#276749" filter="url(#sh3)"/>
+    <text x="660" y="411" text-anchor="middle" fill="white" font-size="11" font-weight="700">📤 「納品する」ボタン</text>
+    <text x="660" y="426" text-anchor="middle" fill="#C6F6D5" font-size="10">POST /api/admin/projects</text>
+    <line x1="510" y1="318" x2="610" y2="392" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr3)"/>
+    <text x="558" y="360" fill="#276749" font-size="10" font-weight="700">納品する</text>
+
+    <!-- 確認ダイアログ -->
+    <polygon points="660,476 750,506 660,536 570,506" fill="#D69E2E" filter="url(#sh3)"/>
+    <text x="660" y="502" text-anchor="middle" fill="white" font-size="11" font-weight="700">確認</text>
+    <text x="660" y="517" text-anchor="middle" fill="white" font-size="11" font-weight="700">OK？</text>
+    <line x1="660" y1="436" x2="660" y2="476" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+    <!-- キャンセル -->
+    <rect x="770" y="484" width="70" height="44" rx="10" fill="#718096" filter="url(#sh3)"/>
+    <text x="805" y="503" text-anchor="middle" fill="white" font-size="10" font-weight="700">キャンセル</text>
+    <text x="805" y="518" text-anchor="middle" fill="#E2E8F0" font-size="10">中断</text>
+    <line x1="750" y1="506" x2="770" y2="506" stroke="#718096" stroke-width="1.5" marker-end="url(#arr3)"/>
+    <text x="756" y="500" fill="#718096" font-size="9">No</text>
+
+    <!-- API: deliver -->
+    <rect x="540" y="566" width="240" height="56" rx="10" fill="#2F855A" filter="url(#sh3)"/>
+    <text x="660" y="587" text-anchor="middle" fill="white" font-size="11" font-weight="700">⚙️ action = 'deliver'</text>
+    <text x="660" y="603" text-anchor="middle" fill="#C6F6D5" font-size="10">image_requests取得</text>
+    <text x="660" y="618" text-anchor="middle" fill="#C6F6D5" font-size="10">users(email, company_name) JOIN</text>
+    <line x1="660" y1="536" x2="660" y2="566" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr3)"/>
+    <text x="668" y="554" fill="#2F855A" font-size="10" font-weight="700">Yes</text>
+
+    <!-- メール送信 -->
+    <rect x="540" y="652" width="240" height="56" rx="10" fill="#DD6B20" filter="url(#sh3)"/>
+    <text x="660" y="673" text-anchor="middle" fill="white" font-size="11" font-weight="700">📧 sendDeliveryEmail()</text>
+    <text x="660" y="689" text-anchor="middle" fill="#FEEBC8" font-size="10">to: お客様のメールアドレス</text>
+    <text x="660" y="704" text-anchor="middle" fill="#FEEBC8" font-size="10">本文にDrive URLリンクを記載</text>
+    <line x1="660" y1="622" x2="660" y2="652" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+    <!-- Slack通知 -->
+    <rect x="540" y="738" width="240" height="44" rx="10" fill="#4A154B" filter="url(#sh3)"/>
+    <text x="660" y="757" text-anchor="middle" fill="white" font-size="11" font-weight="700">💬 notifySlack()</text>
+    <text x="660" y="772" text-anchor="middle" fill="#E9D8FD" font-size="10">【納品完了】会社名 / 依頼ID</text>
+    <line x1="660" y1="708" x2="660" y2="738" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+    <!-- DB: delivered更新 -->
+    <rect x="540" y="812" width="240" height="56" rx="10" fill="#319795" filter="url(#sh3)"/>
+    <text x="660" y="833" text-anchor="middle" fill="white" font-size="11" font-weight="700">💾 status = 'delivered'</text>
+    <text x="660" y="849" text-anchor="middle" fill="#E6FFFA" font-size="10">delivered_at = 現在時刻</text>
+    <text x="660" y="864" text-anchor="middle" fill="#E6FFFA" font-size="10">updated_at = 現在時刻</text>
+    <line x1="660" y1="782" x2="660" y2="812" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+    <!-- 完了 -->
+    <ellipse cx="660" cy="942" rx="110" ry="24" fill="#E60023" filter="url(#sh3)"/>
+    <text x="660" y="947" text-anchor="middle" fill="white" font-size="12" font-weight="800">✅ 納品完了（お客様に通知済み）</text>
+    <line x1="660" y1="868" x2="660" y2="918" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr3)"/>
+
+    <!-- in_progressから納品ボタンへの矢印 -->
+    <path d="M 190 510 L 190 560 L 540 560 L 540 414" stroke="#276749" stroke-width="1.5" fill="none" stroke-dasharray="6,3" marker-end="url(#arr3)"/>
+    <text x="300" y="555" fill="#276749" font-size="10">in_progress になったら納品可能</text>
+  </svg>
+  </div>
+</div>
+
+<!-- ===== TAB 4: Cron自動処理 ===== -->
+<div id="tab-cron" class="tab-content">
+  <div class="legend">
+    <div class="legend-item"><div class="legend-box" style="background:#D69E2E;"></div> Cron実行</div>
+    <div class="legend-item"><div class="legend-box" style="background:#2F855A;"></div> API処理</div>
+    <div class="legend-item"><div class="legend-diamond" style="background:#744210;"></div> 条件分岐</div>
+    <div class="legend-item"><div class="legend-box" style="background:#DD6B20;"></div> メール送信</div>
+  </div>
+  <div class="fc-wrap">
+  <svg width="920" height="780" viewBox="0 0 920 780">
+    <defs>
+      <marker id="arr4" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+      </marker>
+      <filter id="sh4"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#00000018"/></filter>
+    </defs>
+
+    <!-- Cron1: リマインダー -->
+    <rect x="20" y="20" width="260" height="740" rx="16" fill="#FFFAF0" stroke="#F6AD55" stroke-width="1.5"/>
+    <text x="150" y="50" text-anchor="middle" fill="#744210" font-size="12" font-weight="800">⏰ リマインダーCron</text>
+    <text x="150" y="68" text-anchor="middle" fill="#975A16" font-size="11">毎月 15日・20日に自動実行</text>
+    <text x="150" y="84" text-anchor="middle" fill="#975A16" font-size="10">/api/cron/reminder</text>
+
+    <rect x="55" y="106" width="190" height="44" rx="10" fill="#D69E2E" filter="url(#sh4)"/>
+    <text x="150" y="125" text-anchor="middle" fill="white" font-size="11" font-weight="700">⏰ Vercel Cron 起動</text>
+    <text x="150" y="140" text-anchor="middle" fill="#FEFCBF" font-size="10">CRON_SECRET 認証</text>
+
+    <rect x="55" y="178" width="190" height="44" rx="10" fill="#2F855A" filter="url(#sh4)"/>
+    <text x="150" y="197" text-anchor="middle" fill="white" font-size="11" font-weight="700">全アクティブユーザー取得</text>
+    <text x="150" y="212" text-anchor="middle" fill="#C6F6D5" font-size="10">billing_status = active</text>
+    <line x1="150" y1="150" x2="150" y2="178" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+    <polygon points="150,252 230,282 150,312 70,282" fill="#744210" filter="url(#sh4)"/>
+    <text x="150" y="278" text-anchor="middle" fill="white" font-size="10" font-weight="700">今月依頼数</text>
+    <text x="150" y="293" text-anchor="middle" fill="white" font-size="10" font-weight="700">≤ 閾値？</text>
+    <line x1="150" y1="222" x2="150" y2="252" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+    <rect x="55" y="340" width="190" height="56" rx="10" fill="#DD6B20" filter="url(#sh4)"/>
+    <text x="150" y="361" text-anchor="middle" fill="white" font-size="11" font-weight="700">📧 リマインドメール送信</text>
+    <text x="150" y="377" text-anchor="middle" fill="#FEEBC8" font-size="10">今月の依頼状況・残り枠</text>
+    <text x="150" y="392" text-anchor="middle" fill="#FEEBC8" font-size="10">を通知（Resend）</text>
+    <line x1="150" y1="312" x2="150" y2="340" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr4)"/>
+    <text x="158" y="330" fill="#2F855A" font-size="10" font-weight="700">Yes</text>
+
+    <rect x="55" y="426" width="190" height="44" rx="10" fill="#718096" filter="url(#sh4)"/>
+    <text x="150" y="445" text-anchor="middle" fill="white" font-size="11" font-weight="700">スキップ</text>
+    <text x="150" y="460" text-anchor="middle" fill="#E2E8F0" font-size="10">次のユーザーへ</text>
+    <line x1="230" y1="282" x2="245" y2="282" stroke="#718096" stroke-width="1.5"/>
+    <line x1="245" y1="282" x2="245" y2="448" stroke="#718096" stroke-width="1.5"/>
+    <line x1="245" y1="448" x2="245" y2="448" stroke="#718096" stroke-width="1.5" marker-end="url(#arr4)"/>
+    <text x="232" y="275" fill="#718096" font-size="10">No</text>
+
+    <!-- Cron2: フィードバック -->
+    <rect x="330" y="20" width="260" height="740" rx="16" fill="#FAF5FF" stroke="#D6BCFA" stroke-width="1.5"/>
+    <text x="460" y="50" text-anchor="middle" fill="#553C9A" font-size="12" font-weight="800">💬 フィードバックCron</text>
+    <text x="460" y="68" text-anchor="middle" fill="#6B46C1" font-size="11">毎月 末日に自動実行</text>
+    <text x="460" y="84" text-anchor="middle" fill="#6B46C1" font-size="10">/api/cron/feedback</text>
+
+    <rect x="365" y="106" width="190" height="44" rx="10" fill="#D69E2E" filter="url(#sh4)"/>
+    <text x="460" y="125" text-anchor="middle" fill="white" font-size="11" font-weight="700">⏰ Vercel Cron 起動</text>
+    <text x="460" y="140" text-anchor="middle" fill="#FEFCBF" font-size="10">CRON_SECRET 認証</text>
+
+    <rect x="365" y="178" width="190" height="44" rx="10" fill="#2F855A" filter="url(#sh4)"/>
+    <text x="460" y="197" text-anchor="middle" fill="white" font-size="11" font-weight="700">全アクティブユーザー取得</text>
+    <text x="460" y="212" text-anchor="middle" fill="#C6F6D5" font-size="10">今月まだ未回答の全員</text>
+    <line x1="460" y1="150" x2="460" y2="178" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+    <rect x="365" y="252" width="190" height="56" rx="10" fill="#DD6B20" filter="url(#sh4)"/>
+    <text x="460" y="273" text-anchor="middle" fill="white" font-size="11" font-weight="700">📧 フィードバックメール</text>
+    <text x="460" y="289" text-anchor="middle" fill="#FEEBC8" font-size="10">アンケートリンク送信</text>
+    <text x="460" y="304" text-anchor="middle" fill="#FEEBC8" font-size="10">/dashboard/feedback?month=</text>
+    <line x1="460" y1="222" x2="460" y2="252" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+    <rect x="365" y="338" width="190" height="44" rx="10" fill="#805AD5" filter="url(#sh4)"/>
+    <text x="460" y="357" text-anchor="middle" fill="white" font-size="11" font-weight="700">ユーザーが回答</text>
+    <text x="460" y="372" text-anchor="middle" fill="#E9D8FD" font-size="10">満足度スコア・コメント入力</text>
+    <line x1="460" y1="308" x2="460" y2="338" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+    <rect x="365" y="412" width="190" height="44" rx="10" fill="#319795" filter="url(#sh4)"/>
+    <text x="460" y="431" text-anchor="middle" fill="white" font-size="11" font-weight="700">💾 feedbacks テーブル保存</text>
+    <text x="460" y="446" text-anchor="middle" fill="#E6FFFA" font-size="10">score / comment / billing_month</text>
+    <line x1="460" y1="382" x2="460" y2="412" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+    <rect x="365" y="486" width="190" height="44" rx="10" fill="#805AD5" filter="url(#sh4)"/>
+    <text x="460" y="505" text-anchor="middle" fill="white" font-size="11" font-weight="700">管理者がFB確認</text>
+    <text x="460" y="520" text-anchor="middle" fill="#E9D8FD" font-size="10">/admin/feedback</text>
+    <line x1="460" y1="456" x2="460" y2="486" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+    <!-- Cron3: 請求チェック -->
+    <rect x="640" y="20" width="260" height="740" rx="16" fill="#FFF5F5" stroke="#FC8181" stroke-width="1.5"/>
+    <text x="770" y="50" text-anchor="middle" fill="#9B2C2C" font-size="12" font-weight="800">💰 請求チェックCron</text>
+    <text x="770" y="68" text-anchor="middle" fill="#C53030" font-size="11">毎月 1日に自動実行</text>
+    <text x="770" y="84" text-anchor="middle" fill="#C53030" font-size="10">/api/cron/billing-check</text>
+
+    <rect x="675" y="106" width="190" height="44" rx="10" fill="#D69E2E" filter="url(#sh4)"/>
+    <text x="770" y="125" text-anchor="middle" fill="white" font-size="11" font-weight="700">⏰ Vercel Cron 起動</text>
+    <text x="770" y="140" text-anchor="middle" fill="#FEFCBF" font-size="10">CRON_SECRET 認証</text>
+
+    <rect x="675" y="178" width="190" height="44" rx="10" fill="#2F855A" filter="url(#sh4)"/>
+    <text x="770" y="197" text-anchor="middle" fill="white" font-size="11" font-weight="700">新月の billing_records 作成</text>
+    <text x="770" y="212" text-anchor="middle" fill="#C6F6D5" font-size="10">全ユーザー分を自動生成</text>
+    <line x1="770" y1="150" x2="770" y2="178" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+    <polygon points="770,252 850,282 770,312 690,282" fill="#744210" filter="url(#sh4)"/>
+    <text x="770" y="278" text-anchor="middle" fill="white" font-size="10" font-weight="700">2ヶ月連続</text>
+    <text x="770" y="293" text-anchor="middle" fill="white" font-size="10" font-weight="700">未払い？</text>
+    <line x1="770" y1="222" x2="770" y2="252" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+    <rect x="675" y="340" width="190" height="56" rx="10" fill="#DD6B20" filter="url(#sh4)"/>
+    <text x="770" y="361" text-anchor="middle" fill="white" font-size="11" font-weight="700">📧 督促メール送信</text>
+    <text x="770" y="377" text-anchor="middle" fill="#FEEBC8" font-size="10">sendDunningEmail()</text>
+    <text x="770" y="392" text-anchor="middle" fill="#FEEBC8" font-size="10">Resend経由で通知</text>
+    <line x1="770" y1="312" x2="770" y2="340" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr4)"/>
+    <text x="778" y="330" fill="#E53E3E" font-size="10" font-weight="700">Yes</text>
+
+    <rect x="675" y="426" width="190" height="44" rx="10" fill="#805AD5" filter="url(#sh4)"/>
+    <text x="770" y="445" text-anchor="middle" fill="white" font-size="11" font-weight="700">管理者が請求管理確認</text>
+    <text x="770" y="460" text-anchor="middle" fill="#E9D8FD" font-size="10">/admin/billing</text>
+    <line x1="770" y1="396" x2="770" y2="426" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+    <rect x="675" y="500" width="190" height="56" rx="10" fill="#2F855A" filter="url(#sh4)"/>
+    <text x="770" y="521" text-anchor="middle" fill="white" font-size="11" font-weight="700">CSV取込 / 決済リンク発行</text>
+    <text x="770" y="537" text-anchor="middle" fill="#C6F6D5" font-size="10">/api/admin/billing/import</text>
+    <text x="770" y="552" text-anchor="middle" fill="#C6F6D5" font-size="10">/api/admin/billing/link</text>
+    <line x1="770" y1="470" x2="770" y2="500" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+    <rect x="675" y="586" width="190" height="44" rx="10" fill="#319795" filter="url(#sh4)"/>
+    <text x="770" y="605" text-anchor="middle" fill="white" font-size="11" font-weight="700">💾 billing_records 更新</text>
+    <text x="770" y="620" text-anchor="middle" fill="#E6FFFA" font-size="10">status = 'paid' / paid_at</text>
+    <line x1="770" y1="556" x2="770" y2="586" stroke="#64748b" stroke-width="1.5" marker-end="url(#arr4)"/>
+
+    <!-- No -->
+    <line x1="850" y1="282" x2="870" y2="282" stroke="#718096" stroke-width="1.5"/>
+    <line x1="870" y1="282" x2="870" y2="445" stroke="#718096" stroke-width="1.5"/>
+    <line x1="870" y1="445" x2="865" y2="445" stroke="#718096" stroke-width="1.5" marker-end="url(#arr4)"/>
+    <text x="856" y="275" fill="#718096" font-size="10">No</text>
+  </svg>
+  </div>
+</div>
+
+<!-- ===== TAB 5: 全体俯瞰 ===== -->
+<div id="tab-full" class="tab-content">
+  <div class="fc-wrap">
+  <svg width="1100" height="820" viewBox="0 0 1100 820">
+    <defs>
+      <marker id="arr5" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8"/>
+      </marker>
+      <marker id="arr5r" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#E60023"/>
+      </marker>
+      <filter id="sh5"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#00000020"/></filter>
+    </defs>
+
+    <!-- ===== ユーザー層 ===== -->
+    <rect x="10" y="10" width="1080" height="100" rx="16" fill="#EBF8FF" stroke="#90CDF4" stroke-width="1.5"/>
+    <text x="30" y="36" fill="#2B6CB0" font-size="11" font-weight="800">👤 ユーザー（お客様）</text>
+    <rect x="30" y="48" width="100" height="36" rx="8" fill="#3182CE"/>
+    <text x="80" y="64" text-anchor="middle" fill="white" font-size="10" font-weight="700">🌐 トップ</text>
+    <text x="80" y="77" text-anchor="middle" fill="#BEE3F8" font-size="9">/</text>
+    <rect x="148" y="48" width="100" height="36" rx="8" fill="#3182CE"/>
+    <text x="198" y="64" text-anchor="middle" fill="white" font-size="10" font-weight="700">📝 申し込み</text>
+    <text x="198" y="77" text-anchor="middle" fill="#BEE3F8" font-size="9">/apply</text>
+    <rect x="266" y="48" width="100" height="36" rx="8" fill="#3182CE"/>
+    <text x="316" y="64" text-anchor="middle" fill="white" font-size="10" font-weight="700">🔐 ログイン</text>
+    <text x="316" y="77" text-anchor="middle" fill="#BEE3F8" font-size="9">/login</text>
+    <rect x="384" y="48" width="120" height="36" rx="8" fill="#3182CE"/>
+    <text x="444" y="64" text-anchor="middle" fill="white" font-size="10" font-weight="700">🏠 ダッシュボード</text>
+    <text x="444" y="77" text-anchor="middle" fill="#BEE3F8" font-size="9">/dashboard</text>
+    <rect x="522" y="48" width="130" height="36" rx="8" fill="#2B6CB0"/>
+    <text x="587" y="64" text-anchor="middle" fill="white" font-size="10" font-weight="700">🎨 依頼フォーム(4step)</text>
+    <text x="587" y="77" text-anchor="middle" fill="#BEE3F8" font-size="9">Canvas → Drive → pending</text>
+    <rect x="670" y="48" width="100" height="36" rx="8" fill="#3182CE"/>
+    <text x="720" y="64" text-anchor="middle" fill="white" font-size="10" font-weight="700">📋 依頼履歴</text>
+    <text x="720" y="77" text-anchor="middle" fill="#BEE3F8" font-size="9">/dashboard/history</text>
+    <rect x="788" y="48" width="110" height="36" rx="8" fill="#3182CE"/>
+    <text x="843" y="64" text-anchor="middle" fill="white" font-size="10" font-weight="700">⭐ FB入力</text>
+    <text x="843" y="77" text-anchor="middle" fill="#BEE3F8" font-size="9">/dashboard/feedback</text>
+
+    <!-- ユーザー→API矢印 -->
+    <line x1="587" y1="110" x2="587" y2="148" stroke="#3182CE" stroke-width="2" marker-end="url(#arr5)"/>
+
+    <!-- ===== API層 ===== -->
+    <rect x="10" y="148" width="1080" height="110" rx="16" fill="#F0FFF4" stroke="#9AE6B4" stroke-width="1.5"/>
+    <text x="30" y="174" fill="#276749" font-size="11" font-weight="800">⚙️ API Routes (Next.js App Router)</text>
+    <rect x="30" y="184" width="100" height="36" rx="8" fill="#2F855A"/>
+    <text x="80" y="200" text-anchor="middle" fill="white" font-size="9" font-weight="700">/api/auth/login</text>
+    <text x="80" y="213" text-anchor="middle" fill="#C6F6D5" font-size="8">ID→email変換</text>
+    <rect x="148" y="184" width="100" height="36" rx="8" fill="#2F855A"/>
+    <text x="198" y="200" text-anchor="middle" fill="white" font-size="9" font-weight="700">/api/auth/signup</text>
+    <text x="198" y="213" text-anchor="middle" fill="#C6F6D5" font-size="8">ユーザー登録</text>
+    <rect x="266" y="184" width="130" height="36" rx="8" fill="#276749"/>
+    <text x="331" y="200" text-anchor="middle" fill="white" font-size="9" font-weight="700">/api/design/deliver</text>
+    <text x="331" y="213" text-anchor="middle" fill="#C6F6D5" font-size="8">Drive保存→pending</text>
+    <rect x="414" y="184" width="130" height="36" rx="8" fill="#2F855A"/>
+    <text x="479" y="200" text-anchor="middle" fill="white" font-size="9" font-weight="700">/api/admin/projects</text>
+    <text x="479" y="213" text-anchor="middle" fill="#C6F6D5" font-size="8">案件CRUD・納品</text>
+    <rect x="562" y="184" width="110" height="36" rx="8" fill="#2F855A"/>
+    <text x="617" y="200" text-anchor="middle" fill="white" font-size="9" font-weight="700">/api/admin/users</text>
+    <text x="617" y="213" text-anchor="middle" fill="#C6F6D5" font-size="8">ユーザー管理</text>
+    <rect x="690" y="184" width="120" height="36" rx="8" fill="#2F855A"/>
+    <text x="750" y="200" text-anchor="middle" fill="white" font-size="9" font-weight="700">/api/admin/billing/*</text>
+    <text x="750" y="213" text-anchor="middle" fill="#C6F6D5" font-size="8">請求CSV・リンク</text>
+    <rect x="828" y="184" width="120" height="36" rx="8" fill="#D69E2E"/>
+    <text x="888" y="200" text-anchor="middle" fill="white" font-size="9" font-weight="700">/api/cron/*</text>
+    <text x="888" y="213" text-anchor="middle" fill="#FEFCBF" font-size="8">reminder/feedback/billing</text>
+
+    <!-- API→外部サービス矢印 -->
+    <line x1="331" y1="258" x2="331" y2="340" stroke="#1A73E8" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arr5)"/>
+    <line x1="479" y1="258" x2="479" y2="340" stroke="#DD6B20" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arr5)"/>
+    <line x1="550" y1="220" x2="550" y2="340" stroke="#319795" stroke-width="2" marker-end="url(#arr5)"/>
+
+    <!-- ===== 外部サービス層 ===== -->
+    <rect x="10" y="340" width="1080" height="90" rx="16" fill="#FFF5F5" stroke="#FC8181" stroke-width="1.5"/>
+    <text x="30" y="366" fill="#9B2C2C" font-size="11" font-weight="800">🔌 外部サービス</text>
+    <rect x="30" y="376" width="130" height="36" rx="8" fill="#1A73E8"/>
+    <text x="95" y="392" text-anchor="middle" fill="white" font-size="10" font-weight="700">📁 Google Drive API</text>
+    <text x="95" y="405" text-anchor="middle" fill="#D2E3FC" font-size="9">Shared Drive / SA認証</text>
+    <rect x="178" y="376" width="130" height="36" rx="8" fill="#E53E3E"/>
+    <text x="243" y="392" text-anchor="middle" fill="white" font-size="10" font-weight="700">⚡ Supabase Auth</text>
+    <text x="243" y="405" text-anchor="middle" fill="#FED7D7" font-size="9">JWT / Service Role Key</text>
+    <rect x="326" y="376" width="130" height="36" rx="8" fill="#DD6B20"/>
+    <text x="391" y="392" text-anchor="middle" fill="white" font-size="10" font-weight="700">📧 Resend</text>
+    <text x="391" y="405" text-anchor="middle" fill="#FEEBC8" font-size="9">全メール送信</text>
+    <rect x="474" y="376" width="130" height="36" rx="8" fill="#4A154B"/>
+    <text x="539" y="392" text-anchor="middle" fill="white" font-size="10" font-weight="700">💬 Slack Webhook</text>
+    <text x="539" y="405" text-anchor="middle" fill="#E9D8FD" font-size="9">納品完了通知</text>
+    <rect x="622" y="376" width="130" height="36" rx="8" fill="#000000"/>
+    <text x="687" y="392" text-anchor="middle" fill="white" font-size="10" font-weight="700">▲ Vercel</text>
+    <text x="687" y="405" text-anchor="middle" fill="#E2E8F0" font-size="9">ホスト / CronJobs</text>
+
+    <!-- 外部→DB矢印 -->
+    <line x1="243" y1="430" x2="243" y2="498" stroke="#319795" stroke-width="2" marker-end="url(#arr5)"/>
+
+    <!-- ===== DB層 ===== -->
+    <rect x="10" y="498" width="1080" height="110" rx="16" fill="#E6FFFA" stroke="#81E6D9" stroke-width="1.5"/>
+    <text x="30" y="524" fill="#234E52" font-size="11" font-weight="800">🗄️ Supabase PostgreSQL</text>
+    <rect x="30" y="534" width="130" height="44" rx="8" fill="#319795"/>
+    <text x="95" y="552" text-anchor="middle" fill="white" font-size="10" font-weight="700">👤 users</text>
+    <text x="95" y="566" text-anchor="middle" fill="#E6FFFA" font-size="9">login_id / role / email</text>
+    <text x="95" y="578" text-anchor="middle" fill="#E6FFFA" font-size="9">billing_status</text>
+    <rect x="178" y="534" width="200" height="44" rx="8" fill="#2C7A7B"/>
+    <text x="278" y="552" text-anchor="middle" fill="white" font-size="10" font-weight="700">🎨 image_requests</text>
+    <text x="278" y="566" text-anchor="middle" fill="#E6FFFA" font-size="9">status(pending→delivered)</text>
+    <text x="278" y="578" text-anchor="middle" fill="#E6FFFA" font-size="9">delivered_image_url / billing_month</text>
+    <rect x="396" y="534" width="150" height="44" rx="8" fill="#319795"/>
+    <text x="471" y="552" text-anchor="middle" fill="white" font-size="10" font-weight="700">💳 billing_records</text>
+    <text x="471" y="566" text-anchor="middle" fill="#E6FFFA" font-size="9">unpaid / paid</text>
+    <text x="471" y="578" text-anchor="middle" fill="#E6FFFA" font-size="9">billing_month</text>
+    <rect x="564" y="534" width="150" height="44" rx="8" fill="#319795"/>
+    <text x="639" y="552" text-anchor="middle" fill="white" font-size="10" font-weight="700">⭐ feedbacks</text>
+    <text x="639" y="566" text-anchor="middle" fill="#E6FFFA" font-size="9">score / comment</text>
+    <text x="639" y="578" text-anchor="middle" fill="#E6FFFA" font-size="9">billing_month</text>
+    <rect x="732" y="534" width="150" height="44" rx="8" fill="#319795"/>
+    <text x="807" y="552" text-anchor="middle" fill="white" font-size="10" font-weight="700">📦 project_masters</text>
+    <text x="807" y="566" text-anchor="middle" fill="#E6FFFA" font-size="9">テンプレートマスタ</text>
+    <text x="807" y="578" text-anchor="middle" fill="#E6FFFA" font-size="9">CRUD管理</text>
+
+    <!-- ===== 管理者層 ===== -->
+    <rect x="10" y="660" width="1080" height="100" rx="16" fill="#FAF5FF" stroke="#D6BCFA" stroke-width="1.5"/>
+    <text x="30" y="686" fill="#553C9A" font-size="11" font-weight="800">🔧 管理者（/admin/*）</text>
+    <rect x="30" y="696" width="110" height="36" rx="8" fill="#805AD5"/>
+    <text x="85" y="712" text-anchor="middle" fill="white" font-size="9" font-weight="700">📊 ダッシュボード</text>
+    <text x="85" y="725" text-anchor="middle" fill="#E9D8FD" font-size="8">/admin</text>
+    <rect x="158" y="696" width="150" height="36" rx="8" fill="#6B46C1"/>
+    <text x="233" y="712" text-anchor="middle" fill="white" font-size="9" font-weight="700">📁 案件管理</text>
+    <text x="233" y="725" text-anchor="middle" fill="#E9D8FD" font-size="8">Drive確認・制作開始・納品</text>
+    <rect x="326" y="696" width="130" height="36" rx="8" fill="#805AD5"/>
+    <text x="391" y="712" text-anchor="middle" fill="white" font-size="9" font-weight="700">💳 請求管理</text>
+    <text x="391" y="725" text-anchor="middle" fill="#E9D8FD" font-size="8">CSV取込・リンク発行</text>
+    <rect x="474" y="696" width="110" height="36" rx="8" fill="#805AD5"/>
+    <text x="529" y="712" text-anchor="middle" fill="white" font-size="9" font-weight="700">💬 FB管理</text>
+    <text x="529" y="725" text-anchor="middle" fill="#E9D8FD" font-size="8">/admin/feedback</text>
+    <rect x="602" y="696" width="110" height="36" rx="8" fill="#805AD5"/>
+    <text x="657" y="712" text-anchor="middle" fill="white" font-size="9" font-weight="700">📉 残数管理</text>
+    <text x="657" y="725" text-anchor="middle" fill="#E9D8FD" font-size="8">/admin/remaining</text>
+    <rect x="730" y="696" width="130" height="36" rx="8" fill="#805AD5"/>
+    <text x="795" y="712" text-anchor="middle" fill="white" font-size="9" font-weight="700">🗂️ 案件マスタ</text>
+    <text x="795" y="725" text-anchor="middle" fill="#E9D8FD" font-size="8">/admin/projects/master</text>
+
+    <!-- 管理者→DB矢印 -->
+    <line x1="233" y1="660" x2="278" y2="608" stroke="#805AD5" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr5)"/>
+
+    <!-- 納品フロー強調 -->
+    <rect x="870" y="640" width="210" height="130" rx="12" fill="#FFF5F5" stroke="#E60023" stroke-width="2"/>
+    <text x="975" y="663" text-anchor="middle" fill="#E60023" font-size="11" font-weight="800">📤 納品フロー</text>
+    <text x="880" y="683" fill="#744210" font-size="10">① お客様 依頼 → pending</text>
+    <text x="880" y="700" fill="#744210" font-size="10">② 管理者 制作開始 → in_progress</text>
+    <text x="880" y="717" fill="#744210" font-size="10">③ Drive確認 → OK</text>
+    <text x="880" y="734" fill="#E60023" font-size="10" font-weight="700">④「納品する」→ メール送信</text>
+    <text x="880" y="751" fill="#E60023" font-size="10" font-weight="700">⑤ status = delivered</text>
+  </svg>
+  </div>
+</div>
+
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.remove('active');
+  });
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+</script>
+</body>
+</html>
