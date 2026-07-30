@@ -27,7 +27,7 @@ const PRODUCTION_TYPE_CATEGORIES = [
   },
   {
     label: '集客・お知らせ',
-    types: ['LINE登録促進', 'Google口コミ依頼', '営業カレンダー・スケジュール', 'イベント告知'],
+    types: ['LINE登録促進', 'Google口コミ依頼', '営業カレンダー・スケジュール', 'イベント告知', '新規オープン告知'],
   },
   {
     label: '店舗紹介・LP',
@@ -351,16 +351,52 @@ function TemplateCard({ template, selected, onSelect }: {
 // ─── メインフォーム ───────────────────────────────────────────────────
 export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props) {
   const [accessToken, setAccessToken] = useState<string | null>(null)
+  // 登録済みの店舗情報（店名・電話・住所）。テンプレの{store_name}/{tel}/{address}へ自動プリフィルする
+  const [storeInfo, setStoreInfo] = useState<{ company_name: string; phone: string; address: string } | null>(null)
   const [step, setStep] = useState(0)
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setAccessToken(session?.access_token ?? null)
+      if (!session) return
+      // 店舗情報を取得しておき、テンプレ選択時に対応フィールドへ自動プリフィルする
+      const { data } = await supabase
+        .from('users')
+        .select('company_name, phone, address')
+        .eq('id', session.user.id)
+        .single()
+      if (data) setStoreInfo({
+        company_name: data.company_name ?? '',
+        phone: data.phone ?? '',
+        address: data.address ?? '',
+      })
     })
   }, [])
   const [form, setForm] = useState<RequestFormData>(initial)
   const [error, setError] = useState('')
+
+  // 登録済み店舗情報を、選択テンプレの{store_name}/{tel}/{address}へ自動プリフィルする
+  // （未入力の欄のみ・お客様の入力は上書きしない）。テンプレ選択→詳細入力へ進む時に呼ぶ。
+  const applyStorePrefill = (templateId: string) => {
+    if (!storeInfo || !templateId) return
+    const fields = TEMPLATE_FIELDS[templateId]
+    if (!fields) return
+    const map: Record<string, string> = {
+      store_name: storeInfo.company_name,
+      tel: storeInfo.phone,
+      address: storeInfo.address,
+    }
+    setForm(prev => {
+      const nextFields = { ...prev.template_fields }
+      let changed = false
+      for (const f of fields) {
+        const val = map[f.key]
+        if (val && !(nextFields[f.key] ?? '').trim()) { nextFields[f.key] = val; changed = true }
+      }
+      return changed ? { ...prev, template_fields: nextFields } : prev
+    })
+  }
   const [designFilter, setDesignFilter] = useState('')
   const [canvasDataUrl, setCanvasDataUrl] = useState<string | null>(null)
   const [delivering, setDelivering] = useState(false)
@@ -455,6 +491,8 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
 
   const handleNext = () => {
     if (!validate()) return
+    // テンプレ選択(step1)を終えて詳細入力(step2)へ進む直前に、登録済み店舗情報を自動プリフィル
+    if (step === 1) applyStorePrefill(form.template_id)
     // AI制作テンプレは、詳細入力(step2)→プレビュー(step3)に進む時点で自動的に制作を開始する
     const startGeneration = step === 2 && isAITemplate
     setStep(s => s + 1)

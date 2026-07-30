@@ -145,6 +145,7 @@ export default function DashboardPage() {
             <img src="/logo-horizontal.png" alt="DESIGN BOX" className="h-7 w-auto" />
           </Link>
           <div className="flex items-center gap-1">
+            <Link href="/dashboard/settings" className="text-xs text-[#6B7280] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F8F8FA] transition-all">店舗情報</Link>
             <Link href="/dashboard/history" className="text-xs text-[#6B7280] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F8F8FA] transition-all">履歴</Link>
             <Link href="/dashboard/feedback" className="text-xs text-[#6B7280] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F8F8FA] transition-all">フィードバック</Link>
             <button onClick={handleLogout} className="text-xs text-[#6B7280] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F8F8FA] transition-all">ログアウト</button>
