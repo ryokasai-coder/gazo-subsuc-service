@@ -1,0 +1,773 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="1">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <!-- ============================================================ -->
+    <!-- FLOW 1: 新規申込フロー -->
+    <!-- ============================================================ -->
+    <mxCell id="f1" value="① 新規申込フロー" style="shape=pool;startSize=30;horizontal=1;fillColor=#1a1a2e;fontColor=#ffffff;strokeColor=#1a1a2e;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="40" y="40" width="1900" height="520" as="geometry" />
+    </mxCell>
+    <mxCell id="f1l1" value="👤 ユーザー操作" style="swimlane;startSize=36;horizontal=0;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" vertex="1" parent="f1">
+      <mxGeometry x="0" y="30" width="1900" height="150" as="geometry" />
+    </mxCell>
+    <mxCell id="f1l2" value="⚙️ API  /api/auth/signup" style="swimlane;startSize=36;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" vertex="1" parent="f1">
+      <mxGeometry x="0" y="180" width="1900" height="170" as="geometry" />
+    </mxCell>
+    <mxCell id="f1l3" value="💾 DB / 📧 メール" style="swimlane;startSize=36;horizontal=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;" vertex="1" parent="f1">
+      <mxGeometry x="0" y="350" width="1900" height="170" as="geometry" />
+    </mxCell>
+
+    <!-- Lane1 nodes -->
+    <mxCell id="n101" value="開始" style="ellipse;whiteSpace=wrap;fillColor=#1a1a2e;fontColor=#ffffff;strokeColor=#1a1a2e;fontSize=11;fontStyle=1;" vertex="1" parent="f1l1">
+      <mxGeometry x="50" y="55" width="90" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="n102" value="🌐 トップページ (/)&#xa;サービス内容確認" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="f1l1">
+      <mxGeometry x="200" y="50" width="150" height="50" as="geometry" />
+    </mxCell>
+    <mxCell id="n103" value="📝 申し込みフォーム入力&#xa;会社名 / 担当者名&#xa;メール / 電話 / PW" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="f1l1">
+      <mxGeometry x="420" y="45" width="160" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="n104" value="📨 送信ボタン&#xa;クリック" style="rounded=1;whiteSpace=wrap;fillColor=#6c8ebf;fontColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="f1l1">
+      <mxGeometry x="650" y="50" width="130" height="50" as="geometry" />
+    </mxCell>
+    <mxCell id="n105" value="📬 メール受信&#xa;login_id・仮PW確認" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="f1l1">
+      <mxGeometry x="1580" y="50" width="150" height="50" as="geometry" />
+    </mxCell>
+    <mxCell id="n106" value="ログインページへ&#xa;(END)" style="ellipse;whiteSpace=wrap;fillColor=#E60023;fontColor=#ffffff;strokeColor=#E60023;fontSize=10;fontStyle=1;" vertex="1" parent="f1l1">
+      <mxGeometry x="1790" y="55" width="80" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- Lane2 nodes -->
+    <mxCell id="n107" value="POST /api/auth/signup&#xa;受信・バリデーション" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f1l2">
+      <mxGeometry x="420" y="55" width="160" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n108" value="generateLoginId()&#xa;'USR'+Math.random()&#xa;.substring(2,8).toUpperCase()" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f1l2">
+      <mxGeometry x="640" y="55" width="170" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n109" value="auth.admin.createUser()&#xa;email / password&#xa;email_confirm: true" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f1l2">
+      <mxGeometry x="870" y="55" width="160" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n110" value="authError?" style="rhombus;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;fontStyle=1;" vertex="1" parent="f1l2">
+      <mxGeometry x="1090" y="45" width="110" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="n111" value="users.insert()&#xa;id, email, login_id&#xa;company_name, is_active:true&#xa;is_payment_registered:false" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f1l2">
+      <mxGeometry x="1260" y="48" width="170" height="65" as="geometry" />
+    </mxCell>
+    <mxCell id="n112" value="dbError?" style="rhombus;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;fontStyle=1;" vertex="1" parent="f1l2">
+      <mxGeometry x="1490" y="45" width="110" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="n113" value="sendWelcomeEmail()&#xa;(try/catch)&#xa;→ {loginId} レスポンス" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f1l2">
+      <mxGeometry x="1660" y="50" width="160" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="n114" value="❌ 400 Error&#xa;authError.message" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="f1l2">
+      <mxGeometry x="1090" y="130" width="110" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="n115" value="❌ 400 Error&#xa;dbError.message" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="f1l2">
+      <mxGeometry x="1490" y="130" width="110" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- Lane3 nodes -->
+    <mxCell id="n116" value="⚡ Supabase Auth&#xa;ユーザーアカウント作成&#xa;UUID発行" style="shape=cylinder3;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="f1l3">
+      <mxGeometry x="870" y="45" width="160" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="n117" value="💾 users テーブル&#xa;レコード INSERT" style="shape=cylinder3;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f1l3">
+      <mxGeometry x="1260" y="45" width="170" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="n118" value="📧 Resend&#xa;ウェルカムメール送信&#xa;login_id・仮PW通知" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="f1l3">
+      <mxGeometry x="1660" y="50" width="160" height="60" as="geometry" />
+    </mxCell>
+
+    <!-- Flow1 edges -->
+    <mxCell id="e101" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n101" target="n102" parent="f1l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e102" value="「申し込む」" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n102" target="n103" parent="f1l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e103" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n103" target="n104" parent="f1l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e104" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n104" target="n107" parent="f1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e105" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n107" target="n108" parent="f1l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e106" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n108" target="n109" parent="f1l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e107" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n109" target="n110" parent="f1l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e108" value="No" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n110" target="n111" parent="f1l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e109" value="Yes" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;fontColor=#b85450;" edge="1" source="n110" target="n114" parent="f1l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e110" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n111" target="n112" parent="f1l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e111" value="No" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n112" target="n113" parent="f1l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e112" value="Yes" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;fontColor=#b85450;" edge="1" source="n112" target="n115" parent="f1l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e113" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n109" target="n116" parent="f1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e114" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n111" target="n117" parent="f1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e115" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n113" target="n118" parent="f1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e116" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n118" target="n105" parent="f1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e117" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n105" target="n106" parent="f1l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- ============================================================ -->
+    <!-- FLOW 2: ログインフロー -->
+    <!-- ============================================================ -->
+    <mxCell id="f2" value="② ログインフロー" style="shape=pool;startSize=30;horizontal=1;fillColor=#1a1a2e;fontColor=#ffffff;strokeColor=#1a1a2e;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="40" y="620" width="1900" height="560" as="geometry" />
+    </mxCell>
+    <mxCell id="f2l1" value="👤 ユーザー / ブラウザ" style="swimlane;startSize=36;horizontal=0;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" vertex="1" parent="f2">
+      <mxGeometry x="0" y="30" width="1900" height="150" as="geometry" />
+    </mxCell>
+    <mxCell id="f2l2" value="⚙️ API  /api/auth/login + Supabase Auth" style="swimlane;startSize=36;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" vertex="1" parent="f2">
+      <mxGeometry x="0" y="180" width="1900" height="170" as="geometry" />
+    </mxCell>
+    <mxCell id="f2l3" value="🔀 分岐 / リダイレクト先" style="swimlane;startSize=36;horizontal=0;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;" vertex="1" parent="f2">
+      <mxGeometry x="0" y="350" width="1900" height="210" as="geometry" />
+    </mxCell>
+
+    <!-- Lane1 -->
+    <mxCell id="n201" value="開始" style="ellipse;whiteSpace=wrap;fillColor=#1a1a2e;fontColor=#ffffff;strokeColor=#1a1a2e;fontSize=11;fontStyle=1;" vertex="1" parent="f2l1">
+      <mxGeometry x="40" y="55" width="80" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="n202" value="🔐 /login ページ&#xa;ログインIDとPWを入力" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="f2l1">
+      <mxGeometry x="180" y="50" width="160" height="50" as="geometry" />
+    </mxCell>
+    <mxCell id="n203" value="ログインボタン&#xa;クリック" style="rounded=1;whiteSpace=wrap;fillColor=#6c8ebf;fontColor=#ffffff;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="f2l1">
+      <mxGeometry x="410" y="55" width="130" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- Lane2 -->
+    <mxCell id="n204" value="POST /api/auth/login&#xa;{ loginId } 受信" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f2l2">
+      <mxGeometry x="410" y="55" width="155" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n205" value="users テーブル検索&#xa;.eq('login_id', loginId)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f2l2">
+      <mxGeometry x="630" y="55" width="155" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n206" value="login_id&#xa;見つかる?" style="rhombus;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;fontStyle=1;" vertex="1" parent="f2l2">
+      <mxGeometry x="845" y="45" width="110" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="n207" value="{ email } 返却&#xa;フロントへ" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f2l2">
+      <mxGeometry x="1020" y="55" width="150" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n208" value="supabase.auth&#xa;.signInWithPassword&#xa;(email, password)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f2l2">
+      <mxGeometry x="1240" y="50" width="160" height="65" as="geometry" />
+    </mxCell>
+    <mxCell id="n209" value="認証成功?" style="rhombus;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;fontStyle=1;" vertex="1" parent="f2l2">
+      <mxGeometry x="1470" y="45" width="110" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="n210" value="❌ 404 Error&#xa;ログインIDが&#xa;見つかりません" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="f2l2">
+      <mxGeometry x="845" y="130" width="110" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="n211" value="❌ エラー表示&#xa;パスワードが違います" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="f2l2">
+      <mxGeometry x="1470" y="130" width="130" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- Lane3 -->
+    <mxCell id="n212" value="users.role 確認" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="f2l3">
+      <mxGeometry x="1640" y="70" width="140" height="50" as="geometry" />
+    </mxCell>
+    <mxCell id="n213" value="role = admin?" style="rhombus;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;fontStyle=1;" vertex="1" parent="f2l3">
+      <mxGeometry x="1650" y="130" width="120" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="n214" value="🔧 /admin へ&#xa;リダイレクト(END)" style="ellipse;whiteSpace=wrap;fillColor=#E60023;fontColor=#ffffff;strokeColor=#E60023;fontSize=10;" vertex="1" parent="f2l3">
+      <mxGeometry x="1820" y="60" width="60" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n215" value="🏠 /dashboard へ&#xa;リダイレクト" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="f2l3">
+      <mxGeometry x="1820" y="140" width="60" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n216" value="is_payment_registered&#xa;確認" style="rhombus;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=9;fontStyle=1;" vertex="1" parent="f2l3">
+      <mxGeometry x="200" y="130" width="140" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="n217" value="⚠️ 決済登録モーダル&#xa;依頼フォーム制限" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="f2l3">
+      <mxGeometry x="80" y="60" width="110" height="50" as="geometry" />
+    </mxCell>
+    <mxCell id="n218" value="✅ 全機能利用可&#xa;(END)" style="ellipse;whiteSpace=wrap;fillColor=#E60023;fontColor=#ffffff;strokeColor=#E60023;fontSize=10;" vertex="1" parent="f2l3">
+      <mxGeometry x="390" y="140" width="100" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- Flow2 edges -->
+    <mxCell id="e201" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n201" target="n202" parent="f2l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e202" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n202" target="n203" parent="f2l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e203" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n203" target="n204" parent="f2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e204" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n204" target="n205" parent="f2l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e205" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n205" target="n206" parent="f2l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e206" value="Yes" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n206" target="n207" parent="f2l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e207" value="No" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;fontColor=#b85450;" edge="1" source="n206" target="n210" parent="f2l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e208" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n207" target="n208" parent="f2l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e209" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n208" target="n209" parent="f2l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e210" value="Yes" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n209" target="n212" parent="f2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e211" value="No" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;fontColor=#b85450;" edge="1" source="n209" target="n211" parent="f2l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e212" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n212" target="n213" parent="f2l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e213" value="admin" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n213" target="n214" parent="f2l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e214" value="user" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n213" target="n215" parent="f2l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e215" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n215" target="n216" parent="f2l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e216" value="false" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;fontColor=#b85450;" edge="1" source="n216" target="n217" parent="f2l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e217" value="true" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n216" target="n218" parent="f2l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- ============================================================ -->
+    <!-- FLOW 3: 画像依頼フロー（4ステップ） -->
+    <!-- ============================================================ -->
+    <mxCell id="f3" value="③ 画像依頼フロー（4ステップ + Drive保存）" style="shape=pool;startSize=30;horizontal=1;fillColor=#1a1a2e;fontColor=#ffffff;strokeColor=#1a1a2e;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="40" y="1260" width="1900" height="820" as="geometry" />
+    </mxCell>
+    <mxCell id="f3l1" value="👤 ユーザー操作（4ステップ）" style="swimlane;startSize=36;horizontal=0;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" vertex="1" parent="f3">
+      <mxGeometry x="0" y="30" width="1900" height="180" as="geometry" />
+    </mxCell>
+    <mxCell id="f3l2" value="🖥️ HTML Canvas (DesignCanvas.tsx)" style="swimlane;startSize=36;horizontal=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;" vertex="1" parent="f3">
+      <mxGeometry x="0" y="210" width="1900" height="150" as="geometry" />
+    </mxCell>
+    <mxCell id="f3l3" value="⚙️ API  POST /api/design/deliver" style="swimlane;startSize=36;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" vertex="1" parent="f3">
+      <mxGeometry x="0" y="360" width="1900" height="210" as="geometry" />
+    </mxCell>
+    <mxCell id="f3l4" value="📁 Google Drive API（共有ドライブ）" style="swimlane;startSize=36;horizontal=0;fillColor=#dae8fc;strokeColor=#4472C4;fontSize=11;fontStyle=1;" vertex="1" parent="f3">
+      <mxGeometry x="0" y="570" width="1900" height="180" as="geometry" />
+    </mxCell>
+    <mxCell id="f3l5" value="💾 Supabase DB" style="swimlane;startSize=36;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" vertex="1" parent="f3">
+      <mxGeometry x="0" y="750" width="1900" height="70" as="geometry" />
+    </mxCell>
+
+    <!-- Lane1: ユーザー4ステップ -->
+    <mxCell id="n301" value="開始&#xa;(ダッシュボード)" style="ellipse;whiteSpace=wrap;fillColor=#1a1a2e;fontColor=#ffffff;strokeColor=#1a1a2e;fontSize=10;" vertex="1" parent="f3l1">
+      <mxGeometry x="30" y="70" width="100" height="50" as="geometry" />
+    </mxCell>
+    <mxCell id="n302" value="STEP 1&#xa;制作内容選択&#xa;SNS投稿/バナー広告/チラシ&#xa;名刺/サムネイル/ストーリーズ/DM" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;fontStyle=1;" vertex="1" parent="f3l1">
+      <mxGeometry x="190" y="50" width="170" height="80" as="geometry" />
+    </mxCell>
+    <mxCell id="n303" value="STEP 2&#xa;テンプレート選択&#xa;フィルター(高級感/シンプル/&#xa;インパクト/SNS映え/かわいい/ナチュラル)&#xa;24種類から1つ選択" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;fontStyle=1;" vertex="1" parent="f3l1">
+      <mxGeometry x="420" y="40" width="180" height="100" as="geometry" />
+    </mxCell>
+    <mxCell id="n304" value="STEP 3 詳細入力&#xa;テキスト内容(複数行)&#xa;素材アップロード(ロゴ/写真)&#xa;備考入力" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;fontStyle=1;" vertex="1" parent="f3l1">
+      <mxGeometry x="660" y="50" width="170" height="80" as="geometry" />
+    </mxCell>
+    <mxCell id="n305" value="STEP 4&#xa;プレビュー確認&#xa;デザインをCanvasで確認" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=9;fontStyle=1;" vertex="1" parent="f3l1">
+      <mxGeometry x="890" y="55" width="160" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="n306" value="compressImage()&#xa;JPEG 0.88品質&#xa;max 1080px" style="rounded=1;whiteSpace=wrap;fillColor=#6c8ebf;fontColor=#ffffff;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="f3l1">
+      <mxGeometry x="1110" y="55" width="150" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="n307" value="access_token取得&#xa;supabase.auth.getSession()&#xa;→ Bearer token" style="rounded=1;whiteSpace=wrap;fillColor=#6c8ebf;fontColor=#ffffff;strokeColor=#6c8ebf;fontSize=9;" vertex="1" parent="f3l1">
+      <mxGeometry x="1320" y="55" width="160" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="n308" value="fetch POST&#xa;/api/design/deliver&#xa;{imageDataUrl,templateName,&#xa;textContent,imageType,imageSize}" style="rounded=1;whiteSpace=wrap;fillColor=#1a1a2e;fontColor=#ffffff;strokeColor=#1a1a2e;fontSize=9;" vertex="1" parent="f3l1">
+      <mxGeometry x="1540" y="50" width="160" height="80" as="geometry" />
+    </mxCell>
+
+    <!-- Lane2: Canvas -->
+    <mxCell id="n309" value="DesignCanvas.tsx レンダリング&#xa;useEffect+useCallback" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="f3l2">
+      <mxGeometry x="660" y="45" width="180" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n310" value="素材あり → drawImageCover()&#xa;写真枠にカバー表示&#xa;テキスト・グラデーション描画" style="rounded=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="f3l2">
+      <mxGeometry x="890" y="45" width="200" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="n311" value="onGenerated()&#xa;previewDataUrl取得" style="rounded=1;whiteSpace=wrap;fillColor=#d6b656;fontColor=#ffffff;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="f3l2">
+      <mxGeometry x="1150" y="50" width="140" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- Lane3: API -->
+    <mxCell id="n312" value="Authorization: Bearer 確認&#xa;service.auth.getUser(token)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f3l3">
+      <mxGeometry x="40" y="65" width="175" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n313" value="authError?" style="rhombus;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="f3l3">
+      <mxGeometry x="270" y="55" width="100" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="n314" value="users テーブル取得&#xa;login_id, company_name&#xa;email" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f3l3">
+      <mxGeometry x="430" y="65" width="160" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n315" value="base64→Buffer変換&#xa;4MB超 → 413エラー" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f3l3">
+      <mxGeometry x="650" y="65" width="155" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n316" value="getGoogleDriveClient()&#xa;ServiceAccount 認証&#xa;googleapis GoogleAuth" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f3l3">
+      <mxGeometry x="865" y="65" width="170" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n317" value="billing_month生成&#xa;new Date().toISOString()&#xa;.slice(0,7) → YYYY-MM" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f3l3">
+      <mxGeometry x="1095" y="65" width="165" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n318" value="{success:true,&#xa;driveUrl,previewUrl,&#xa;fileId,requestId}返却" style="rounded=1;whiteSpace=wrap;fillColor=#82b366;fontColor=#ffffff;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f3l3">
+      <mxGeometry x="1690" y="65" width="165" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n319" value="❌ 401 Unauthorized" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="f3l3">
+      <mxGeometry x="270" y="140" width="100" height="40" as="geometry" />
+    </mxCell>
+
+    <!-- Lane4: Drive -->
+    <mxCell id="n320" value="getOrCreateFolder()&#xa;drive.files.list&#xa;supportsAllDrives:true&#xa;includeItemsFromAllDrives:true&#xa;q=login_idフォルダ検索" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#4472C4;fontSize=9;" vertex="1" parent="f3l4">
+      <mxGeometry x="40" y="40" width="185" height="100" as="geometry" />
+    </mxCell>
+    <mxCell id="n321" value="フォルダ&#xa;存在する?" style="rhombus;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="f3l4">
+      <mxGeometry x="285" y="50" width="110" height="80" as="geometry" />
+    </mxCell>
+    <mxCell id="n322" value="drive.files.create()&#xa;mimeType:folder&#xa;parents:[parentId]&#xa;supportsAllDrives:true" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#4472C4;fontSize=9;" vertex="1" parent="f3l4">
+      <mxGeometry x="285" y="120" width="170" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n323" value="PassThrough stream生成&#xa;passThrough.end(imageBuffer)" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#4472C4;fontSize=10;" vertex="1" parent="f3l4">
+      <mxGeometry x="490" y="55" width="185" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n324" value="drive.files.create()&#xa;mimeType:image/jpeg&#xa;PassThrough body&#xa;supportsAllDrives:true" style="rounded=1;whiteSpace=wrap;fillColor=#4472C4;fontColor=#ffffff;strokeColor=#4472C4;fontSize=9;" vertex="1" parent="f3l4">
+      <mxGeometry x="735" y="45" width="175" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="n325" value="drive.permissions.create()&#xa;role:reader, type:anyone&#xa;supportsAllDrives:true" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#4472C4;fontSize=9;" vertex="1" parent="f3l4">
+      <mxGeometry x="970" y="50" width="185" height="65" as="geometry" />
+    </mxCell>
+    <mxCell id="n326" value="driveUrl=&#xa;drive.google.com/file/d/{id}/view&#xa;previewUrl=thumbnail?id={id}&amp;sz=w800" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#4472C4;fontSize=9;" vertex="1" parent="f3l4">
+      <mxGeometry x="1215" y="50" width="205" height="65" as="geometry" />
+    </mxCell>
+
+    <!-- Lane5: DB -->
+    <mxCell id="n327" value="image_requests.insert(user_id, image_type, image_size, text_content, template_name, status:'pending', delivered_image_url:driveUrl, billing_month)" style="shape=cylinder3;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;" vertex="1" parent="f3l5">
+      <mxGeometry x="735" y="5" width="500" height="55" as="geometry" />
+    </mxCell>
+
+    <!-- Flow3 edges -->
+    <mxCell id="e301" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n301" target="n302" parent="f3l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e302" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n302" target="n303" parent="f3l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e303" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n303" target="n304" parent="f3l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e304" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n304" target="n309" parent="f3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e305" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n309" target="n310" parent="f3l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e306" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n310" target="n311" parent="f3l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e307" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n311" target="n305" parent="f3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e308" value="「📤依頼する」" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n305" target="n306" parent="f3l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e309" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n306" target="n307" parent="f3l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e310" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n307" target="n308" parent="f3l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e311" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n308" target="n312" parent="f3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e312" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n312" target="n313" parent="f3l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e313" value="No(OK)" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n313" target="n314" parent="f3l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e314" value="Yes" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;" edge="1" source="n313" target="n319" parent="f3l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e315" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n314" target="n315" parent="f3l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e316" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n315" target="n316" parent="f3l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e317" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n316" target="n317" parent="f3l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e318" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n316" target="n320" parent="f3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e319" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n320" target="n321" parent="f3l4"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e320" value="No→新規作成" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n321" target="n322" parent="f3l4"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e321" value="Yes→既存使用" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n321" target="n323" parent="f3l4"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e322" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n322" target="n323" parent="f3l4"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e323" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n323" target="n324" parent="f3l4"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e324" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n324" target="n325" parent="f3l4"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e325" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n325" target="n326" parent="f3l4"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e326" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n326" target="n327" parent="f3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e327" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n327" target="n318" parent="f3"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- ============================================================ -->
+    <!-- FLOW 4: 管理者・納品フロー -->
+    <!-- ============================================================ -->
+    <mxCell id="f4" value="④ 管理者・案件管理・納品フロー" style="shape=pool;startSize=30;horizontal=1;fillColor=#1a1a2e;fontColor=#ffffff;strokeColor=#1a1a2e;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="40" y="2160" width="1900" height="650" as="geometry" />
+    </mxCell>
+    <mxCell id="f4l1" value="🔧 管理者操作" style="swimlane;startSize=36;horizontal=0;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;" vertex="1" parent="f4">
+      <mxGeometry x="0" y="30" width="1900" height="200" as="geometry" />
+    </mxCell>
+    <mxCell id="f4l2" value="⚙️ API  /api/admin/projects (GET / PATCH / POST)" style="swimlane;startSize=36;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" vertex="1" parent="f4">
+      <mxGeometry x="0" y="230" width="1900" height="200" as="geometry" />
+    </mxCell>
+    <mxCell id="f4l3" value="📤 通知・DB更新" style="swimlane;startSize=36;horizontal=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;" vertex="1" parent="f4">
+      <mxGeometry x="0" y="430" width="1900" height="220" as="geometry" />
+    </mxCell>
+
+    <!-- Lane1 管理者 -->
+    <mxCell id="n401" value="開始 /admin/login&#xa;checkAdmin()認証" style="ellipse;whiteSpace=wrap;fillColor=#1a1a2e;fontColor=#ffffff;strokeColor=#1a1a2e;fontSize=9;" vertex="1" parent="f4l1">
+      <mxGeometry x="30" y="75" width="110" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n402" value="📁 /admin/projects&#xa;ステータス/月フィルター選択&#xa;🔄更新ボタン" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="f4l1">
+      <mxGeometry x="200" y="70" width="165" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="n403" value="一覧表示&#xa;お客様番号/会社名/テンプレート&#xa;ステータス/依頼日/Drive確認" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="f4l1">
+      <mxGeometry x="430" y="65" width="170" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="n404" value="操作選択" style="rhombus;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;fontStyle=1;" vertex="1" parent="f4l1">
+      <mxGeometry x="665" y="70" width="110" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="n405" value="🔵「制作開始」クリック&#xa;pending → in_progress" style="rounded=1;whiteSpace=wrap;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="f4l1">
+      <mxGeometry x="840" y="50" width="155" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n406" value="📤「納品する」クリック&#xa;delivered_image_urlある案件のみ" style="rounded=1;whiteSpace=wrap;fillColor=#82b366;fontColor=#ffffff;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f4l1">
+      <mxGeometry x="840" y="120" width="155" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n407" value="confirm()ダイアログ&#xa;OK?" style="rhombus;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="f4l1">
+      <mxGeometry x="1055" y="115" width="110" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="n408" value="中断" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="f4l1">
+      <mxGeometry x="1055" y="55" width="80" height="35" as="geometry" />
+    </mxCell>
+    <mxCell id="n409" value="📊 CSV出力&#xa;Blob→download" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="f4l1">
+      <mxGeometry x="840" y="160" width="120" height="35" as="geometry" />
+    </mxCell>
+    <mxCell id="n410" value="✅ 納品完了&#xa;alert表示" style="ellipse;whiteSpace=wrap;fillColor=#E60023;fontColor=#ffffff;strokeColor=#E60023;fontSize=10;" vertex="1" parent="f4l1">
+      <mxGeometry x="1750" y="75" width="110" height="55" as="geometry" />
+    </mxCell>
+
+    <!-- Lane2 API -->
+    <mxCell id="n411" value="GET /api/admin/projects&#xa;image_requests+users JOIN&#xa;status/monthフィルター適用" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f4l2">
+      <mxGeometry x="200" y="70" width="175" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="n412" value="PATCH /api/admin/projects&#xa;{id, status:'in_progress'}&#xa;updated_at更新" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f4l2">
+      <mxGeometry x="840" y="55" width="170" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="n413" value="POST action='deliver'&#xa;image_requests取得&#xa;users(email,company_name) JOIN" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f4l2">
+      <mxGeometry x="1100" y="55" width="180" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="n414" value="checkAdmin()&#xa;role=admin 確認" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f4l2">
+      <mxGeometry x="30" y="75" width="140" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- Lane3 通知 -->
+    <mxCell id="n415" value="📧 sendDeliveryEmail()&#xa;to: お客様メール&#xa;本文: DriveURLリンク付き&#xa;(Resend経由)" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="f4l3">
+      <mxGeometry x="1100" y="40" width="175" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="n416" value="💬 notifySlack()&#xa;【納品完了】&#xa;会社名/依頼ID" style="rounded=1;whiteSpace=wrap;fillColor=#4A154B;fontColor=#ffffff;strokeColor=#4A154B;fontSize=10;" vertex="1" parent="f4l3">
+      <mxGeometry x="1330" y="40" width="155" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="n417" value="image_requests.update()&#xa;status:'delivered'&#xa;delivered_at: NOW()&#xa;updated_at: NOW()" style="shape=cylinder3;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f4l3">
+      <mxGeometry x="1540" y="35" width="180" height="80" as="geometry" />
+    </mxCell>
+    <mxCell id="n418" value="{ok:true}&#xa;レスポンス" style="rounded=1;whiteSpace=wrap;fillColor=#82b366;fontColor=#ffffff;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f4l3">
+      <mxGeometry x="1770" y="55" width="100" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- Flow4 edges -->
+    <mxCell id="e401" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n401" target="n402" parent="f4l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e402" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n402" target="n411" parent="f4"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e403" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n411" target="n403" parent="f4"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e404" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n403" target="n404" parent="f4l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e405" value="制作開始" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n404" target="n405" parent="f4l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e406" value="納品する" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n404" target="n406" parent="f4l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e407" value="CSV出力" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n404" target="n409" parent="f4l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e408" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n405" target="n412" parent="f4"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e409" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n406" target="n407" parent="f4l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e410" value="No" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;" edge="1" source="n407" target="n408" parent="f4l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e411" value="Yes" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n407" target="n413" parent="f4"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e412" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n413" target="n415" parent="f4"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e413" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n415" target="n416" parent="f4l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e414" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n416" target="n417" parent="f4l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e415" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n417" target="n418" parent="f4l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e416" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n418" target="n410" parent="f4"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- ============================================================ -->
+    <!-- FLOW 5: Cronリマインダー -->
+    <!-- ============================================================ -->
+    <mxCell id="f5" value="⑤ Cron リマインダーフロー（/api/cron/reminder）毎日実行" style="shape=pool;startSize=30;horizontal=1;fillColor=#1a1a2e;fontColor=#ffffff;strokeColor=#1a1a2e;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="40" y="2900" width="1900" height="680" as="geometry" />
+    </mxCell>
+    <mxCell id="f5l1" value="⏰ Vercel Cron Jobs（毎日）" style="swimlane;startSize=36;horizontal=0;fillColor=#ffd966;strokeColor=#d6b656;fontSize=11;fontStyle=1;" vertex="1" parent="f5">
+      <mxGeometry x="0" y="30" width="1900" height="100" as="geometry" />
+    </mxCell>
+    <mxCell id="f5l2" value="⚙️ API 認証・初期処理" style="swimlane;startSize=36;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" vertex="1" parent="f5">
+      <mxGeometry x="0" y="130" width="1900" height="150" as="geometry" />
+    </mxCell>
+    <mxCell id="f5l3" value="🔁 ユーザーループ処理" style="swimlane;startSize=36;horizontal=0;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;" vertex="1" parent="f5">
+      <mxGeometry x="0" y="280" width="1900" height="280" as="geometry" />
+    </mxCell>
+    <mxCell id="f5l4" value="💾 DB / 📧 メール" style="swimlane;startSize=36;horizontal=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;" vertex="1" parent="f5">
+      <mxGeometry x="0" y="560" width="1900" height="120" as="geometry" />
+    </mxCell>
+
+    <mxCell id="n501" value="Vercel Cron 毎日起動&#xa;GET /api/cron/reminder" style="rounded=1;whiteSpace=wrap;fillColor=#ffd966;strokeColor=#d6b656;fontSize=10;fontStyle=1;" vertex="1" parent="f5l1">
+      <mxGeometry x="40" y="30" width="200" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="n502" value="x-cron-secret または&#xa;Bearer token 認証" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f5l2">
+      <mxGeometry x="40" y="50" width="175" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n503" value="認証OK?" style="rhombus;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="f5l2">
+      <mxGeometry x="270" y="40" width="100" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="n504" value="today.getDate() → dayOfMonth&#xa;billingMonth=YYYY-MM取得&#xa;THRESHOLDS配列:&#xa;day3→1回,day6→2回,...day30→10回" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;" vertex="1" parent="f5l2">
+      <mxGeometry x="430" y="45" width="210" height="65" as="geometry" />
+    </mxCell>
+    <mxCell id="n505" value="activeThresholds=&#xa;THRESHOLDS.filter(t=&gt;dayOfMonth&gt;=t.day)&#xa;空→{sent:0}返却" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f5l2">
+      <mxGeometry x="700" y="50" width="200" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="n506" value="users取得&#xa;is_active:true&#xa;is_payment_registered:true" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f5l2">
+      <mxGeometry x="960" y="50" width="170" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="n507" value="❌ 401 Unauthorized" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="f5l2">
+      <mxGeometry x="270" y="120" width="110" height="30" as="geometry" />
+    </mxCell>
+
+    <mxCell id="n508" value="各ユーザーを&#xa;ループ処理" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;fontStyle=1;" vertex="1" parent="f5l3">
+      <mxGeometry x="40" y="100" width="140" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n509" value="image_requests.count&#xa;(当月 billingMonth-01 〜 nextMonth-01)&#xa;→ used件数取得" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="f5l3">
+      <mxGeometry x="240" y="90" width="190" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="n510" value="各activeThreshold&#xa;ループ" style="rounded=1;whiteSpace=wrap;fillColor=#9673a6;fontColor=#ffffff;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="f5l3">
+      <mxGeometry x="490" y="100" width="130" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n511" value="used &lt; threshold&#xa;.required ?" style="rhombus;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="f5l3">
+      <mxGeometry x="680" y="90" width="120" height="80" as="geometry" />
+    </mxCell>
+    <mxCell id="n512" value="reminder_logs検索&#xa;user_id + billing_month&#xa;+ threshold_day" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="f5l3">
+      <mxGeometry x="870" y="90" width="175" height="65" as="geometry" />
+    </mxCell>
+    <mxCell id="n513" value="送信済み&#xa;記録あり?" style="rhombus;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="f5l3">
+      <mxGeometry x="1105" y="90" width="110" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="n514" value="スキップ&#xa;(重複防止)" style="rounded=1;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="f5l3">
+      <mxGeometry x="1105" y="200" width="110" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="n515" value="次のthresholdへ" style="rounded=1;whiteSpace=wrap;fillColor=#718096;fontColor=#ffffff;strokeColor=#718096;fontSize=10;" vertex="1" parent="f5l3">
+      <mxGeometry x="680" y="220" width="120" height="40" as="geometry" />
+    </mxCell>
+
+    <mxCell id="n516" value="sendReminderEmail()&#xa;user, usedCount, requiredCount&#xa;thresholdDay, billingMonth" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="f5l4">
+      <mxGeometry x="1280" y="25" width="195" height="65" as="geometry" />
+    </mxCell>
+    <mxCell id="n517" value="reminder_logs.insert()&#xa;user_id, billing_month&#xa;threshold_day, required_count&#xa;→ sent++" style="shape=cylinder3;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f5l4">
+      <mxGeometry x="1530" y="15" width="185" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="n518" value="{ok:true,sent,errors&#xa;dayOfMonth,billingMonth}" style="ellipse;whiteSpace=wrap;fillColor=#E60023;fontColor=#ffffff;strokeColor=#E60023;fontSize=10;" vertex="1" parent="f5l4">
+      <mxGeometry x="1760" y="30" width="110" height="55" as="geometry" />
+    </mxCell>
+
+    <!-- Flow5 edges -->
+    <mxCell id="e501" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n501" target="n502" parent="f5"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e502" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n502" target="n503" parent="f5l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e503" value="Yes(OK)" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n503" target="n504" parent="f5l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e504" value="No" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;" edge="1" source="n503" target="n507" parent="f5l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e505" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n504" target="n505" parent="f5l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e506" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n505" target="n506" parent="f5l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e507" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n506" target="n508" parent="f5"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e508" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n508" target="n509" parent="f5l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e509" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n509" target="n510" parent="f5l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e510" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n510" target="n511" parent="f5l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e511" value="Yes(不足)" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n511" target="n512" parent="f5l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e512" value="No" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#718096;" edge="1" source="n511" target="n515" parent="f5l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e513" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n512" target="n513" parent="f5l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e514" value="Yes" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#b85450;" edge="1" source="n513" target="n514" parent="f5l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e515" value="No(未送信)" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n513" target="n516" parent="f5"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e516" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n516" target="n517" parent="f5l4"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e517" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n517" target="n518" parent="f5l4"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- ============================================================ -->
+    <!-- FLOW 6: Cronフィードバック -->
+    <!-- ============================================================ -->
+    <mxCell id="f6" value="⑥ Cron フィードバックフロー（/api/cron/feedback）毎月20日実行" style="shape=pool;startSize=30;horizontal=1;fillColor=#1a1a2e;fontColor=#ffffff;strokeColor=#1a1a2e;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="40" y="3680" width="1900" height="500" as="geometry" />
+    </mxCell>
+    <mxCell id="f6l1" value="⏰ Vercel Cron（毎月20日）" style="swimlane;startSize=36;horizontal=0;fillColor=#ffd966;strokeColor=#d6b656;fontSize=11;fontStyle=1;" vertex="1" parent="f6">
+      <mxGeometry x="0" y="30" width="1900" height="90" as="geometry" />
+    </mxCell>
+    <mxCell id="f6l2" value="⚙️ API 処理" style="swimlane;startSize=36;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" vertex="1" parent="f6">
+      <mxGeometry x="0" y="120" width="1900" height="220" as="geometry" />
+    </mxCell>
+    <mxCell id="f6l3" value="📧 メール送信" style="swimlane;startSize=36;horizontal=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;" vertex="1" parent="f6">
+      <mxGeometry x="0" y="340" width="1900" height="160" as="geometry" />
+    </mxCell>
+
+    <mxCell id="n601" value="Vercel Cron 起動&#xa;GET /api/cron/feedback" style="rounded=1;whiteSpace=wrap;fillColor=#ffd966;strokeColor=#d6b656;fontSize=10;fontStyle=1;" vertex="1" parent="f6l1">
+      <mxGeometry x="40" y="25" width="180" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="n602" value="Authorization: Bearer CRON_SECRET&#xa;認証チェック → 不一致→401" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f6l2">
+      <mxGeometry x="40" y="70" width="200" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n603" value="today.getDate()&#xa;=== 20 ?" style="rhombus;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="f6l2">
+      <mxGeometry x="295" y="60" width="110" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="n604" value="users取得&#xa;is_active:true&#xa;is_payment_registered:true" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f6l2">
+      <mxGeometry x="470" y="65" width="170" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="n605" value="feedbacks.select(user_id)&#xa;.eq(billing_month=今月)&#xa;→ submittedUserIds Set作成" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f6l2">
+      <mxGeometry x="700" y="65" width="195" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="n606" value="各ユーザーループ&#xa;submittedUserIds.has(id)?&#xa;→ Yes:スキップ" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="f6l2">
+      <mxGeometry x="955" y="65" width="185" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="n607" value="当月依頼数 count取得&#xa;count=0 → スキップ" style="rhombus;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="f6l2">
+      <mxGeometry x="1200" y="60" width="140" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="n608" value="Not the 20th" style="rounded=1;whiteSpace=wrap;fillColor=#718096;fontColor=#ffffff;strokeColor=#718096;fontSize=10;" vertex="1" parent="f6l2">
+      <mxGeometry x="295" y="155" width="110" height="35" as="geometry" />
+    </mxCell>
+
+    <mxCell id="n609" value="sendFeedbackEmail()&#xa;email, company_name, contact_name&#xa;billingMonth&#xa;アンケートリンク付き" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="f6l3">
+      <mxGeometry x="1400" y="40" width="200" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="n610" value="{sent, errors}&#xa;(END)" style="ellipse;whiteSpace=wrap;fillColor=#E60023;fontColor=#ffffff;strokeColor=#E60023;fontSize=10;" vertex="1" parent="f6l3">
+      <mxGeometry x="1660" y="55" width="110" height="50" as="geometry" />
+    </mxCell>
+
+    <!-- Flow6 edges -->
+    <mxCell id="e601" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n601" target="n602" parent="f6"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e602" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n602" target="n603" parent="f6l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e603" value="Yes(20日)" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n603" target="n604" parent="f6l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e604" value="No" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#718096;" edge="1" source="n603" target="n608" parent="f6l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e605" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n604" target="n605" parent="f6l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e606" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n605" target="n606" parent="f6l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e607" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n606" target="n607" parent="f6l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e608" value="count&gt;0" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n607" target="n609" parent="f6"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e609" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n609" target="n610" parent="f6l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- ============================================================ -->
+    <!-- FLOW 7: Cron請求チェック -->
+    <!-- ============================================================ -->
+    <mxCell id="f7" value="⑦ Cron 請求チェックフロー（/api/cron/billing-check）毎月25〜31日実行" style="shape=pool;startSize=30;horizontal=1;fillColor=#1a1a2e;fontColor=#ffffff;strokeColor=#1a1a2e;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="40" y="4280" width="1900" height="560" as="geometry" />
+    </mxCell>
+    <mxCell id="f7l1" value="⏰ Vercel Cron（毎月25〜31日）" style="swimlane;startSize=36;horizontal=0;fillColor=#ffd966;strokeColor=#d6b656;fontSize=11;fontStyle=1;" vertex="1" parent="f7">
+      <mxGeometry x="0" y="30" width="1900" height="90" as="geometry" />
+    </mxCell>
+    <mxCell id="f7l2" value="⚙️ API 処理" style="swimlane;startSize=36;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" vertex="1" parent="f7">
+      <mxGeometry x="0" y="120" width="1900" height="230" as="geometry" />
+    </mxCell>
+    <mxCell id="f7l3" value="📤 通知・DB停止処理" style="swimlane;startSize=36;horizontal=0;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;fontStyle=1;" vertex="1" parent="f7">
+      <mxGeometry x="0" y="350" width="1900" height="210" as="geometry" />
+    </mxCell>
+
+    <mxCell id="n701" value="Vercel Cron 起動&#xa;GET /api/cron/billing-check" style="rounded=1;whiteSpace=wrap;fillColor=#ffd966;strokeColor=#d6b656;fontSize=10;fontStyle=1;" vertex="1" parent="f7l1">
+      <mxGeometry x="40" y="25" width="200" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="n702" value="Authorization: Bearer CRON_SECRET&#xa;認証 → 不一致→401" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f7l2">
+      <mxGeometry x="40" y="75" width="195" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n703" value="today.getDate()&#xa;&lt; 25?" style="rhombus;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="f7l2">
+      <mxGeometry x="295" y="65" width="110" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="n704" value="users取得&#xa;is_active: true" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f7l2">
+      <mxGeometry x="470" y="75" width="155" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n705" value="各ユーザーループ&#xa;過去3ヶ月のmonths配列生成&#xa;setMonth(-1,-2,-3)" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="f7l2">
+      <mxGeometry x="685" y="70" width="190" height="65" as="geometry" />
+    </mxCell>
+    <mxCell id="n706" value="billing_records取得&#xa;.in('billing_month', months)&#xa;clearing_status取得" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f7l2">
+      <mxGeometry x="935" y="70" width="180" height="65" as="geometry" />
+    </mxCell>
+    <mxCell id="n707" value="clearing_status&#xa;='未収'の件数&#xa;&gt;= 2ヶ月?" style="rhombus;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="f7l2">
+      <mxGeometry x="1175" y="60" width="130" height="90" as="geometry" />
+    </mxCell>
+    <mxCell id="n708" value="次のユーザーへ" style="rounded=1;whiteSpace=wrap;fillColor=#718096;fontColor=#ffffff;strokeColor=#718096;fontSize=10;" vertex="1" parent="f7l2">
+      <mxGeometry x="1175" y="165" width="130" height="35" as="geometry" />
+    </mxCell>
+    <mxCell id="n709" value="早すぎる" style="rounded=1;whiteSpace=wrap;fillColor=#718096;fontColor=#ffffff;strokeColor=#718096;fontSize=10;" vertex="1" parent="f7l2">
+      <mxGeometry x="295" y="160" width="110" height="35" as="geometry" />
+    </mxCell>
+
+    <mxCell id="n710" value="users.update()&#xa;is_active: false&#xa;updated_at: NOW()&#xa;→ アクセス停止" style="shape=cylinder3;whiteSpace=wrap;fillColor=#f8cecc;strokeColor=#b85450;fontSize=10;" vertex="1" parent="f7l3">
+      <mxGeometry x="1360" y="30" width="175" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="n711" value="sendDunningEmail()&#xa;email, company_name&#xa;督促メール送信(Resend)" style="rounded=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d6b656;fontSize=10;" vertex="1" parent="f7l3">
+      <mxGeometry x="1570" y="35" width="175" height="65" as="geometry" />
+    </mxCell>
+    <mxCell id="n712" value="notifySlack()&#xa;【滞納アラート】&#xa;会社名(email)&#xa;N月未払いでアクセス停止" style="rounded=1;whiteSpace=wrap;fillColor=#4A154B;fontColor=#ffffff;strokeColor=#4A154B;fontSize=10;" vertex="1" parent="f7l3">
+      <mxGeometry x="1570" y="120" width="175" height="65" as="geometry" />
+    </mxCell>
+    <mxCell id="n713" value="{checked, blocked&#xa;dunned}(END)" style="ellipse;whiteSpace=wrap;fillColor=#E60023;fontColor=#ffffff;strokeColor=#E60023;fontSize=10;" vertex="1" parent="f7l3">
+      <mxGeometry x="1790" y="60" width="90" height="55" as="geometry" />
+    </mxCell>
+
+    <!-- Flow7 edges -->
+    <mxCell id="e701" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n701" target="n702" parent="f7"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e702" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n702" target="n703" parent="f7l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e703" value="No(25日以降)" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n703" target="n704" parent="f7l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e704" value="Yes" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#718096;" edge="1" source="n703" target="n709" parent="f7l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e705" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n704" target="n705" parent="f7l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e706" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n705" target="n706" parent="f7l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e707" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n706" target="n707" parent="f7l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e708" value="Yes(2ヶ月以上)" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n707" target="n710" parent="f7"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e709" value="No" style="edgeStyle=orthogonalEdgeStyle;strokeColor=#718096;" edge="1" source="n707" target="n708" parent="f7l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e710" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n710" target="n711" parent="f7l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e711" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n711" target="n712" parent="f7l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e712" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n712" target="n713" parent="f7l3"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- ============================================================ -->
+    <!-- FLOW 8: 請求CSV取込フロー -->
+    <!-- ============================================================ -->
+    <mxCell id="f8" value="⑧ 請求CSV取込フロー（/api/admin/billing/import）" style="shape=pool;startSize=30;horizontal=1;fillColor=#1a1a2e;fontColor=#ffffff;strokeColor=#1a1a2e;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="40" y="4940" width="1900" height="490" as="geometry" />
+    </mxCell>
+    <mxCell id="f8l1" value="🔧 管理者操作" style="swimlane;startSize=36;horizontal=0;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;" vertex="1" parent="f8">
+      <mxGeometry x="0" y="30" width="1900" height="120" as="geometry" />
+    </mxCell>
+    <mxCell id="f8l2" value="⚙️ API /api/admin/billing/import" style="swimlane;startSize=36;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" vertex="1" parent="f8">
+      <mxGeometry x="0" y="150" width="1900" height="200" as="geometry" />
+    </mxCell>
+    <mxCell id="f8l3" value="💾 DB upsert" style="swimlane;startSize=36;horizontal=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;" vertex="1" parent="f8">
+      <mxGeometry x="0" y="350" width="1900" height="140" as="geometry" />
+    </mxCell>
+
+    <mxCell id="n801" value="開始&#xa;/admin/billing" style="ellipse;whiteSpace=wrap;fillColor=#1a1a2e;fontColor=#ffffff;strokeColor=#1a1a2e;fontSize=10;" vertex="1" parent="f8l1">
+      <mxGeometry x="30" y="40" width="90" height="45" as="geometry" />
+    </mxCell>
+    <mxCell id="n802" value="CSVファイル選択&#xa;records_file(請求明細)&#xa;contracts_file(請求情報)" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="f8l1">
+      <mxGeometry x="180" y="35" width="180" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n803" value="アップロード&#xa;ボタンクリック" style="rounded=1;whiteSpace=wrap;fillColor=#9673a6;fontColor=#ffffff;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="f8l1">
+      <mxGeometry x="420" y="40" width="130" height="45" as="geometry" />
+    </mxCell>
+
+    <mxCell id="n804" value="POST受信&#xa;checkAdmin()&#xa;role確認→401" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f8l2">
+      <mxGeometry x="420" y="65" width="150" height="60" as="geometry" />
+    </mxCell>
+    <mxCell id="n805" value="users.select(id,billing_code)&#xa;billing_code→user_idマップ生成&#xa;new Map([billing_code, id])" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f8l2">
+      <mxGeometry x="630" y="60" width="210" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="n806" value="[records_file]&#xa;Buffer→iconv.decode('Shift_JIS')&#xa;csv-parse(columns定義,from_line:2)&#xa;rows.map→parseDate/parseNum変換&#xa;filter(invoice_number必須)" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;" vertex="1" parent="f8l2">
+      <mxGeometry x="905" y="55" width="220" height="90" as="geometry" />
+    </mxCell>
+    <mxCell id="n807" value="[contracts_file]&#xa;同様Shift_JISデコード&#xa;csv-parse(columns定義)&#xa;billing_contracts用データ変換" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=9;" vertex="1" parent="f8l2">
+      <mxGeometry x="1190" y="55" width="200" height="90" as="geometry" />
+    </mxCell>
+    <mxCell id="n808" value="{records:{count}&#xa;contracts:{count}}&#xa;返却(END)" style="ellipse;whiteSpace=wrap;fillColor=#E60023;fontColor=#ffffff;strokeColor=#E60023;fontSize=10;" vertex="1" parent="f8l2">
+      <mxGeometry x="1700" y="70" width="120" height="60" as="geometry" />
+    </mxCell>
+
+    <mxCell id="n809" value="billing_records.upsert()&#xa;onConflict:'invoice_number'&#xa;→ results.records={count}" style="shape=cylinder3;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f8l3">
+      <mxGeometry x="905" y="30" width="220" height="75" as="geometry" />
+    </mxCell>
+    <mxCell id="n810" value="billing_contracts.upsert()&#xa;onConflict:'billing_info_number'&#xa;→ results.contracts={count}" style="shape=cylinder3;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f8l3">
+      <mxGeometry x="1190" y="30" width="200" height="75" as="geometry" />
+    </mxCell>
+
+    <!-- Flow8 edges -->
+    <mxCell id="e801" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n801" target="n802" parent="f8l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e802" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n802" target="n803" parent="f8l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e803" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n803" target="n804" parent="f8"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e804" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n804" target="n805" parent="f8l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e805" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n805" target="n806" parent="f8l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e806" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n805" target="n807" parent="f8l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e807" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n806" target="n809" parent="f8"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e808" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n807" target="n810" parent="f8"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e809" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n809" target="n808" parent="f8"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e810" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n810" target="n808" parent="f8"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+    <!-- ============================================================ -->
+    <!-- FLOW 9: 請求リンク紐付けフロー -->
+    <!-- ============================================================ -->
+    <mxCell id="f9" value="⑨ 請求リンク紐付けフロー（/api/admin/billing/link）" style="shape=pool;startSize=30;horizontal=1;fillColor=#1a1a2e;fontColor=#ffffff;strokeColor=#1a1a2e;fontSize=14;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="40" y="5530" width="1900" height="440" as="geometry" />
+    </mxCell>
+    <mxCell id="f9l1" value="🔧 管理者操作" style="swimlane;startSize=36;horizontal=0;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;fontStyle=1;" vertex="1" parent="f9">
+      <mxGeometry x="0" y="30" width="1900" height="100" as="geometry" />
+    </mxCell>
+    <mxCell id="f9l2" value="⚙️ API /api/admin/billing/link" style="swimlane;startSize=36;horizontal=0;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" vertex="1" parent="f9">
+      <mxGeometry x="0" y="130" width="1900" height="200" as="geometry" />
+    </mxCell>
+    <mxCell id="f9l3" value="💾 DB更新" style="swimlane;startSize=36;horizontal=0;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;fontStyle=1;" vertex="1" parent="f9">
+      <mxGeometry x="0" y="330" width="1900" height="110" as="geometry" />
+    </mxCell>
+
+    <mxCell id="n901" value="開始 /admin/billing&#xa;未紐付けレコード確認" style="ellipse;whiteSpace=wrap;fillColor=#1a1a2e;fontColor=#ffffff;strokeColor=#1a1a2e;fontSize=10;" vertex="1" parent="f9l1">
+      <mxGeometry x="30" y="30" width="130" height="45" as="geometry" />
+    </mxCell>
+    <mxCell id="n902" value="「紐付け」ボタンクリック&#xa;{recordId, billingCode, userId}送信" style="rounded=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=10;" vertex="1" parent="f9l1">
+      <mxGeometry x="225" y="30" width="200" height="45" as="geometry" />
+    </mxCell>
+
+    <mxCell id="n903" value="POST受信&#xa;checkAdmin()→401" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f9l2">
+      <mxGeometry x="225" y="65" width="150" height="55" as="geometry" />
+    </mxCell>
+    <mxCell id="n904" value="userId直接&#xa;指定あり?" style="rhombus;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="f9l2">
+      <mxGeometry x="440" y="55" width="120" height="80" as="geometry" />
+    </mxCell>
+    <mxCell id="n905" value="users.select(company_name)&#xa;.eq(id=userId)&#xa;billing_codeあり→users.update" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f9l2">
+      <mxGeometry x="630" y="35" width="200" height="65" as="geometry" />
+    </mxCell>
+    <mxCell id="n906" value="users.select(id,company_name)&#xa;.eq(billing_code=billingCode)&#xa;見つからない→404" style="rounded=1;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f9l2">
+      <mxGeometry x="630" y="120" width="210" height="65" as="geometry" />
+    </mxCell>
+    <mxCell id="n907" value="{ok:true, companyName}&#xa;返却(END)" style="ellipse;whiteSpace=wrap;fillColor=#E60023;fontColor=#ffffff;strokeColor=#E60023;fontSize=10;" vertex="1" parent="f9l2">
+      <mxGeometry x="1700" y="70" width="120" height="55" as="geometry" />
+    </mxCell>
+
+    <mxCell id="n908" value="billing_records.update(user_id=resolvedUserId)&#xa;.eq(id=recordId)" style="shape=cylinder3;whiteSpace=wrap;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="f9l3">
+      <mxGeometry x="900" y="20" width="280" height="65" as="geometry" />
+    </mxCell>
+
+    <!-- Flow9 edges -->
+    <mxCell id="e901" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n901" target="n902" parent="f9l1"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e902" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n902" target="n903" parent="f9"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e903" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n903" target="n904" parent="f9l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e904" value="Yes" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n904" target="n905" parent="f9l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e905" value="No" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n904" target="n906" parent="f9l2"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e906" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n905" target="n908" parent="f9"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e907" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n906" target="n908" parent="f9"><mxGeometry relative="1" as="geometry"/></mxCell>
+    <mxCell id="e908" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="n908" target="n907" parent="f9"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+  </root>
+</mxGraphModel>

@@ -44,3 +44,6 @@ next-env.d.ts
 /scripts/
 
 .vercel
+
+# --- Claude Code / 作業生成物（2026-07-22 追加） ---
+.worktreeinclude

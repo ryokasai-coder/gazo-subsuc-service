@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>画像作成サブスクサービス — システム全体図</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', 'Hiragino Sans', sans-serif; background: #F8F9FB; color: #1a1a2e; overflow-x: hidden; }
+
+  /* ヘッダー */
+  .header { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color: white; padding: 28px 40px; display: flex; align-items: center; gap: 16px; }
+  .header-icon { width: 44px; height: 44px; background: #E60023; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .header h1 { font-size: 22px; font-weight: 700; }
+  .header p { font-size: 13px; color: #a0aec0; margin-top: 3px; }
+
+  /* メインレイアウト */
+  .canvas { padding: 32px 40px; max-width: 1400px; margin: 0 auto; }
+
+  /* セクションタイトル */
+  .section-label {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: #718096; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
+
+  /* フロー全体 */
+  .flow-row { display: flex; gap: 24px; align-items: flex-start; margin-bottom: 32px; }
+  .flow-col { display: flex; flex-direction: column; gap: 12px; }
+
+  /* カード */
+  .card {
+    background: white; border-radius: 16px; padding: 16px 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid #edf2f7;
+    transition: transform 0.15s, box-shadow 0.15s; cursor: default; min-width: 200px;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+  .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .card-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .card-title { font-size: 13px; font-weight: 700; }
+  .card-path { font-size: 10px; color: #a0aec0; font-family: 'Courier New', monospace; margin-top: 2px; }
+  .card-desc { font-size: 11px; color: #4a5568; line-height: 1.7; }
+  .card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+  .tag { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+
+  /* カラーテーマ */
+  .theme-user { border-left: 3px solid #4299e1; }
+  .theme-user .card-icon { background: #ebf8ff; }
+  .theme-admin { border-left: 3px solid #9f7aea; }
+  .theme-admin .card-icon { background: #faf5ff; }
+  .theme-api { border-left: 3px solid #48bb78; }
+  .theme-api .card-icon { background: #f0fff4; }
+  .theme-cron { border-left: 3px solid #ed8936; }
+  .theme-cron .card-icon { background: #fffaf0; }
+  .theme-ext { border-left: 3px solid #e53e3e; }
+  .theme-ext .card-icon { background: #fff5f5; }
+  .theme-db { border-left: 3px solid #38b2ac; }
+  .theme-db .card-icon { background: #e6fffa; }
+
+  .tag-get { background: #ebf8ff; color: #2b6cb0; }
+  .tag-post { background: #f0fff4; color: #276749; }
+  .tag-patch { background: #fffaf0; color: #744210; }
+  .tag-auth { background: #faf5ff; color: #553c9a; }
+  .tag-cron { background: #fff5f5; color: #9b2c2c; }
+
+  /* 矢印コネクター */
+  .connector { display: flex; align-items: center; justify-content: center; color: #a0aec0; font-size: 18px; padding: 0 4px; flex-shrink: 0; align-self: center; }
+  .connector-down { display: flex; align-items: center; justify-content: center; color: #a0aec0; font-size: 18px; padding: 4px 0; }
+  .connector-label { font-size: 10px; color: #718096; text-align: center; font-weight: 600; }
+
+  /* フローボックス */
+  .flow-box { background: white; border-radius: 20px; padding: 20px 24px; box-shadow: 0 2px 16px rgba(0,0,0,0.06); border: 1px solid #edf2f7; }
+
+  /* ユーザーフロー図 */
+  .user-flow { display: flex; align-items: center; gap: 0; overflow-x: auto; padding: 8px 0; }
+  .flow-step {
+    display: flex; flex-direction: column; align-items: center; min-width: 110px;
+    padding: 12px 8px; border-radius: 12px; background: #F8F9FB; border: 1px solid #e2e8f0;
+    font-size: 11px; text-align: center; cursor: default;
+  }
+  .flow-step:hover { background: #EBF8FF; border-color: #90CDF4; }
+  .flow-step-icon { font-size: 22px; margin-bottom: 6px; }
+  .flow-step-title { font-weight: 700; font-size: 11px; color: #2d3748; }
+  .flow-step-sub { font-size: 10px; color: #718096; margin-top: 3px; line-height: 1.4; }
+  .flow-arrow { color: #CBD5E0; font-size: 20px; padding: 0 6px; flex-shrink: 0; }
+  .flow-arrow-label { font-size: 9px; color: #a0aec0; text-align: center; }
+
+  /* ステータスフロー */
+  .status-flow { display: flex; align-items: center; gap: 0; flex-wrap: wrap; }
+  .status-badge {
+    padding: 6px 16px; border-radius: 20px; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .status-pending { background: #FFF9C4; color: #92610B; border: 1px solid #F6E05E; }
+  .status-in-progress { background: #EBF8FF; color: #1A4A6E; border: 1px solid #90CDF4; }
+  .status-delivered { background: #F0FFF4; color: #1C4532; border: 1px solid #9AE6B4; }
+  .status-arrow { color: #CBD5E0; font-size: 16px; padding: 0 10px; }
+  .status-action { font-size: 10px; color: #718096; text-align: center; line-height: 1.4; margin-top: 4px; }
+
+  /* グリッドレイアウト */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+  /* DB テーブル */
+  .db-table { background: white; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; }
+  .db-table-head { background: #319795; color: white; padding: 8px 14px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+  .db-table-row { padding: 6px 14px; font-size: 11px; color: #4a5568; border-top: 1px solid #f7fafc; display: flex; gap: 8px; }
+  .db-col-name { font-family: 'Courier New', monospace; color: #2d3748; font-weight: 600; min-width: 120px; }
+  .db-col-type { color: #9f7aea; font-size: 10px; }
+
+  /* 外部サービス */
+  .ext-grid { display: flex; gap: 12px; flex-wrap: wrap; }
+  .ext-card {
+    background: white; border-radius: 12px; padding: 12px 16px; border: 1px solid #edf2f7;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 10px;
+    min-width: 160px;
+  }
+  .ext-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .ext-name { font-size: 12px; font-weight: 700; }
+  .ext-desc { font-size: 10px; color: #718096; }
+
+  /* Legend */
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #718096; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+  /* tooltip */
+  .tooltip-wrap { position: relative; }
+  .tooltip { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #1a1a2e; color: white; padding: 8px 12px; border-radius: 8px; font-size: 11px; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.2s; z-index: 100; line-height: 1.6; }
+  .tooltip-wrap:hover .tooltip { opacity: 1; }
+
+  /* 注釈 */
+  .note { background: #FFFBEA; border: 1px solid #F6E05E; border-radius: 10px; padding: 10px 14px; font-size: 11px; color: #744210; line-height: 1.7; display: flex; gap: 8px; }
+  .note-icon { flex-shrink: 0; font-size: 14px; }
+
+  hr.sep { border: none; border-top: 2px dashed #e2e8f0; margin: 28px 0; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-icon">🎨</div>
+  <div>
+    <h1>画像作成サブスクサービス — システム全体構成図</h1>
+    <p>Next.js 14 App Router + Supabase + Google Drive API + Resend | 最終更新: 2026-06-07</p>
+  </div>
+</div>
+
+<div class="canvas">
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#4299e1"></div> ユーザー向けページ</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#9f7aea"></div> 管理者向けページ</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#48bb78"></div> API Routes</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ed8936"></div> Cron自動処理</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#38b2ac"></div> DBテーブル</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e53e3e"></div> 外部サービス</div>
+  </div>
+
+  <!-- ===== 1. ユーザーの全体フロー ===== -->
+  <div class="section-label">① お客様（ユーザー）の全体フロー</div>
+  <div class="flow-box" style="margin-bottom:32px;">
+    <div class="user-flow">
+
+      <div class="flow-step tooltip-wrap" style="background:#EBF8FF; border-color:#90CDF4;">
+        <div class="flow-step-icon">🌐</div>
+        <div class="flow-step-title">トップページ</div>
+        <div class="flow-step-sub">/</div>
+        <div class="tooltip">サービス紹介ランディングページ<br>「申し込む」ボタンあり</div>
+      </div>
+      <div class="flow-arrow">→</div>
+
+      <div class="flow-step tooltip-wrap">
+        <div class="flow-step-icon">📝</div>
+        <div class="flow-step-title">申し込み</div>
+        <div class="flow-step-sub">/apply</div>
+        <div class="tooltip">会社名・担当者・メール・電話を入力<br>→ ログインID・仮PW発行メール送信</div>
+      </div>
+      <div class="flow-arrow">→</div>
+
+      <div class="flow-step tooltip-wrap">
+        <div class="flow-step-icon">🔐</div>
+        <div class="flow-step-title">ログイン</div>
+        <div class="flow-step-sub">/login</div>
+        <div class="tooltip">ログインID（お客様番号）＋PW<br>管理者も同ページ（admin IDで分岐）</div>
+      </div>
+      <div class="flow-arrow">→</div>
+
+      <div class="flow-step tooltip-wrap" style="background:#F0FFF4; border-color:#9AE6B4;">
+        <div class="flow-step-icon">🏠</div>
+        <div class="flow-step-title">ダッシュボード</div>
+        <div class="flow-step-sub">/dashboard</div>
+        <div class="tooltip">今月の利用状況・残り回数<br>「画像を依頼する」ボタン</div>
+      </div>
+      <div class="flow-arrow" style="font-size:14px; flex-direction:column; display:flex; align-items:center;">
+        <div>↓</div>
+        <div style="font-size:9px; color:#a0aec0; white-space:nowrap;">画像依頼フォーム<br>（4ステップ）</div>
+        <div>↓</div>
+      </div>
+
+      <div class="flow-step tooltip-wrap" style="background:#FAF5FF; border-color:#D6BCFA; min-width:140px;">
+        <div class="flow-step-icon">🎨</div>
+        <div class="flow-step-title">デザイン生成・依頼</div>
+        <div class="flow-step-sub">Canvas → Drive → pending</div>
+        <div class="tooltip">Step1: 制作内容選択<br>Step2: テンプレート選択（フィルター付き）<br>Step3: テキスト・素材アップロード<br>Step4: プレビュー確認→依頼ボタン</div>
+      </div>
+      <div class="flow-arrow">→</div>
+
+      <div class="flow-step tooltip-wrap">
+        <div class="flow-step-icon">📋</div>
+        <div class="flow-step-title">依頼履歴</div>
+        <div class="flow-step-sub">/dashboard/history</div>
+        <div class="tooltip">過去の依頼一覧・ステータス確認<br>納品済みはDriveリンクを表示</div>
+      </div>
+      <div class="flow-arrow">→</div>
+
+      <div class="flow-step tooltip-wrap">
+        <div class="flow-step-icon">⭐</div>
+        <div class="flow-step-title">フィードバック</div>
+        <div class="flow-step-sub">/dashboard/feedback</div>
+        <div class="tooltip">月末にメール通知<br>満足度・コメント入力</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== 2. 案件ステータスフロー ===== -->
+  <div class="section-label">② 案件ステータスフロー（image_requests）</div>
+  <div class="flow-box" style="margin-bottom:32px;">
+    <div style="display:flex; align-items:flex-start; gap:0; flex-wrap:wrap;">
+      <div style="text-align:center;">
+        <div class="status-badge status-pending">⏳ pending<br><span style="font-size:9px; font-weight:400;">依頼中</span></div>
+        <div class="status-action">お客様が「依頼する」<br>ボタンを押した直後<br>Drive画像は保存済み</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;padding:0 12px;align-self:center;">
+        <div class="status-arrow">→</div>
+        <div style="font-size:9px;color:#718096;">管理者が<br>「制作開始」</div>
+      </div>
+      <div style="text-align:center;">
+        <div class="status-badge status-in-progress">🔧 in_progress<br><span style="font-size:9px; font-weight:400;">制作中</span></div>
+        <div class="status-action">管理者が制作中に変更<br>お客様には未通知</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;padding:0 12px;align-self:center;">
+        <div class="status-arrow">→</div>
+        <div style="font-size:9px;color:#718096;">管理者が<br>「📤 納品する」</div>
+      </div>
+      <div style="text-align:center;">
+        <div class="status-badge status-delivered">✅ delivered<br><span style="font-size:9px; font-weight:400;">納品済み</span></div>
+        <div class="status-action">納品メール送信<br>DriveリンクURLをメールに記載</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;padding:0 12px;align-self:center;">
+        <div class="status-arrow">→</div>
+        <div style="font-size:9px;color:#718096;">cancelled も<br>選択可</div>
+      </div>
+      <div style="text-align:center;">
+        <div class="status-badge" style="background:#FED7D7;color:#742A2A;border:1px solid #FC8181;">🚫 cancelled</div>
+        <div class="status-action">キャンセル済み</div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:16px;">
+      <div class="note-icon">💡</div>
+      <div>お客様が「依頼する」を押すと即座にGoogleドライブへ画像アップロード→<strong>pending</strong>保存。管理者が案件管理画面でDriveプレビューを確認後、「📤 納品する」ボタンで納品メール送信＆ステータス更新。</div>
+    </div>
+  </div>
+
+  <!-- ===== 3. ページ詳細 ===== -->
+  <div class="section-label">③ ページ詳細（ユーザー側）</div>
+  <div class="grid-3" style="margin-bottom:32px;">
+
+    <div class="card theme-user">
+      <div class="card-header">
+        <div class="card-icon">🌐</div>
+        <div>
+          <div class="card-title">トップページ</div>
+          <div class="card-path">app/page.tsx → /</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        • サービス紹介・料金プラン表示<br>
+        • 「申し込む」→ /apply へ<br>
+        • 「ログイン」→ /login へ
+      </div>
+    </div>
+
+    <div class="card theme-user">
+      <div class="card-header">
+        <div class="card-icon">📝</div>
+        <div>
+          <div class="card-title">申し込みページ</div>
+          <div class="card-path">app/apply/page.tsx → /apply</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        • 会社名・担当者名・メール・電話<br>
+        • 送信 → API: /api/auth/signup<br>
+        • ログインID・仮パスワード発行<br>
+        • ウェルカムメール自動送信（Resend）
+      </div>
+      <div class="card-tags">
+        <span class="tag tag-post">POST /api/auth/signup</span>
+      </div>
+    </div>
+
+    <div class="card theme-user">
+      <div class="card-header">
+        <div class="card-icon">🔐</div>
+        <div>
+          <div class="card-title">ログインページ</div>
+          <div class="card-path">app/login/page.tsx → /login</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        • ログインID（お客様番号）＋PW入力<br>
+        • ID → メール変換後にSupabase認証<br>
+        • admin IDの場合 → /admin へリダイレクト<br>
+        • 一般ユーザー → /dashboard へ
+      </div>
+      <div class="card-tags">
+        <span class="tag tag-post">POST /api/auth/login</span>
+      </div>
+    </div>
+
+    <div class="card theme-user">
+      <div class="card-header">
+        <div class="card-icon">🏠</div>
+        <div>
+          <div class="card-title">ダッシュボード</div>
+          <div class="card-path">app/dashboard/page.tsx → /dashboard</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        • 今月の依頼回数・残り枠（10回/月）<br>
+        • 最近の依頼ステータス表示<br>
+        • 決済未登録の場合は制限あり<br>
+        • 「画像を依頼する」ボタン（モーダルで4ステップフォーム表示）
+      </div>
+    </div>
+
+    <div class="card theme-user" style="grid-column: span 2;">
+      <div class="card-header">
+        <div class="card-icon">🎨</div>
+        <div>
+          <div class="card-title">画像依頼フォーム（4ステップ）</div>
+          <div class="card-path">components/forms/ImageRequestForm.tsx</div>
+        </div>
+      </div>
+      <div class="card-desc" style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <div style="background:#F8F9FB; border-radius:8px; padding:8px;">
+          <strong style="color:#4299e1;">Step 1: 制作内容</strong><br>
+          何を作りたいか選択<br>（SNS投稿/バナー広告/チラシ/名刺 等）
+        </div>
+        <div style="background:#F8F9FB; border-radius:8px; padding:8px;">
+          <strong style="color:#4299e1;">Step 2: テンプレート選択</strong><br>
+          フィルター（高級感/シンプル/インパクト 等）<br>24種類のテンプレートから選択
+        </div>
+        <div style="background:#F8F9FB; border-radius:8px; padding:8px;">
+          <strong style="color:#4299e1;">Step 3: 詳細入力</strong><br>
+          テキスト内容・素材アップロード<br>（ロゴ/写真など）・備考
+        </div>
+        <div style="background:#F8F9FB; border-radius:8px; padding:8px;">
+          <strong style="color:#4299e1;">Step 4: プレビュー・依頼</strong><br>
+          CanvasでデザインをリアルタイムRender<br>→「📤 このデザインで依頼する」
+        </div>
+      </div>
+      <div class="card-tags" style="margin-top:8px;">
+        <span class="tag tag-post">POST /api/design/deliver</span>
+        <span class="tag" style="background:#FAF5FF;color:#553c9a;">Canvas API</span>
+        <span class="tag" style="background:#F0FFF4;color:#276749;">Google Drive</span>
+      </div>
+    </div>
+
+    <div class="card theme-user">
+      <div class="card-header">
+        <div class="card-icon">📋</div>
+        <div>
+          <div class="card-title">依頼履歴</div>
+          <div class="card-path">app/dashboard/history/page.tsx</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        • 過去の依頼一覧表示<br>
+        • ステータスバッジ表示<br>
+        • 納品済み案件はDriveリンク表示
+      </div>
+    </div>
+
+    <div class="card theme-user">
+      <div class="card-header">
+        <div class="card-icon">⭐</div>
+        <div>
+          <div class="card-title">フィードバックページ</div>
+          <div class="card-path">app/dashboard/feedback/page.tsx</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        • 月末メール通知から遷移<br>
+        • 満足度・コメント入力<br>
+        • 月次ごとに1回記録
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== 4. 管理画面 ===== -->
+  <div class="section-label">④ 管理者画面</div>
+  <div class="grid-3" style="margin-bottom:32px;">
+
+    <div class="card theme-admin">
+      <div class="card-header">
+        <div class="card-icon">🔑</div>
+        <div>
+          <div class="card-title">管理者ログイン</div>
+          <div class="card-path">app/admin/login/page.tsx</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        • 管理者専用ログインID＋PW<br>
+        • ログイン後 → /admin へ
+      </div>
+    </div>
+
+    <div class="card theme-admin">
+      <div class="card-header">
+        <div class="card-icon">📊</div>
+        <div>
+          <div class="card-title">管理者ダッシュボード</div>
+          <div class="card-path">app/admin/page.tsx</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        • 全体サマリー（件数・売上）<br>
+        • 各管理ページへのナビ<br>
+        • pending件数のアラート表示
+      </div>
+    </div>
+
+    <div class="card theme-admin">
+      <div class="card-header">
+        <div class="card-icon">📁</div>
+        <div>
+          <div class="card-title">案件管理</div>
+          <div class="card-path">app/admin/projects/page.tsx</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        • ステータス・月でフィルター<br>
+        • サマリーカード（依頼中/制作中/納品済）<br>
+        • Drive URLプレビューリンク表示<br>
+        • 「制作開始」「📤 納品する」ボタン<br>
+        • 納品→メール自動送信（Resend）<br>
+        • CSV出力機能
+      </div>
+      <div class="card-tags">
+        <span class="tag tag-patch">PATCH /api/admin/projects</span>
+        <span class="tag tag-post">POST /api/admin/projects</span>
+      </div>
+    </div>
+
+    <div class="card theme-admin">
+      <div class="card-header">
+        <div class="card-icon">🗂️</div>
+        <div>
+          <div class="card-title">案件マスタ管理</div>
+          <div class="card-path">app/admin/projects/master/page.tsx</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        • project_mastersテーブル管理<br>
+        • テンプレート名・種類などの<br>　マスタデータCRUD
+      </div>
+    </div>
+
+    <div class="card theme-admin">
+      <div class="card-header">
+        <div class="card-icon">💳</div>
+        <div>
+          <div class="card-title">請求管理</div>
+          <div class="card-path">app/admin/billing/page.tsx</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        • ユーザー別の請求状況管理<br>
+        • 月別フィルター<br>
+        • CSV取込（billing_records一括更新）<br>
+        • 決済リンク発行・メール送信
+      </div>
+      <div class="card-tags">
+        <span class="tag tag-post">POST /api/admin/billing/import</span>
+        <span class="tag tag-post">POST /api/admin/billing/link</span>
+      </div>
+    </div>
+
+    <div class="card theme-admin">
+      <div class="card-header">
+        <div class="card-icon">💬</div>
+        <div>
+          <div class="card-title">フィードバック管理</div>
+          <div class="card-path">app/admin/feedback/page.tsx</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        • ユーザーからのフィードバック一覧<br>
+        • 満足度スコア・コメント確認<br>
+        • 月別フィルター
+      </div>
+    </div>
+
+    <div class="card theme-admin">
+      <div class="card-header">
+        <div class="card-icon">📉</div>
+        <div>
+          <div class="card-title">残数管理</div>
+          <div class="card-path">app/admin/remaining/page.tsx</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        • ユーザー別の今月残り依頼回数<br>
+        • 未依頼ユーザーの可視化<br>
+        • リマインドメール手動送信
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== 5. API Routes ===== -->
+  <div class="section-label">⑤ API Routes</div>
+  <div class="grid-4" style="margin-bottom:32px;">
+
+    <div class="card theme-api">
+      <div class="card-header">
+        <div class="card-icon">🔑</div>
+        <div>
+          <div class="card-title">認証 API</div>
+          <div class="card-path">/api/auth/</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        <strong>POST /login</strong><br>
+        ログインID→メール変換後にSupabase認証<br>
+        <br>
+        <strong>POST /signup</strong><br>
+        新規ユーザー登録<br>
+        ログインID・仮PW自動発行
+      </div>
+      <div class="card-tags">
+        <span class="tag tag-auth">Supabase Auth</span>
+      </div>
+    </div>
+
+    <div class="card theme-api">
+      <div class="card-header">
+        <div class="card-icon">🎨</div>
+        <div>
+          <div class="card-title">デザイン納品 API</div>
+          <div class="card-path">/api/design/deliver</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        <strong>POST</strong><br>
+        1. Bearer token認証<br>
+        2. JPEG画像をBase64受信<br>
+        3. Googleドライブへアップロード<br>
+        4. お客様番号フォルダ自動作成<br>
+        5. DBにpendingで保存<br>
+        ※メールは管理画面操作まで送らない
+      </div>
+      <div class="card-tags">
+        <span class="tag" style="background:#F0FFF4;color:#276749;">Google Drive API</span>
+        <span class="tag tag-auth">JWT認証</span>
+      </div>
+    </div>
+
+    <div class="card theme-api">
+      <div class="card-header">
+        <div class="card-icon">📁</div>
+        <div>
+          <div class="card-title">案件管理 API</div>
+          <div class="card-path">/api/admin/projects</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        <strong>GET</strong> — 案件一覧取得<br>
+        <strong>PATCH</strong> — ステータス更新<br>
+        <strong>POST action=deliver</strong><br>
+        　→ 納品メール送信（DriveURL付き）<br>
+        　→ Slack通知<br>
+        　→ status=delivered更新
+      </div>
+      <div class="card-tags">
+        <span class="tag tag-get">GET</span>
+        <span class="tag tag-patch">PATCH</span>
+        <span class="tag tag-post">POST</span>
+      </div>
+    </div>
+
+    <div class="card theme-api">
+      <div class="card-header">
+        <div class="card-icon">👥</div>
+        <div>
+          <div class="card-title">ユーザー管理 API</div>
+          <div class="card-path">/api/admin/users</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        <strong>GET</strong> — ユーザー一覧<br>
+        <strong>POST</strong> — ユーザー作成<br>
+        <strong>PATCH</strong> — ユーザー更新<br>
+        管理者のみアクセス可
+      </div>
+    </div>
+
+    <div class="card theme-api">
+      <div class="card-header">
+        <div class="card-icon">💳</div>
+        <div>
+          <div class="card-title">請求 CSV取込 API</div>
+          <div class="card-path">/api/admin/billing/import</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        CSVファイルをアップロード<br>
+        billing_recordsを一括更新<br>
+        入金確認・消込処理
+      </div>
+    </div>
+
+    <div class="card theme-api">
+      <div class="card-header">
+        <div class="card-icon">🔗</div>
+        <div>
+          <div class="card-title">決済リンク API</div>
+          <div class="card-path">/api/admin/billing/link</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        決済リンク生成・メール送信<br>
+        未払いユーザーへの督促<br>
+        Resend経由でメール送信
+      </div>
+    </div>
+
+    <div class="card theme-api">
+      <div class="card-header">
+        <div class="card-icon">📦</div>
+        <div>
+          <div class="card-title">案件マスタ API</div>
+          <div class="card-path">/api/admin/project-masters</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        テンプレートマスタのCRUD<br>
+        GET / POST / PATCH / DELETE
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== 6. Cron ===== -->
+  <div class="section-label">⑥ Cron自動処理（Vercel Cron Jobs）</div>
+  <div class="grid-3" style="margin-bottom:32px;">
+
+    <div class="card theme-cron">
+      <div class="card-header">
+        <div class="card-icon">⏰</div>
+        <div>
+          <div class="card-title">リマインダーCron</div>
+          <div class="card-path">/api/cron/reminder</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        <strong>毎月15日・20日に実行</strong><br>
+        今月の依頼が少ないユーザーに<br>リマインドメール送信<br>
+        （10回/月の残り枠を通知）
+      </div>
+      <div class="card-tags">
+        <span class="tag tag-cron">CRON_SECRET認証</span>
+        <span class="tag" style="background:#FFF9C4;color:#744210;">Resend</span>
+      </div>
+    </div>
+
+    <div class="card theme-cron">
+      <div class="card-header">
+        <div class="card-icon">💬</div>
+        <div>
+          <div class="card-title">フィードバックCron</div>
+          <div class="card-path">/api/cron/feedback</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        <strong>毎月末日に実行</strong><br>
+        全アクティブユーザーに<br>フィードバック依頼メール送信<br>
+        月次満足度収集
+      </div>
+      <div class="card-tags">
+        <span class="tag tag-cron">CRON_SECRET認証</span>
+      </div>
+    </div>
+
+    <div class="card theme-cron">
+      <div class="card-header">
+        <div class="card-icon">💰</div>
+        <div>
+          <div class="card-title">請求チェックCron</div>
+          <div class="card-path">/api/cron/billing-check</div>
+        </div>
+      </div>
+      <div class="card-desc">
+        <strong>毎月1日に実行</strong><br>
+        未払いユーザーを検出<br>
+        2ヶ月連続未払い → 督促メール<br>
+        billing_recordsを自動生成
+      </div>
+      <div class="card-tags">
+        <span class="tag tag-cron">CRON_SECRET認証</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== 7. DBテーブル ===== -->
+  <div class="section-label">⑦ データベース（Supabase PostgreSQL）</div>
+  <div class="grid-3" style="margin-bottom:32px;">
+
+    <div class="db-table">
+      <div class="db-table-head">👤 users — ユーザーマスタ</div>
+      <div class="db-table-row"><span class="db-col-name">id</span><span class="db-col-type">uuid PK</span></div>
+      <div class="db-table-row"><span class="db-col-name">login_id</span><span class="db-col-type">text UNIQUE（お客様番号）</span></div>
+      <div class="db-table-row"><span class="db-col-name">company_name</span><span class="db-col-type">text</span></div>
+      <div class="db-table-row"><span class="db-col-name">contact_name</span><span class="db-col-type">text</span></div>
+      <div class="db-table-row"><span class="db-col-name">email</span><span class="db-col-type">text UNIQUE</span></div>
+      <div class="db-table-row"><span class="db-col-name">role</span><span class="db-col-type">text（user/admin）</span></div>
+      <div class="db-table-row"><span class="db-col-name">is_active</span><span class="db-col-type">boolean</span></div>
+      <div class="db-table-row"><span class="db-col-name">billing_status</span><span class="db-col-type">text</span></div>
+    </div>
+
+    <div class="db-table">
+      <div class="db-table-head">🎨 image_requests — 依頼案件</div>
+      <div class="db-table-row"><span class="db-col-name">id</span><span class="db-col-type">uuid PK</span></div>
+      <div class="db-table-row"><span class="db-col-name">user_id</span><span class="db-col-type">uuid FK→users</span></div>
+      <div class="db-table-row"><span class="db-col-name">image_type</span><span class="db-col-type">text（SNS投稿/バナー等）</span></div>
+      <div class="db-table-row"><span class="db-col-name">image_size</span><span class="db-col-type">text（1080x1080px等）</span></div>
+      <div class="db-table-row"><span class="db-col-name">template_name</span><span class="db-col-type">text</span></div>
+      <div class="db-table-row"><span class="db-col-name">text_content</span><span class="db-col-type">text</span></div>
+      <div class="db-table-row"><span class="db-col-name">status</span><span class="db-col-type">text（pending/in_progress/delivered）</span></div>
+      <div class="db-table-row"><span class="db-col-name">delivered_image_url</span><span class="db-col-type">text（Drive URL）</span></div>
+      <div class="db-table-row"><span class="db-col-name">billing_month</span><span class="db-col-type">text（YYYY-MM）</span></div>
+      <div class="db-table-row"><span class="db-col-name">delivered_at</span><span class="db-col-type">timestamptz</span></div>
+    </div>
+
+    <div class="db-table">
+      <div class="db-table-head">💳 billing_records — 請求記録</div>
+      <div class="db-table-row"><span class="db-col-name">id</span><span class="db-col-type">uuid PK</span></div>
+      <div class="db-table-row"><span class="db-col-name">user_id</span><span class="db-col-type">uuid FK→users</span></div>
+      <div class="db-table-row"><span class="db-col-name">billing_month</span><span class="db-col-type">text（YYYY-MM）</span></div>
+      <div class="db-table-row"><span class="db-col-name">amount</span><span class="db-col-type">integer（円）</span></div>
+      <div class="db-table-row"><span class="db-col-name">status</span><span class="db-col-type">text（unpaid/paid）</span></div>
+      <div class="db-table-row"><span class="db-col-name">paid_at</span><span class="db-col-type">timestamptz</span></div>
+      <div class="db-table-head" style="background:#805ad5; margin-top:8px;">⭐ feedbacks — フィードバック</div>
+      <div class="db-table-row"><span class="db-col-name">user_id</span><span class="db-col-type">uuid FK→users</span></div>
+      <div class="db-table-row"><span class="db-col-name">billing_month</span><span class="db-col-type">text</span></div>
+      <div class="db-table-row"><span class="db-col-name">score</span><span class="db-col-type">integer（1-5）</span></div>
+      <div class="db-table-row"><span class="db-col-name">comment</span><span class="db-col-type">text</span></div>
+    </div>
+
+  </div>
+
+  <!-- ===== 8. 外部サービス ===== -->
+  <div class="section-label">⑧ 外部サービス連携</div>
+  <div class="ext-grid" style="margin-bottom:32px;">
+
+    <div class="ext-card">
+      <div class="ext-icon" style="background:#e8f5e9;">🗄️</div>
+      <div>
+        <div class="ext-name">Supabase</div>
+        <div class="ext-desc">認証 / PostgreSQL DB<br>Service Role Key使用</div>
+      </div>
+    </div>
+
+    <div class="ext-card">
+      <div class="ext-icon" style="background:#e8f0fe;">📁</div>
+      <div>
+        <div class="ext-name">Google Drive API v3</div>
+        <div class="ext-desc">画像ファイル保存<br>共有ドライブ対応（supportsAllDrives）<br>お客様番号フォルダ自動作成</div>
+      </div>
+    </div>
+
+    <div class="ext-card">
+      <div class="ext-icon" style="background:#fff3e0;">📧</div>
+      <div>
+        <div class="ext-name">Resend</div>
+        <div class="ext-desc">メール送信<br>登録通知・納品・リマインド・督促</div>
+      </div>
+    </div>
+
+    <div class="ext-card">
+      <div class="ext-icon" style="background:#e3f2fd;">💬</div>
+      <div>
+        <div class="ext-name">Slack Webhook</div>
+        <div class="ext-desc">納品完了通知<br>管理者へのアラート</div>
+      </div>
+    </div>
+
+    <div class="ext-card">
+      <div class="ext-icon" style="background:#fce4ec;">▲</div>
+      <div>
+        <div class="ext-name">Vercel</div>
+        <div class="ext-desc">Next.jsホスティング<br>Cron Jobs実行環境</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== 9. デザイン生成の詳細フロー ===== -->
+  <div class="section-label">⑨ デザイン生成〜Driveアップロードの詳細フロー</div>
+  <div class="flow-box" style="margin-bottom:32px;">
+    <div style="display:flex; align-items:center; gap:0; overflow-x:auto; flex-wrap:wrap; row-gap:12px;">
+      <div class="flow-step" style="background:#EBF8FF; border-color:#90CDF4; min-width:120px;">
+        <div class="flow-step-icon">🖥️</div>
+        <div class="flow-step-title">Canvas描画</div>
+        <div class="flow-step-sub">DesignCanvas.tsx<br>テンプレート24種<br>素材画像反映</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="flow-arrow">→</div>
+        <div style="font-size:9px;color:#718096;">JPEG圧縮<br>max1080px</div>
+      </div>
+      <div class="flow-step" style="min-width:120px;">
+        <div class="flow-step-icon">📦</div>
+        <div class="flow-step-title">クライアント圧縮</div>
+        <div class="flow-step-sub">compressImage()<br>JPEG 0.88品質<br>4.5MB制限対策</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div class="flow-arrow">→</div>
+        <div style="font-size:9px;color:#718096;">Bearer token<br>付きで送信</div>
+      </div>
+      <div class="flow-step" style="min-width:120px;">
+        <div class="flow-step-icon">🌐</div>
+        <div class="flow-step-title">API受信</div>
+        <div class="flow-step-sub">/api/design/deliver<br>JWT認証確認<br>Buffer変換</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="background:#F0FFF4; border-color:#9AE6B4; min-width:140px;">
+        <div class="flow-step-icon">📁</div>
+        <div class="flow-step-title">Driveアップロード</div>
+        <div class="flow-step-sub">お客様番号フォルダ<br>確認/作成<br>PassThrough Stream</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="min-width:120px;">
+        <div class="flow-step-icon">🔓</div>
+        <div class="flow-step-title">公開設定</div>
+        <div class="flow-step-sub">permissions.create<br>role=reader<br>type=anyone</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step" style="background:#FAF5FF; border-color:#D6BCFA; min-width:120px;">
+        <div class="flow-step-icon">💾</div>
+        <div class="flow-step-title">DB保存</div>
+        <div class="flow-step-sub">status=pending<br>Drive URL保存<br>billing_month記録</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <div class="note-icon">⚠️</div>
+    <div>
+      <strong>共有ドライブ（Shared Drive）の注意点:</strong> Googleドライブフォルダは共有ドライブのため、Drive API のすべての呼び出しに <code>supportsAllDrives: true</code> と <code>includeItemsFromAllDrives: true</code> が必要です。これがないと404エラーが発生します。
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // カードをクリックしたときのハイライト
+  document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', () => {
+      document.querySelectorAll('.card').forEach(c => c.style.outline = '');
+      card.style.outline = '2px solid #E60023';
+      card.style.outlineOffset = '2px';
+      setTimeout(() => { card.style.outline = ''; }, 1500);
+    });
+  });
+</script>
+</body>
+</html>
