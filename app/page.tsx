@@ -55,6 +55,7 @@ export default function HomePage() {
             デザインを、<br />
             もっと<span className="text-gradient">自由</span>に。
           </h1>
+          <img src="/hero-showcase.jpg" alt="制作イメージ" className="mx-auto mt-8 w-full max-w-xl rounded-3xl shadow-lg" />
           <p className="text-lg text-[#6B7280] max-w-xl mx-auto mb-10 leading-relaxed">
             月額5,000円で、月10回までデザイン依頼。<br className="hidden sm:block" />
             SNS投稿・広告バナー・販促物を、プロのデザイナーが最短3営業日でお届け。
