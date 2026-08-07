@@ -9,33 +9,7 @@ import { TEMPLATE_FIELDS, buildPrompt, buildBrochurePrompt, BROCHURE_TONES, merg
 // 1依頼あたりのAI生成回数の上限（初回1＋作り直し2＝計3回）
 const MAX_GENERATIONS = 3
 
-const STEPS = ['制作内容', 'テンプレート選択', '詳細入力', 'プレビュー・納品']
-
-// ─── 制作内容カテゴリ（画像プロンプト・参考画像 集の内容に合わせて再編） ───
-const PRODUCTION_TYPE_CATEGORIES = [
-  {
-    label: '新商品・キャンペーン',
-    types: ['新商品告知', 'キャンペーン・セール告知', 'クーポン告知', '季節限定メニュー'],
-  },
-  {
-    label: '商品・メニュー訴求',
-    types: ['商品ヒーロー訴求', 'SNS投稿画像', 'お客様の声・口コミ風'],
-  },
-  {
-    label: 'メニュー表',
-    types: ['グランドメニュー表', 'ドリンクメニュー表', 'サイド・デザートメニュー表', 'お持ち帰りメニュー表'],
-  },
-  {
-    label: '集客・お知らせ',
-    types: ['LINE登録促進', 'Google口コミ依頼', '営業カレンダー・スケジュール', 'イベント告知', '新規オープン告知'],
-  },
-  {
-    label: '店舗紹介・LP',
-    types: ['メニュー表紙・ブランド紹介', '店舗紹介LP', '総合訴求LP'],
-  },
-]
-
-const PRODUCTION_TYPES = PRODUCTION_TYPE_CATEGORIES.flatMap(c => c.types)
+const STEPS = ['テンプレート選択', '詳細入力', 'プレビュー・納品']
 
 const DESIGN_FILTERS = ['高級感', 'シンプル', 'インパクト', 'SNS映え', 'かわいい', 'ナチュラル']
 
@@ -522,15 +496,9 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
 
   const validate = () => {
     if (step === 0) {
-      const types = form.production_types_other
-        ? [...form.production_types, form.production_types_other]
-        : form.production_types
-      if (types.length === 0) { setError('制作内容を1つ以上選択してください'); return false }
-    }
-    if (step === 1) {
       if (!form.template_id) { setError('テンプレートを1つ選択してください'); return false }
     }
-    if (step === 2) {
+    if (step === 1) {
       if (!form.image_size) { setError('画像サイズを選択してください'); return false }
       // AI生成テンプレは必須入力欄をチェック
       if (templateFields) {
@@ -546,10 +514,10 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
 
   const handleNext = () => {
     if (!validate()) return
-    // テンプレ選択(step1)を終えて詳細入力(step2)へ進む直前に、登録済み店舗情報を自動プリフィル
-    if (step === 1) applyStorePrefill(form.template_id)
-    // AI制作テンプレは、詳細入力(step2)→プレビュー(step3)に進む時点で自動的に制作を開始する
-    const startGeneration = step === 2 && isAITemplate
+    // テンプレ選択(step0)を終えて詳細入力(step1)へ進む直前に、登録済み店舗情報を自動プリフィル
+    if (step === 0) applyStorePrefill(form.template_id)
+    // AI制作テンプレは、詳細入力(step1)→プレビュー(step2)に進む時点で自動的に制作を開始する
+    const startGeneration = step === 1 && isAITemplate
     setStep(s => s + 1)
     if (startGeneration) handleGenerate()
   }
@@ -590,7 +558,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
           imageDataUrl: compressed,
           templateName: form.template_name,
           textContent: isAITemplate ? (form.template_fields.main_title || form.template_name) : form.text_content,
-          imageType: form.production_types[0] || 'SNS投稿',
+          imageType: form.template_name || 'AI制作画像',
           imageSize: form.image_size,
         }),
       })
@@ -639,7 +607,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
         </div>
       )}
 
-      {/* Step 0: 制作内容 */}
+      {/* Step 0: テンプレート選択 */}
       {step === 0 && (
         <div className="space-y-4">
           {/* パンフレット一括制作の入口 */}
@@ -649,7 +617,6 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
             className="w-full text-left rounded-2xl border-2 border-[#E85C97]/30 bg-gradient-to-r from-[#FFF0F6] to-[#FFF7FB] px-4 py-3.5 hover:border-[#E85C97] transition-all group"
           >
             <div className="flex items-center gap-3">
-              <span className="text-2xl">📖</span>
               <div className="flex-1">
                 <p className="text-sm font-bold text-[#111111]">パンフレットをまとめて作る</p>
                 <p className="text-[11px] text-[#6B7280] mt-0.5">表紙・メニュー・店内紹介・アクセスなど、複数ページを統一デザインで一括制作</p>
@@ -662,66 +629,6 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
             または1枚ずつ制作
             <div className="flex-1 h-px bg-[#EFEFEF]" />
           </div>
-          <div className="flex items-center justify-between">
-            <label className="text-xs font-bold text-[#111111]">
-              制作内容を選択（1つ） <span className="text-[#E85C97]">*</span>
-            </label>
-            {form.production_types[0] && (
-              <span className="text-xs text-[#E85C97] font-semibold bg-[#FFF0F6] px-2 py-0.5 rounded-full">
-                {form.production_types[0]}
-              </span>
-            )}
-          </div>
-          <div className="space-y-3">
-            {PRODUCTION_TYPE_CATEGORIES.map(cat => (
-              <div key={cat.label}>
-                <p className="text-[10px] font-bold text-[#ABABAB] uppercase tracking-widest mb-1.5">
-                  {cat.label}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {cat.types.map(opt => (
-                    <button
-                      key={opt}
-                      type="button"
-                      onClick={() => setForm(prev => ({
-                        ...prev,
-                        production_types: [opt],
-                        production_types_other: '',
-                        template_id: '',
-                        template_name: '',
-                      }))}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
-                        form.production_types[0] === opt
-                          ? 'bg-[#E85C97] text-white border-[#E85C97] shadow-sm'
-                          : 'bg-white text-[#6B7280] border-[#EFEFEF] hover:border-[#E85C97] hover:text-[#E85C97]'
-                      }`}
-                    >
-                      {opt}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-          <input
-            type="text"
-            value={form.production_types_other}
-            onChange={e => setForm(prev => ({
-              ...prev,
-              production_types_other: e.target.value,
-              production_types: [],
-              template_id: '',
-              template_name: '',
-            }))}
-            placeholder="その他（上記にない場合は自由入力）"
-            className={inputClass}
-          />
-        </div>
-      )}
-
-      {/* Step 1: テンプレート選択 */}
-      {step === 1 && (
-        <div className="space-y-4">
           <div>
             <p className="text-xs font-bold text-[#111111] mb-2">デザインイメージで絞り込む</p>
             <div className="flex flex-wrap gap-2">
@@ -771,8 +678,8 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
         </div>
       )}
 
-      {/* Step 2: 詳細入力 */}
-      {step === 2 && (
+      {/* Step 1: 詳細入力 */}
+      {step === 1 && (
         <div className="md:flex md:gap-6 md:items-start">
           {/* 選択中テンプレの見本（PC=左サイド固定表示／スマホ=上部）。どんなデザインを作っているか常に見える */}
           {selectedTemplate?.referenceImage && (
@@ -962,14 +869,16 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
         </div>
       )}
 
-      {/* Step 3: プレビュー・納品 */}
-      {step === 3 && (
+      {/* Step 2: プレビュー・納品 */}
+      {step === 2 && (
         <div className="space-y-5">
           {deliverResult ? (
             /* 納品完了 */
             <div className="text-center space-y-5">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                <span className="text-3xl">✅</span>
+                <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
               </div>
               <div>
                 <p className="text-lg font-black text-[#111111]">納品完了！</p>
@@ -1086,7 +995,6 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
               <div className="bg-[#F8F8FA] rounded-2xl p-4 space-y-2 text-sm">
                 <p className="text-xs font-bold text-[#111111] mb-3">依頼内容の確認</p>
                 {[
-                  ['制作内容', [...form.production_types, form.production_types_other ? `その他: ${form.production_types_other}` : ''].filter(Boolean).join('、') || '未選択'],
                   ['テンプレート', form.template_name || '未選択'],
                   ['サイズ', form.image_size || '未選択'],
                   ['内容', isAITemplate ? (form.template_fields.main_title || form.template_name) : (form.text_content || 'なし')],
@@ -1115,7 +1023,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                     </svg>
                     Googleドライブに保存中...
                   </span>
-                ) : '📤 このデザインで依頼する'}
+                ) : 'このデザインで依頼する'}
               </button>
 
               <p className="text-[10px] text-[#ABABAB] text-center">
@@ -1154,12 +1062,12 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
 
 // ─── パンフレット一括制作 ─────────────────────────────────────────
 const BROCHURE_PAGES = [
-  { id: 'menu-cover',    label: '表紙・ブランド紹介', icon: '📖' },
-  { id: 'menu-grid',     label: 'グランド／ランチメニュー', icon: '🍽️' },
-  { id: 'sweets-menu',   label: 'サイド・デザート', icon: '🍰' },
-  { id: 'drink-menu',    label: 'ドリンクメニュー', icon: '🥤' },
-  { id: 'shop-interior', label: '店内のご紹介', icon: '🪴' },
-  { id: 'access-info',   label: 'アクセス・店舗情報', icon: '🗺️' },
+  { id: 'menu-cover',    label: '表紙・ブランド紹介' },
+  { id: 'menu-grid',     label: 'グランド／ランチメニュー' },
+  { id: 'sweets-menu',   label: 'サイド・デザート' },
+  { id: 'drink-menu',    label: 'ドリンクメニュー' },
+  { id: 'shop-interior', label: '店内のご紹介' },
+  { id: 'access-info',   label: 'アクセス・店舗情報' },
 ]
 
 function brochureCompress(dataUrl: string, maxWidth = 1080): Promise<string> {
@@ -1319,7 +1227,6 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
   return (
     <div className="space-y-5">
       <div className="flex items-center gap-2">
-        <span className="text-xl">📖</span>
         <h3 className="text-base font-bold text-[#111111]">パンフレット一括制作</h3>
       </div>
 
@@ -1368,9 +1275,9 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
                     {ref ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={ref} alt={p.label} className="w-14 h-14 rounded-lg object-cover border border-[#EFEFEF] flex-shrink-0" />
-                    ) : <span className="text-lg w-14 text-center flex-shrink-0">{p.icon}</span>}
+                    ) : <span className="w-14 h-14 rounded-lg bg-[#F8F8FA] border border-[#EFEFEF] flex-shrink-0" />}
                     <span className="flex-1 text-left">
-                      <span className={`block text-sm font-medium ${on ? 'text-[#111111]' : 'text-[#6B7280]'}`}>{p.icon} {p.label}</span>
+                      <span className={`block text-sm font-medium ${on ? 'text-[#111111]' : 'text-[#6B7280]'}`}>{p.label}</span>
                       <span className="block text-[10px] text-[#ABABAB] mt-0.5">テンプレート見本</span>
                     </span>
                     {on
@@ -1396,7 +1303,7 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
             <div key={p.id} className="border border-[#EFEFEF] rounded-2xl p-4 space-y-3">
               <div className="flex items-center gap-2">
                 <span className="text-[11px] text-white bg-[#E85C97] w-5 h-5 rounded-full flex items-center justify-center font-bold">{i + 1}</span>
-                <span className="text-sm font-bold text-[#111111]">{p.icon} {p.label}</span>
+                <span className="text-sm font-bold text-[#111111]">{p.label}</span>
               </div>
               {(TEMPLATE_FIELDS[p.id] || []).map(f => (
                 <div key={f.key}>
@@ -1437,7 +1344,7 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
                   <img src={images[p.id]} alt={p.label} className="w-full rounded-lg border border-[#EFEFEF]" />
                   <button type="button" onClick={() => regenerateOne(p.id)} disabled={regenId !== null || generating}
                     className="mt-2 w-full border border-[#E85C97] text-[#E85C97] text-xs font-bold py-2 rounded-full hover:bg-[#FFF0F6] disabled:opacity-50">
-                    {regenId === p.id ? '作り直し中…' : '🔄 このページだけ作り直す'}
+                    {regenId === p.id ? '作り直し中…' : 'このページだけ作り直す'}
                   </button>
                 </div>
               )}
@@ -1486,7 +1393,7 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
                 <p className="text-[10px] text-[#6B7280] px-2 py-1 font-medium">{i + 1}. {p.label}</p>
                 <button type="button" onClick={() => regenerateOne(p.id)} disabled={regenId !== null || delivering}
                   className="w-full text-[11px] text-[#E85C97] font-bold py-1.5 border-t border-[#F3F3F3] hover:bg-[#FFF0F6] disabled:opacity-50">
-                  {regenId === p.id ? '作り直し中…' : '🔄 作り直す'}
+                  {regenId === p.id ? '作り直し中…' : '作り直す'}
                 </button>
               </div>
             ))}
@@ -1494,16 +1401,16 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
           {regenId && <p className="text-[11px] text-[#E85C97] text-center font-semibold">「{pages.find(p => p.id === regenId)?.label}」を作り直しています…</p>}
           <div className="bg-[#FFF7FB] rounded-xl px-4 py-2.5 text-[11px] text-[#6B7280]">
             この{pages.length}ページで今月の制作回数を <b className="text-[#E85C97]">{pages.length}回</b> 消費します。<br />
-            気に入らないページは各画像の「🔄作り直す」で個別に、下の「すべて作り直す」で一括で作り直せます（作り直しは無料・回数は納品時のみ消費）。
+            気に入らないページは各画像の「作り直す」で個別に、下の「すべて作り直す」で一括で作り直せます（作り直しは無料・回数は納品時のみ消費）。
           </div>
           <button type="button" onClick={handleGenerateAll} disabled={delivering || regenId !== null || generating}
             className="w-full border border-[#E85C97] text-[#E85C97] font-bold py-2.5 rounded-full hover:bg-[#FFF0F6] disabled:opacity-50">
-            {generating ? (progress || '全ページを作り直し中…') : `🔄 すべて作り直す（全${pages.length}ページ）`}
+            {generating ? (progress || '全ページを作り直し中…') : `すべて作り直す（全${pages.length}ページ）`}
           </button>
           <div className="flex gap-3">
-            <button type="button" onClick={() => setPhase('input')} disabled={delivering || regenId !== null} className="flex-1 border border-[#EFEFEF] text-[#6B7280] font-semibold py-3 rounded-full hover:bg-[#F8F8FA] disabled:opacity-50">✏️ 内容を修正</button>
+            <button type="button" onClick={() => setPhase('input')} disabled={delivering || regenId !== null} className="flex-1 border border-[#EFEFEF] text-[#6B7280] font-semibold py-3 rounded-full hover:bg-[#F8F8FA] disabled:opacity-50">内容を修正</button>
             <button type="button" onClick={handleDeliverAll} disabled={delivering || regenId !== null} className="flex-1 bg-[#E85C97] text-white font-bold py-3 rounded-full hover:bg-[#D8477F] shadow-md shadow-red-100 disabled:opacity-50">
-              {delivering ? 'Googleドライブに保存中...' : `📤 ${pages.length}ページを一括で依頼する`}
+              {delivering ? 'Googleドライブに保存中...' : `${pages.length}ページを一括で依頼する`}
             </button>
           </div>
         </div>
@@ -1512,7 +1419,11 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
       {/* done：完了 */}
       {phase === 'done' && (
         <div className="text-center py-8 space-y-3">
-          <div className="text-4xl">🎉</div>
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+            <svg className="w-8 h-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
           <p className="text-base font-bold text-[#111111]">パンフレット{doneCount}ページを納品しました</p>
           <p className="text-xs text-[#6B7280]">Googleドライブのお客様番号フォルダ内に、パンフレット用フォルダとして保存されました。</p>
           <button type="button" onClick={onCancel} className="mt-2 bg-[#E85C97] text-white font-bold px-8 py-3 rounded-full hover:bg-[#D8477F] shadow-md shadow-red-100">完了</button>
