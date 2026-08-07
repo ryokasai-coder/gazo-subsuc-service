@@ -239,17 +239,10 @@ const MATERIAL_UPLOAD: Record<string, { label: string; hint: string; needed?: bo
   'line-friend-guide':     { label: 'QRコード画像アップロード（必須）', hint: 'LINE友だち追加用のQRコード画像を1枚アップロードしてください' },
 }
 
-function getFilteredTemplates(productionTypes: string[], designFilter: string): Template[] {
-  // デザインイメージ条件
-  const byDesign = (t: Template) =>
-    !designFilter || t.designTags.includes(designFilter) || t.designTags.includes('お任せ')
-  // 制作内容条件（選択した制作内容に一致するテンプレのみ）
-  const byProduction = (t: Template) =>
-    productionTypes.length === 0 ||
-    productionTypes.some(pt => t.productionTags.some(tag => pt.includes(tag) || tag.includes(pt)))
-  const matched = TEMPLATES.filter(t => byDesign(t) && byProduction(t))
-  // 制作内容に一致するテンプレが1件も無い場合のみ、デザイン条件のみの全件にフォールバック（0件回避）
-  return matched.length > 0 ? matched : TEMPLATES.filter(byDesign)
+function getFilteredTemplates(designFilter: string): Template[] {
+  // デザインイメージ未選択なら全テンプレ表示。選択時はそのタグを持つテンプレのみに絞る。
+  if (!designFilter) return TEMPLATES
+  return TEMPLATES.filter(t => t.designTags.includes(designFilter))
 }
 
 export interface RequestFormData {
@@ -444,7 +437,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
     setForm(prev => ({ ...prev, template_fields: { ...prev.template_fields, [fieldKey]: val } }))
   }
 
-  const filteredTemplates = getFilteredTemplates(form.production_types, designFilter)
+  const filteredTemplates = getFilteredTemplates(designFilter)
 
   const selectedTemplate = TEMPLATES.find(t => t.id === form.template_id)
   // 入力欄定義があるテンプレ = AI生成テンプレ（全テンプレ対応済み）。無ければ従来のDesignCanvas。
@@ -636,7 +629,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                 <button
                   key={f}
                   type="button"
-                  onClick={() => setDesignFilter(f)}
+                  onClick={() => setDesignFilter(prev => prev === f ? '' : f)}
                   className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
                     designFilter === f
                       ? 'bg-[#E85C97] text-white border-[#E85C97] shadow-sm'
@@ -663,7 +656,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
                   onSelect={() => {
                     update('template_id', t.id)
                     update('template_name', t.name)
-                    update('design_image', designFilter !== 'お任せ' ? designFilter : form.design_image)
+                    update('design_image', designFilter || form.design_image)
                   }}
                 />
               ))}
