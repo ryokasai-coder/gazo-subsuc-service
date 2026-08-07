@@ -192,6 +192,56 @@ const TEMPLATES: Template[] = [
     productionTags: ['総合訴求LP', '店舗紹介LP', 'メニュー表紙・ブランド紹介'],
     designTags: ['高級感', 'インパクト', 'お任せ'],
   },
+  {
+    id: 'salon-open',
+    name: 'サロン新規オープン告知（高級感）',
+    description: '上質な内装イメージに大きな「OPEN」と強み・特典を配した、サロン向けの開店告知デザイン。',
+    sampleUses: 'スパ＆マッサージOPEN・リラクゼーション開店・新規オープン記念',
+    layoutType: 'shop-hero',
+    bgFrom: '#d8c7b8', bgTo: '#a89a8c',
+    productionTags: ['新規オープン告知', 'イベント告知'],
+    designTags: ['高級感', 'シンプル', 'お任せ'],
+  },
+  {
+    id: 'esthe-campaign',
+    name: 'エステ・サロン集客キャンペーン（清潔感）',
+    description: 'フェイシャル施術イメージに体験コースの特別価格を訴求する、女性向けの集客キャンペーンデザイン。',
+    sampleUses: 'フェイシャルエステ体験・初回限定キャンペーン・サロン集客',
+    layoutType: 'color-text',
+    bgFrom: '#f9c9d4', bgTo: '#e6c9a8',
+    productionTags: ['キャンペーン・セール告知', 'クーポン告知', '新規オープン告知'],
+    designTags: ['高級感', 'かわいい', 'シンプル', 'お任せ'],
+  },
+  {
+    id: 'takeout-menu',
+    name: 'お持ち帰りメニュー表（和モダン）',
+    description: 'ネイビー帯＋点線で商品名と価格を整然と並べる、テイクアウト向けの情報整理型メニュー表。',
+    sampleUses: 'お持ち帰りメニュー・テイクアウト価格表・弁当メニュー一覧',
+    layoutType: 'menu-list',
+    bgFrom: '#1e3a5f', bgTo: '#3d5a80',
+    productionTags: ['お持ち帰りメニュー表', 'グランドメニュー表'],
+    designTags: ['シンプル', 'ナチュラル', 'お任せ'],
+  },
+  {
+    id: 'bento-menu',
+    name: 'お弁当メニュー（和風・高級感）',
+    description: '黒×金×赤茶の和モダン配色で、お弁当を美味しそうに見せる高級感あるテイクアウトメニュー表。',
+    sampleUses: '焼肉弁当・宅配弁当・仕出し弁当メニュー',
+    layoutType: 'menu-list',
+    bgFrom: '#1a1a1a', bgTo: '#3d2b1f',
+    productionTags: ['お持ち帰りメニュー表', '商品ヒーロー訴求'],
+    designTags: ['高級感', 'シンプル', 'お任せ'],
+  },
+  {
+    id: 'line-friend-guide',
+    name: 'LINE友だち登録案内（操作手順つき）',
+    description: 'QRコード・ID検索の登録手順を丁寧に説明する、LINE公式アカウントの友だち追加案内デザイン。',
+    sampleUses: 'LINE友だち登録案内・公式アカウント登録手順・お得情報の案内',
+    layoutType: 'steps-3',
+    bgFrom: '#22c55e', bgTo: '#4ade80',
+    productionTags: ['LINE登録促進'],
+    designTags: ['シンプル', 'かわいい', 'お任せ'],
+  },
 ]
 
 // テンプレ別の素材アップロード欄のラベル・説明。未定義なら汎用ラベル。
@@ -208,6 +258,11 @@ const MATERIAL_UPLOAD: Record<string, { label: string; hint: string; needed?: bo
   'line-qr':              { label: 'QRコード画像アップロード（必須）', hint: 'LINE友だち追加用のQRコード画像を1枚アップロードしてください' },
   'calendar-schedule':     { label: '', hint: '', needed: false },
   'vertical-lp':           { label: '店舗・商品写真アップロード（推奨）', hint: '店舗や商品の写真があれば添付' },
+  'salon-open':            { label: 'サロン・施術イメージ写真（任意）', hint: '施術風景やサロン内観の写真があれば添付' },
+  'esthe-campaign':        { label: '施術イメージ写真（任意）', hint: 'フェイシャル・サロンの写真があれば添付' },
+  'takeout-menu':          { label: '商品写真アップロード（任意）', hint: 'お持ち帰り商品の写真があれば添付' },
+  'bento-menu':            { label: 'お弁当写真アップロード（推奨）', hint: 'お弁当の写真があれば添付' },
+  'line-friend-guide':     { label: 'QRコード画像アップロード（必須）', hint: 'LINE友だち追加用のQRコード画像を1枚アップロードしてください' },
 }
 
 function getFilteredTemplates(productionTypes: string[], designFilter: string): Template[] {
