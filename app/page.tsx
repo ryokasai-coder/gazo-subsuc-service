@@ -83,7 +83,7 @@ export default function HomePage() {
         </div>
 
         {/* 制作イメージ・コラージュ（作例4点：飲食・SNS・美容） */}
-        <div className="relative w-full max-w-5xl mx-auto mt-16 aspect-[1.85/1]">
+        <div className="relative w-full max-w-[640px] mx-auto mt-16 aspect-[1.85/1]">
           {/* 右上：ビューティーサロン広告（横） */}
           <img src="/hero/hero-beauty.png" alt="ビューティーサロンの広告デザイン例"
             className="absolute right-0 top-[7%] w-[36%] rotate-[3deg] drop-shadow-xl z-10" />
