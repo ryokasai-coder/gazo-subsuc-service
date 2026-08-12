@@ -55,7 +55,6 @@ export default function HomePage() {
             デザインを、<br />
             もっと<span className="text-gradient">自由</span>に。
           </h1>
-          <img src="/hero-showcase.jpg" alt="制作イメージ" className="mx-auto mt-8 w-full max-w-xl rounded-3xl shadow-lg" />
           <p className="text-lg text-[#6B7280] max-w-xl mx-auto mb-10 leading-relaxed">
             月額5,000円で、月10回までデザイン依頼。<br className="hidden sm:block" />
             SNS投稿・広告バナー・販促物を、プロのデザイナーが最短3営業日でお届け。
@@ -81,6 +80,22 @@ export default function HomePage() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* 制作イメージ・コラージュ（作例4点：飲食・SNS・美容） */}
+        <div className="relative w-full max-w-5xl mx-auto mt-16 aspect-[1.85/1]">
+          {/* 右上：ビューティーサロン広告（横） */}
+          <img src="/hero/hero-beauty.png" alt="ビューティーサロンの広告デザイン例"
+            className="absolute right-0 top-[7%] w-[36%] rotate-[3deg] drop-shadow-xl z-10" />
+          {/* 右下：サロン NEW OPEN 告知（横） */}
+          <img src="/hero/hero-newopen.png" alt="サロンのNEW OPEN告知デザイン例"
+            className="absolute right-[1%] bottom-[2%] w-[37%] -rotate-[2deg] drop-shadow-xl z-10" />
+          {/* 左：レストラン GRAND OPEN 告知（縦） */}
+          <img src="/hero/hero-grandopen.png" alt="レストランのGRAND OPEN告知デザイン例"
+            className="absolute left-[2%] top-[11%] w-[29%] -rotate-[4deg] drop-shadow-xl z-20" />
+          {/* 中央：Instagram投稿（スマホモックアップ） */}
+          <img src="/hero/hero-instagram.png" alt="レストランのInstagram投稿デザイン例"
+            className="absolute left-1/2 -translate-x-1/2 top-0 w-[25%] z-30 drop-shadow-2xl" />
         </div>
       </section>
 
