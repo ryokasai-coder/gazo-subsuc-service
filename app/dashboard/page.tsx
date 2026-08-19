@@ -7,6 +7,12 @@ import { createClient } from '@/lib/supabase'
 import Modal from '@/components/ui/Modal'
 import StatusBadge from '@/components/ui/StatusBadge'
 import ImageRequestForm, { type RequestFormData } from '@/components/forms/ImageRequestForm'
+import {
+  effectiveCancellationStatus,
+  canRequestNewImage,
+  CANCELLATION_STATUS_LABEL,
+  formatJpDate,
+} from '@/lib/contract'
 
 interface UsageLimit {
   used_count: number
@@ -28,6 +34,10 @@ interface User {
   contact_name: string
   is_payment_registered: boolean
   role: string
+  created_at?: string
+  contract_start_date?: string | null
+  cancellation_status?: string | null
+  service_end_date?: string | null
 }
 
 export default function DashboardPage() {
@@ -125,6 +135,10 @@ export default function DashboardPage() {
   const filteredRequests = requests.filter(r => r.status === activeTab)
   const remaining = (usage?.total_limit ?? 10) - (usage?.used_count ?? 0)
 
+  // 解約ステータス（cancel_requested のまま利用期限超過なら cancelled 扱い）と依頼可否
+  const cancelStatus = user ? effectiveCancellationStatus(user) : 'active'
+  const requestable = user ? canRequestNewImage(user) : true
+
   const usedPct = Math.round(((usage?.used_count ?? 0) / (usage?.total_limit ?? 10)) * 100)
 
   if (loading) {
@@ -147,6 +161,7 @@ export default function DashboardPage() {
           <div className="flex items-center gap-1">
             <Link href="/dashboard/settings" className="text-xs text-[#6B7280] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F8F8FA] transition-all">店舗情報</Link>
             <Link href="/dashboard/history" className="text-xs text-[#6B7280] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F8F8FA] transition-all">履歴</Link>
+            <Link href="/dashboard/billing" className="text-xs text-[#6B7280] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F8F8FA] transition-all">契約・お支払い</Link>
             <Link href="/dashboard/feedback" className="text-xs text-[#6B7280] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F8F8FA] transition-all">フィードバック</Link>
             <button onClick={handleLogout} className="text-xs text-[#6B7280] hover:text-[#111111] px-3 py-2 rounded-full hover:bg-[#F8F8FA] transition-all">ログアウト</button>
           </div>
@@ -154,6 +169,21 @@ export default function DashboardPage() {
       </header>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* 解約ステータスのお知らせ */}
+        {cancelStatus !== 'active' && (
+          <div className="bg-[#FFF0F6] rounded-2xl px-5 py-4 mb-5 flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold text-[#E85C97]">{CANCELLATION_STATUS_LABEL[cancelStatus]}</p>
+              <p className="text-xs text-[#6B7280] mt-0.5">
+                {cancelStatus === 'cancel_requested'
+                  ? `${formatJpDate(user?.service_end_date)}まではご利用いただけます。以降は自動更新・請求は発生しません。`
+                  : 'サービスのご利用は終了しています。'}
+              </p>
+            </div>
+            <Link href="/dashboard/contract" className="text-xs text-[#E85C97] underline underline-offset-2 whitespace-nowrap flex-shrink-0">契約情報</Link>
+          </div>
+        )}
+
         {/* Hero CTA card */}
         <div className="bg-white rounded-3xl shadow-sm p-6 mb-5">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
@@ -178,11 +208,12 @@ export default function DashboardPage() {
             </div>
             <button
               onClick={() => {
+                if (!requestable) { alert('契約終了日を過ぎているため、画像制作の依頼はご利用いただけません。'); return }
                 if (!user?.is_payment_registered && user?.role !== 'admin') { setShowPaymentModal(true); return }
                 if (remaining <= 0) { alert('今月の依頼上限に達しています'); return }
                 setShowRequestForm(true)
               }}
-              disabled={remaining <= 0}
+              disabled={remaining <= 0 || !requestable}
               className="btn-gradient inline-flex items-center justify-center gap-2 font-bold px-8 py-4 rounded-full text-base disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap flex-shrink-0"
             >
               <span className="text-lg leading-none">＋</span>新しい依頼をする

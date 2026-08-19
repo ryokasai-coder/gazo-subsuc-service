@@ -299,6 +299,7 @@ export default function HomePage() {
               <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
               <Link href="/apply" className="hover:text-white transition-colors">お申し込み</Link>
               <Link href="/login" className="hover:text-white transition-colors">ログイン</Link>
+              <Link href="/terms" className="hover:text-white transition-colors">利用規約</Link>
             </div>
           </div>
           <div className="border-t border-white/10 mt-8 pt-8 text-center text-xs">

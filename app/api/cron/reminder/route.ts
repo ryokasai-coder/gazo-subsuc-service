@@ -25,13 +25,31 @@ export async function GET(req: NextRequest) {
   const dayOfMonth = today.getDate()
   const billingMonth = today.toISOString().slice(0, 7)
 
+  const service = createServiceClient()
+
+  // ── 解約確定処理（自動処理⑯）──
+  // 契約終了日（service_end_date）を過ぎた解約申請済みユーザーを「解約済み」に確定。
+  // ※閾値の有無に関わらず毎日実行する（リマインダー本体より前に処理）。
+  const todayStr = today.toISOString().slice(0, 10)
+  let finalized = 0
+  const { data: toFinalize } = await service
+    .from('users')
+    .select('id')
+    .eq('cancellation_status', 'cancel_requested')
+    .lt('service_end_date', todayStr)   // 利用期限（末日）の翌日以降
+  if (toFinalize && toFinalize.length > 0) {
+    const { error: finErr } = await service
+      .from('users')
+      .update({ cancellation_status: 'cancelled', updated_at: today.toISOString() })
+      .in('id', toFinalize.map((u: { id: string }) => u.id))
+    if (!finErr) finalized = toFinalize.length
+  }
+
   // 当日以降の全閾値（その日以前の閾値で未送信のものをまとめて処理）
   const activeThresholds = THRESHOLDS.filter(t => dayOfMonth >= t.day)
   if (activeThresholds.length === 0) {
-    return NextResponse.json({ ok: true, sent: 0, message: 'No active thresholds today' })
+    return NextResponse.json({ ok: true, sent: 0, finalized, message: 'No active thresholds today' })
   }
-
-  const service = createServiceClient()
 
   const { data: users } = await service
     .from('users')
@@ -93,5 +111,5 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ ok: true, sent, errors, dayOfMonth, billingMonth })
+  return NextResponse.json({ ok: true, sent, finalized, errors, dayOfMonth, billingMonth })
 }

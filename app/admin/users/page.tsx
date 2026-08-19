@@ -4,6 +4,13 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
+import {
+  effectiveCancellationStatus,
+  CANCELLATION_STATUS_LABEL,
+  cancelReasonLabel,
+  formatJpDate,
+  type CancellationStatus,
+} from '@/lib/contract'
 
 interface User {
   id: string
@@ -16,6 +23,18 @@ interface User {
   is_active: boolean
   is_payment_registered: boolean
   created_at: string
+  contract_start_date: string | null
+  cancellation_status: string | null
+  cancel_requested_at: string | null
+  cancel_reason: string | null
+  cancel_reason_detail: string | null
+  service_end_date: string | null
+}
+
+const cancelBadgeClass: Record<CancellationStatus, string> = {
+  active: 'text-emerald-700 bg-emerald-50 ring-1 ring-emerald-200',
+  cancel_requested: 'text-amber-700 bg-amber-50 ring-1 ring-amber-200',
+  cancelled: 'text-[#E85C97] bg-[#FFF0F6] ring-1 ring-red-200',
 }
 
 export default function AdminUsersPage() {
@@ -110,7 +129,7 @@ export default function AdminUsersPage() {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {/* サマリー */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           <div className="bg-white rounded-2xl p-4 shadow-sm text-center">
             <div className="text-2xl font-black text-[#111111]">{users.length}</div>
             <div className="text-xs text-[#6B7280] mt-1">総ユーザー数</div>
@@ -120,8 +139,12 @@ export default function AdminUsersPage() {
             <div className="text-xs text-[#6B7280] mt-1">決済登録済み</div>
           </div>
           <div className="bg-white rounded-2xl p-4 shadow-sm text-center">
-            <div className="text-2xl font-black text-amber-500">{users.filter(u => !u.is_payment_registered).length}</div>
-            <div className="text-xs text-[#6B7280] mt-1">決済未登録</div>
+            <div className="text-2xl font-black text-amber-500">{users.filter(u => effectiveCancellationStatus(u) === 'cancel_requested').length}</div>
+            <div className="text-xs text-[#6B7280] mt-1">解約申請済み</div>
+          </div>
+          <div className="bg-white rounded-2xl p-4 shadow-sm text-center">
+            <div className="text-2xl font-black text-[#E85C97]">{users.filter(u => effectiveCancellationStatus(u) === 'cancelled').length}</div>
+            <div className="text-xs text-[#6B7280] mt-1">解約済み</div>
           </div>
         </div>
 
@@ -139,6 +162,7 @@ export default function AdminUsersPage() {
                     <th className={thClass}>会社名 / 担当者</th>
                     <th className={thClass}>メール</th>
                     <th className={thClass}>決済登録</th>
+                    <th className={thClass}>契約状況</th>
                     <th className={thClass}>ステータス</th>
                     <th className={thClass}>登録日</th>
                     <th className={thClass}>操作</th>
@@ -159,6 +183,26 @@ export default function AdminUsersPage() {
                         ) : (
                           <span className="text-xs px-2.5 py-1 rounded-full font-semibold text-amber-700 bg-amber-50 ring-1 ring-amber-200">未登録</span>
                         )}
+                      </td>
+                      <td className={tdClass}>
+                        {(() => {
+                          const st = effectiveCancellationStatus(user)
+                          return (
+                            <div className="space-y-1">
+                              <span className={`inline-block text-xs px-2.5 py-1 rounded-full font-semibold ${cancelBadgeClass[st]}`}>
+                                {CANCELLATION_STATUS_LABEL[st]}
+                              </span>
+                              {st !== 'active' && (
+                                <div className="text-[11px] text-[#ABABAB] leading-tight">
+                                  {user.cancel_requested_at && <div>申請 {formatJpDate(user.cancel_requested_at)}</div>}
+                                  {user.service_end_date && <div>終了 {formatJpDate(user.service_end_date)}</div>}
+                                  {user.cancel_reason && <div>理由: {cancelReasonLabel(user.cancel_reason)}</div>}
+                                  {user.cancel_reason_detail && <div className="max-w-[160px] truncate" title={user.cancel_reason_detail}>「{user.cancel_reason_detail}」</div>}
+                                </div>
+                              )}
+                            </div>
+                          )
+                        })()}
                       </td>
                       <td className={tdClass}>
                         <button

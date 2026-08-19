@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient, createServiceClient } from '@/lib/supabase-server'
 import { notifySlack } from '@/lib/slack'
+import { canRequestNewImage } from '@/lib/contract'
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient()
@@ -12,14 +13,17 @@ export async function POST(req: NextRequest) {
   const serviceClient = createServiceClient()
 
   // Check user
+  // select('*') により、解約用カラム未適用（マイグレーション前）でもエラーにならない（欠損列は undefined）
   const { data: userData } = await serviceClient
     .from('users')
-    .select('company_name, contact_name, is_payment_registered, is_active, role')
+    .select('*')
     .eq('id', user.id)
     .single()
 
   if (!userData?.is_active) return NextResponse.json({ error: 'アカウントが無効です' }, { status: 403 })
   if (!userData?.is_payment_registered && userData?.role !== 'admin') return NextResponse.json({ error: '決済登録が必要です' }, { status: 403 })
+  // 契約終了日を過ぎた解約済みは依頼不可（解約申請中でも利用期限内なら可）
+  if (!canRequestNewImage(userData)) return NextResponse.json({ error: '契約終了日を過ぎているため、画像制作の依頼はご利用いただけません。' }, { status: 403 })
 
   // Check usage limit
   const { data: usageData } = await serviceClient

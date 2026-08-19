@@ -12,6 +12,14 @@ CREATE TABLE IF NOT EXISTS users (
   is_payment_registered BOOLEAN DEFAULT FALSE,
   is_active BOOLEAN DEFAULT TRUE,
   role TEXT DEFAULT 'user' CHECK (role IN ('user', 'admin')),
+  -- 契約・解約関連（2026-08-19 解約申請機能。migrations/2026-08-19-cancellation.sql）
+  contract_start_date DATE,                                       -- 初回契約日（無料期間・次回更新日の算出基準。既存は created_at で補完）
+  cancellation_status TEXT NOT NULL DEFAULT 'active'
+    CHECK (cancellation_status IN ('active', 'cancel_requested', 'cancelled')),  -- 契約中/解約申請済み/解約済み
+  cancel_requested_at TIMESTAMPTZ,                                -- 解約申請日時
+  cancel_reason TEXT,                                             -- 解約理由（区分キー）
+  cancel_reason_detail TEXT,                                      -- 解約理由の自由記述
+  service_end_date DATE,                                          -- 契約終了日（＝解約後のサービス利用期限。当月末日）
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -173,3 +181,4 @@ CREATE INDEX IF NOT EXISTS idx_billing_records_status ON billing_records(clearin
 CREATE INDEX IF NOT EXISTS idx_billing_records_month ON billing_records(billing_month);
 CREATE INDEX IF NOT EXISTS idx_billing_contracts_code ON billing_contracts(billing_code);
 CREATE INDEX IF NOT EXISTS idx_reminder_logs_user ON reminder_logs(user_id, billing_month);
+CREATE INDEX IF NOT EXISTS idx_users_cancellation_status ON users(cancellation_status);

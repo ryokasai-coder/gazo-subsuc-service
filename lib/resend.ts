@@ -99,6 +99,28 @@ export async function sendDeliveryEmail({ email, companyName, requestId, driveUr
   })
 }
 
+// 解約完了メール（STEP⑩／自動処理⑯）。契約終了日・次回更新なし・次回請求なしを明記。
+export async function sendCancellationEmail({ email, companyName, contactName, serviceEndDate }: {
+  email: string; companyName: string; contactName?: string; serviceEndDate: string
+}) {
+  await sendMail({
+    to: email,
+    subject: '【DESIGN BOX】解約手続き完了のお知らせ',
+    html: `
+      <p>${companyName} ${contactName ?? ''} 様</p>
+      <p>解約手続きが完了しました。以下の内容で受け付けております。</p>
+      <hr/>
+      <p>契約終了日：<strong>${serviceEndDate}</strong></p>
+      <p>次回更新：なし</p>
+      <p>次回請求：なし</p>
+      <hr/>
+      <p>${serviceEndDate}までは、引き続き画像制作サービスをご利用いただけます。<br/>
+      同日以降はサービスをご利用いただけなくなり、次回の自動更新・請求は発生しません。</p>
+      <p>これまでご利用いただき、誠にありがとうございました。</p>
+    `,
+  })
+}
+
 export async function sendDunningEmail({ email, companyName }: {
   email: string; companyName: string
 }) {
