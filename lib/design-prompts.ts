@@ -236,6 +236,117 @@ export const TEMPLATE_FIELDS: Record<string, PromptField[]> = {
     { key: 'step2_desc', label: '手順②（ID検索で登録）', placeholder: '例：友だち追加→検索→IDを入力', default: '「友だち追加」→「検索」でIDを入力', maxLength: 30 },
     { key: 'cta', label: '呼びかけ文', placeholder: '例：友だち登録募集中！', default: '友だち登録募集中！', maxLength: 18 },
   ],
+
+  // ══ DESIGN BOX 新規テンプレ11種（2026-08-20 追加・飲食／db-food-*）══
+  // 出典: Downloads/DESIGN BOX 新規テンプレート11種｜画像・JSON・Driveリンク.xlsx
+  // 見本画像は public/templates/tpl-db-food-*.jpg（referenceImage）。生成は buildFoodPrompt。
+
+  // ① 縦書き商品ヒーロー
+  'db-food-vertical-hero': [
+    { key: 'tone', label: 'トーン（雰囲気）', type: 'select', options: ['明るい和モダン', '高級和風', '爽やか', '力強い'], default: '明るい和モダン' },
+    { key: 'main_title', label: '商品名', placeholder: '例：炭火香る さば重', required: true, maxLength: 15 },
+    { key: 'description', label: '商品の特徴', placeholder: '例：皮は香ばしく、身はふっくら', maxLength: 40 },
+    { key: 'badge_text', label: '丸バッジの文言', placeholder: '例：季節限定', maxLength: 8 },
+    { key: 'service_time', label: '提供時間・区分', placeholder: '例：昼 11:00–15:00', maxLength: 18 },
+    { key: 'price', label: '価格', placeholder: '例：1,280円', maxLength: 10 },
+    { key: 'palette', label: '配色', type: 'select', options: ['ミント×ネイビー×オレンジ', '生成り×黒×朱色', '水色×白×濃紺', 'おまかせ'], default: 'おまかせ' },
+  ],
+  // ② 情報充実テイクアウトメニュー
+  'db-food-takeout-dense': [
+    { key: 'tone', label: 'トーン（雰囲気）', type: 'select', options: ['和モダン', '親しみやすい', 'ポップ', '落ち着いた'], default: '和モダン' },
+    { key: 'main_title', label: 'メニュー名', placeholder: '例：鉄板ぎょうざ', required: true, maxLength: 16 },
+    { key: 'main_catch', label: 'メインキャッチ', placeholder: '例：外はパリッと中はジューシー', maxLength: 20 },
+    { key: 'products', label: '主力商品（1行に「商品名 個数 価格 説明」／最大2行）', type: 'textarea', placeholder: '鉄板ぎょうざ 6個 480円 熱々をそのまま\n特製水餃子 5個 450円 もちもち', hint: '1行1商品・最大2行。写真は下でアップロード', maxLength: 34, maxLines: 2 },
+    { key: 'flavors', label: '味・ソース（1行に「名称 説明」／最大5行）', type: 'textarea', placeholder: '味噌だれ こく深い\nゆず胡椒 さっぱり', hint: '1行1件・最大5行', maxLength: 26, maxLines: 5 },
+    { key: 'toppings', label: 'トッピング（1行に「名称 追加価格」／最大4行）', type: 'textarea', placeholder: '大盛り +150円\nチーズ +100円', hint: '1行1件・最大4行', maxLength: 20, maxLines: 4 },
+    { key: 'order_steps', label: '注文・受取方法（1行に「見出し 説明」／最大3行）', type: 'textarea', placeholder: '注文 電話またはLINEで\n受取 店頭カウンター', hint: '1行1段階・最大3行', maxLength: 26, maxLines: 3 },
+    { key: 'footer_notes', label: '下部案内（1行に「見出し 説明」／最大3行）', type: 'textarea', placeholder: '営業時間 11:00-20:00', hint: '入力がある項目のみ表示・最大3行', maxLength: 26, maxLines: 3 },
+    { key: 'palette', label: '配色', type: 'select', options: ['ミント×紫×コーラル', '紺×生成り×赤', '茶×クリーム×緑', 'おまかせ'], default: 'おまかせ' },
+  ],
+  // ③ 4商品フォトグリッド
+  'db-food-four-grid': [
+    { key: 'tone', label: 'トーン（雰囲気）', type: 'select', options: ['パステル', 'カラフル', 'ナチュラル', 'クール'], default: 'パステル' },
+    { key: 'main_title', label: '企画・メニュー名', placeholder: '例：選べる彩りボウル', required: true, maxLength: 18 },
+    { key: 'price_text', label: '価格・価格訴求', placeholder: '例：ランチ限定 680円', maxLength: 12 },
+    { key: 'items', label: '商品4件（1行に「商品名」／4行）', type: 'textarea', placeholder: 'サーモンボウル\nアボカドボウル\nチキンボウル\n彩り野菜ボウル', hint: '4商品・各写真は下でアップロード', maxLength: 18, maxLines: 4 },
+    { key: 'palette', label: '配色', type: 'select', options: ['ラベンダー×ミント×オレンジ', '青×黄×白', 'ベージュ×緑×赤', 'おまかせ'], default: 'おまかせ' },
+  ],
+  // ④ 写真付き縦型メニュー一覧
+  'db-food-list-menu': [
+    { key: 'tone', label: 'トーン（雰囲気）', type: 'select', options: ['和モダン', 'ナチュラル', '高級感', 'クール'], default: '和モダン' },
+    { key: 'main_title', label: 'メニュー名', placeholder: '例：炭火串焼き MENU', required: true, maxLength: 14 },
+    { key: 'items', label: '商品一覧（1行に「商品名 価格」／最大8行）', type: 'textarea', placeholder: '正肉 180円\nつくね 200円\nねぎま 190円', hint: '1行1商品・最大8行', maxLength: 24, maxLines: 8 },
+    { key: 'featured_items', label: '下部おすすめ（1行に「商品名 価格」／最大2行）', type: 'textarea', placeholder: '特上盛り合わせ 1,280円', hint: '1行1商品・最大2行', maxLength: 24, maxLines: 2 },
+    { key: 'palette', label: '配色', type: 'select', options: ['紺×桃×生成り', '黒×金×白', '緑×ベージュ×朱', 'おまかせ'], default: 'おまかせ' },
+  ],
+  // ⑤ エディトリアル3品メニュー
+  'db-food-editorial-brunch': [
+    { key: 'tone', label: 'トーン（雰囲気）', type: 'select', options: ['上品', 'ナチュラル', 'フェミニン', 'モダン'], default: '上品' },
+    { key: 'main_title', label: 'メニュー名', placeholder: '例：WEEKEND BRUNCH', required: true, maxLength: 18 },
+    { key: 'items', label: 'メイン商品3件（1行に「商品名 価格 説明」／3行）', type: 'textarea', placeholder: 'エッグベネディクト 1,200円 半熟卵ととろけるソース\nパンケーキ 980円 ふわふわ食感', hint: '3商品・各写真は下でアップロード', maxLength: 34, maxLines: 3 },
+    { key: 'option_groups', label: '追加メニュー（1行に「グループ名：項目1, 項目2…」／最大2行）', type: 'textarea', placeholder: 'ドリンク：コーヒー, 紅茶, ジュース', hint: '1行1グループ・最大2行', maxLength: 40, maxLines: 2 },
+    { key: 'info_cards', label: '下部案内（1行に「見出し 本文」／最大2行）', type: 'textarea', placeholder: '営業時間 土日 8:00-14:00', hint: '入力がある項目のみ表示・最大2行', maxLength: 40, maxLines: 2 },
+    { key: 'palette', label: '配色', type: 'select', options: ['セージ×ラベンダー×生成り', '白×黒×グレー', 'ベージュ×茶×緑', 'おまかせ'], default: 'おまかせ' },
+  ],
+  // ⑥ 超大型価格キャンペーン
+  'db-food-price-impact': [
+    { key: 'tone', label: 'トーン（雰囲気）', type: 'select', options: ['力強い', 'ネオン', 'ポップ', 'スポーティー'], default: '力強い' },
+    { key: 'campaign_title', label: 'キャンペーン名', placeholder: '例：OPEN記念', required: true, maxLength: 14 },
+    { key: 'main_price', label: 'メイン価格', placeholder: '例：690円', required: true, maxLength: 8 },
+    { key: 'period', label: '期間', placeholder: '例：5.16–5.22', required: true, maxLength: 24 },
+    { key: 'condition', label: '利用条件', placeholder: '例：お一人様1回まで', maxLength: 42 },
+    { key: 'items', label: '対象商品3件（1行に「商品名 特徴 価格」／3行）', type: 'textarea', placeholder: '唐揚げ ジューシー 690円\nハンバーグ 肉汁たっぷり 690円', hint: '3商品・各写真は下でアップロード', maxLength: 30, maxLines: 3 },
+    { key: 'footer_text', label: '最下部の案内', placeholder: '例：全店舗共通・テイクアウトOK', maxLength: 50 },
+    { key: 'palette', label: '配色', type: 'select', options: ['青×ライム×紫', '赤×黒×白', 'オレンジ×紺×白', 'おまかせ'], default: 'おまかせ' },
+  ],
+  // ⑦ イラスト付きオープニングイベント
+  'db-food-opening-event': [
+    { key: 'tone', label: 'トーン（雰囲気）', type: 'select', options: ['パステル', '温かい', 'ナチュラル', '子ども向け'], default: 'パステル' },
+    { key: 'event_title', label: 'イベント名', placeholder: '例：BAKERY OPENING DAY', required: true, maxLength: 22 },
+    { key: 'event_date', label: '開催日', placeholder: '例：9.14 SUN', required: true, maxLength: 16 },
+    { key: 'event_time', label: '開催時間', placeholder: '例：10:00-17:00', maxLength: 18 },
+    { key: 'offers', label: '特典・企画（1行に「見出し 説明 価格」／最大2行）', type: 'textarea', placeholder: '先着50名 焼きたてパンプレゼント\n本日限定 全品10%OFF', hint: '1行1件・最大2行', maxLength: 34, maxLines: 2 },
+    { key: 'features', label: '特徴（1行に「見出し」／最大4行）', type: 'textarea', placeholder: '駐車場あり\nテラス席\nペットOK', hint: '1行1件・最大4行', maxLength: 16, maxLines: 4 },
+    { key: 'access_text', label: 'アクセス・受取案内', type: 'textarea', placeholder: '○○駅から徒歩5分', hint: '最大2行', maxLength: 40, maxLines: 2 },
+    { key: 'palette', label: '配色', type: 'select', options: ['ラベンダー×コーラル×深緑', '黄緑×桃×黄', '水色×赤×生成り', 'おまかせ'], default: 'おまかせ' },
+  ],
+  // ⑧ 高級スイーツ・プロダクトヒーロー
+  'db-food-luxury-product': [
+    { key: 'tone', label: 'トーン（雰囲気）', type: 'select', options: ['ラグジュアリー', 'モード', 'ロマンティック', 'クール'], default: 'ラグジュアリー' },
+    { key: 'category_left', label: '左上カテゴリ', placeholder: '例：CREPE', maxLength: 10 },
+    { key: 'category_right', label: '右上カテゴリ', placeholder: '例：SEASONAL', maxLength: 10 },
+    { key: 'main_title', label: '英字商品名', placeholder: '例：STRAWBERRY PISTACHIO', required: true, maxLength: 28 },
+    { key: 'script_subtitle', label: '筆記体サブタイトル', placeholder: '例：Ruby Garden', maxLength: 18 },
+    { key: 'description', label: '商品説明（最大3行）', type: 'textarea', placeholder: '厳選した苺とピスタチオの\n贅沢なマリアージュ', maxLength: 38, maxLines: 3 },
+    { key: 'palette', label: '配色', type: 'select', options: ['濃紺×淡桃×生成り', '深緑×金×白', '黒×赤紫×銀', 'おまかせ'], default: 'おまかせ' },
+  ],
+  // ⑨ 季節の和スイーツ
+  'db-food-seasonal-shaved-ice': [
+    { key: 'tone', label: 'トーン（雰囲気）', type: 'select', options: ['上品', '涼しげ', '華やか', '伝統的'], default: '上品' },
+    { key: 'main_title', label: '商品名', placeholder: '例：苺みるくかき氷', required: true, maxLength: 14 },
+    { key: 'sub_catch', label: '季節のキャッチ', placeholder: '例：夏のご褒美スイーツ', maxLength: 18 },
+    { key: 'english_title', label: '英字タイトル', placeholder: '例：STRAWBERRY KAKIGORI', maxLength: 26 },
+    { key: 'badge_text', label: '販売区分', placeholder: '例：季節限定', maxLength: 8 },
+    { key: 'price', label: '価格', placeholder: '例：980円', maxLength: 10 },
+    { key: 'palette', label: '配色', type: 'select', options: ['薄紫×苺色×水色', '白×抹茶×金', '紺×白×朱', 'おまかせ'], default: 'おまかせ' },
+  ],
+  // ⑩ 具材解説サンドイッチ
+  'db-food-ingredient-anatomy': [
+    { key: 'tone', label: 'トーン（雰囲気）', type: 'select', options: ['クール', 'ポップ', 'ナチュラル', 'ミニマル'], default: 'クール' },
+    { key: 'main_title', label: '商品名', placeholder: '例：アボカドシュリンプサンド', required: true, maxLength: 20 },
+    { key: 'ingredients', label: '具材・構成要素（1行に「表示名 位置の説明」／最大7行）', type: 'textarea', placeholder: 'アボカド 上段のクリーミーな層\nエビ 中央のメイン具材\nレタス みずみずしい葉物', hint: '1行1具材・最大7行。写真の断面と一致させます', maxLength: 30, maxLines: 7 },
+    { key: 'palette', label: '配色', type: 'select', options: ['水色×紺×コーラル', '白×オレンジ', '生成り×緑×茶', 'おまかせ'], default: 'おまかせ' },
+  ],
+  // ⑪ 写真全面＋超大型タイポグラフィ
+  'db-food-oversized-photo-type': [
+    { key: 'tone', label: 'トーン（雰囲気）', type: 'select', options: ['エディトリアル', 'ストリート', 'モダン', '温かい'], default: 'エディトリアル' },
+    { key: 'main_title', label: '大型タイトル', placeholder: '例：ROASTED VEGGIE FOCACCIA', required: true, maxLength: 24 },
+    { key: 'location_label', label: '地域・短い副題', placeholder: '例：KOBE HARBOR', maxLength: 18 },
+    { key: 'brand_sentence', label: 'ブランドメッセージ', placeholder: '例：素材にこだわる、街のパン工房', maxLength: 52 },
+    { key: 'hours', label: '営業時間', placeholder: '例：8:00-19:00', maxLength: 24 },
+    { key: 'closed_day', label: '定休日', placeholder: '例：月曜定休', maxLength: 18 },
+    { key: 'palette', label: '文字・写真の色調', type: 'select', options: ['ティール×コーラル×生成り', '暖色写真×白文字', 'モノクロ×差し色', 'おまかせ'], default: 'おまかせ' },
+  ],
 }
 
 // フォーム入力(fields)＋各欄のdefaultをマージし、必ず入力制限を適用した実効値を返す
@@ -253,8 +364,116 @@ export function mergeFieldDefaults(templateId: string, fields: Record<string, st
 const SEASON_COLOR: Record<string, string> = { 春: '淡いピンク', 夏: '爽やかな水色', 秋: '温かいオレンジ', 冬: '白銀' }
 const SEASON_MOTIF: Record<string, string> = { 春: '桜の花びら', 夏: 'ひまわりや涼しげな波', 秋: '紅葉やイチョウ', 冬: '雪の結晶' }
 
+// ══ DESIGN BOX 新規テンプレ11種（飲食・db-food-*）の生成 ══════════════
+// 全11種で共通のガードレール（共通ルール sheet「全11テンプレート共通」準拠）。
+// 事実の創作を禁止し、見本画像の固定構成を維持させる。
+const COMMON_FOOD_GUARDRAILS = [
+  '・価格・割引率・期間・営業時間・住所・電話番号・限定数・受賞歴は、入力にないものを絶対に創作しない（該当区画は非表示にする）。',
+  '・アップロードされた写真の料理の同一性を保ち、頼まれていないトッピングや別商品に変えない。',
+  '・日本語と数字は正確に描画し、文字化け・見切れ・はみ出しを作らない。本文を読めないほど小さくしない。',
+  '・見本画像の固定構成（配置・比率・骨格）を維持し、内容と配色だけを入力に合わせて変更する。',
+]
+
+interface FoodSpec { title: string; orientation: string; layout: string[]; instruction: string }
+const FOOD_TEMPLATE_SPECS: Record<string, FoodSpec> = {
+  'db-food-vertical-hero': {
+    title: '縦書き商品ヒーロー', orientation: '縦長1080×1350',
+    layout: ['見出し：中央上部から縦方向に超大型', '説明：左右に細い縦書き', '写真：中央下部、横幅70〜90%', 'バッジ：写真付近の丸型', '下部：最下部に提供時間と価格'],
+    instruction: '縦書き主体の構成、文字スケール、写真位置、左右説明、丸バッジ、下部帯を固定する。横書き中心の構成へ変更しない。',
+  },
+  'db-food-takeout-dense': {
+    title: '情報充実テイクアウトメニュー', orientation: '縦長1080×1350',
+    layout: ['ヒーロー：上部左にタイトル、右に主力写真', '主力商品：中上段に2カード', '味・ソース：横一列', 'トッピング：横一列', '注文方法：下段に注文方法と温め方', '下部：最下部に3分割案内'],
+    instruction: '情報ブロックの段数と順序を維持し、文章を小さく詰め込まず各上限内に要約する。電話・地図・住所は入力がある場合だけ表示する。',
+  },
+  'db-food-four-grid': {
+    title: '4商品フォトグリッド', orientation: '正方形1080×1080',
+    layout: ['写真：上2枚・下2枚の同寸グリッド', '見出し：中央の太い帯', '価格：中央帯で最大級', 'ラベル：各写真上部'],
+    instruction: '2×2写真と中央帯の構造を変更しない。4商品が同じ重要度で見えるよう写真サイズを統一する。',
+  },
+  'db-food-list-menu': {
+    title: '写真付き縦型メニュー一覧', orientation: '縦長1080×1350',
+    layout: ['タイトル：左上の縦組みまたは短いタイトル', '主役写真：右上の横長写真', 'サムネイル：左列', '一覧：中央〜右に商品名・点線・価格', 'おすすめ：最下部に2商品'],
+    instruction: '縦方向の一覧性を優先し、商品名と価格の行位置を揃える。最大数を超える場合は省略せず表示する。',
+  },
+  'db-food-editorial-brunch': {
+    title: 'エディトリアル3品メニュー', orientation: '縦長1080×1350',
+    layout: ['メイン商品：上部に3列', '見出し：中央', '追加メニュー：中段2列', '案内：下段2カード', '余白：広い余白を固定'],
+    instruction: '余白と整列を最優先し、情報不足時に装飾や文章を勝手に増やさない。3品の写真比率を統一する。',
+  },
+  'db-food-price-impact': {
+    title: '超大型価格キャンペーン', orientation: '正方形1080×1080',
+    layout: ['告知：上端', '価格：上半分に超大型・斜め', '期間：価格直下の帯', '対象商品：下段に3分割', '下部：最下部の濃色帯'],
+    instruction: '価格を最重要要素として固定し、3商品を同じ幅で配置する。割引・税込表記・期間を入力なしで作らない。',
+  },
+  'db-food-opening-event': {
+    title: 'イラスト付きオープニングイベント', orientation: '縦長1080×1350',
+    layout: ['装飾：上部周囲に商品モチーフ', '見出し：上部中央', '開催日：見出し直下', '特典：中央2カード', '特徴：横4個', 'アクセス：最下部'],
+    instruction: '友好的な構成を維持する。架空の地図・住所・電話番号を生成しない。商品写真がない場合は一般的な装飾イラストだけ使用する。',
+  },
+  'db-food-luxury-product': {
+    title: '高級スイーツ・プロダクトヒーロー', orientation: '縦長1080×1350',
+    layout: ['カテゴリ：左右上端', '見出し：上部に超大型英字', '筆記体：見出しへ重ねる', '写真：中央〜下部に単品', '説明：左下'],
+    instruction: '単色背景、大型英字、中央商品という骨格を固定する。ロゴ・URL・架空ブランドを追加しない。商品写真を別商品へ変えない。',
+  },
+  'db-food-seasonal-shaved-ice': {
+    title: '季節の和スイーツ', orientation: '縦長1080×1350',
+    layout: ['見出し：上部大型', 'キャッチ：見出し直下', '英字：中央上部の筆記体', '写真：中央下部', '装飾：四隅の和柄', '下部：最下部の白帯'],
+    instruction: '和柄の位置と中央商品の構成を維持し、配色と商品内容を変更する。価格・限定表記は入力時のみ使用する。',
+  },
+  'db-food-ingredient-anatomy': {
+    title: '具材解説サンドイッチ', orientation: '正方形1080×1080',
+    layout: ['見出し：左上に大型積み上げ', '写真：右から大きくはみ出す', 'ラベル：左に縦並び', '引き出し線：各具材へ水平線'],
+    instruction: '写真の断面と具材名を一致させる。写真に存在しない素材を追加しない。大型写真と左ラベルの構成を固定する。',
+  },
+  'db-food-oversized-photo-type': {
+    title: '写真全面＋超大型タイポグラフィ', orientation: '縦長1080×1350',
+    layout: ['写真：全面', '見出し：上半分を覆う超大型文字', '地域：見出し直下', 'メッセージ：中段', '営業時間：下部の小型情報'],
+    instruction: '写真全面と巨大文字の比率を固定する。文字が料理の主役部分を完全に隠さないようコントラストと改行を調整する。店舗名・地域・営業時間を推測しない。',
+  },
+}
+
+// 新規飲食テンプレの最終プロンプトを組み立てる（レイアウト＋入力内容＋トーン/配色＋厳守事項）。
+function buildFoodPrompt(templateId: string, f: Record<string, string>, hasPhoto: boolean): string {
+  const spec = FOOD_TEMPLATE_SPECS[templateId]
+  const defs = TEMPLATE_FIELDS[templateId] ?? []
+  const tone = (f.tone || '').trim()
+  const palette = (f.palette || '').trim()
+
+  const contentLines: string[] = []
+  for (const d of defs) {
+    if (d.key === 'tone' || d.key === 'palette') continue
+    const v = (f[d.key] ?? '').trim()
+    if (!v) continue
+    if (d.type === 'textarea') {
+      const lines = v.split('\n').map(s => s.trim()).filter(Boolean)
+      if (!lines.length) continue
+      contentLines.push(`・${d.label.replace(/（.*$/, '')}：`)
+      for (const ln of lines) contentLines.push(`　- ${ln}`)
+    } else {
+      contentLines.push(`・${d.label}：「${v}」`)
+    }
+  }
+
+  return [
+    `飲食店向けの「${spec.title}」デザイン(${spec.orientation})を作成してください。添付の見本画像と同じ構成を踏襲します。`,
+    '■レイアウト（この構成を厳守。文字は各エリア内に収め、はみ出さないこと）',
+    ...spec.layout.map(l => `・${l}`),
+    '■内容（下記の入力内容に置き換える。空欄の項目は表示しない）',
+    ...(contentLines.length ? contentLines : ['・入力内容に応じて構成する']),
+    tone ? `■トーン（雰囲気）：${tone}` : '',
+    palette && palette !== 'おまかせ' ? `■配色：${palette}` : '■配色：写真になじむ高コントラストの3色でまとめる',
+    '■厳守事項',
+    ...COMMON_FOOD_GUARDRAILS,
+    `・${spec.instruction}`,
+    hasPhoto ? '■添付画像を主役の写真として使用してください（複数枚あれば各区画へ割り当て）。' : '■写真がないため、料理は自然で美味しそうなイメージとして表現してください。',
+  ].filter(Boolean).join('\n')
+}
+
 // 最終プロンプトを組み立てる。fieldsは mergeFieldDefaults 済み（＝制限適用済み）を想定。
 export function buildPrompt(templateId: string, f: Record<string, string>, hasPhoto: boolean): string {
+  // 新規飲食テンプレ（db-food-*）は共通ビルダーで生成
+  if (FOOD_TEMPLATE_SPECS[templateId]) return buildFoodPrompt(templateId, f, hasPhoto)
   if (templateId === 'limited-banner') {
     const season = f.season || '春'
     const color = SEASON_COLOR[season] || '淡いピンク'
