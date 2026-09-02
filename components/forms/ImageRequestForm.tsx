@@ -38,6 +38,7 @@ export interface Template {
   designTags: string[]
   referenceImage?: string  // 参考画像（画像プロンプト集の実例サムネ）
   sampleUses?: string      // このテンプレで作れる画像の具体例
+  hidden?: boolean         // 選択画面に出さない（後継テンプレに置き換えた旧テンプレ等）。定義は互換のため残す
 }
 
 // ─── テンプレート定義（画像プロンプト・参考画像 集 準拠） ───
@@ -168,6 +169,7 @@ const TEMPLATES: Template[] = [
   },
   {
     id: 'salon-open',
+    hidden: true, // 後継: spa_open（参考画像方式）
     name: 'サロン新規オープン告知（高級感）',
     description: '上質な内装イメージに大きな「OPEN」と強み・特典を配した、サロン向けの開店告知デザイン。',
     sampleUses: 'スパ＆マッサージOPEN・リラクゼーション開店・新規オープン記念',
@@ -179,6 +181,7 @@ const TEMPLATES: Template[] = [
   },
   {
     id: 'esthe-campaign',
+    hidden: true, // 後継: esthe_pink / esthe_gold（参考画像方式）
     name: 'エステ・サロン集客キャンペーン（清潔感）',
     description: 'フェイシャル施術イメージに体験コースの特別価格を訴求する、女性向けの集客キャンペーンデザイン。',
     sampleUses: 'フェイシャルエステ体験・初回限定キャンペーン・サロン集客',
@@ -190,6 +193,7 @@ const TEMPLATES: Template[] = [
   },
   {
     id: 'takeout-menu',
+    hidden: true, // 後継: takeout_bento（参考画像方式）
     name: 'お持ち帰りメニュー表（和モダン）',
     description: 'ネイビー帯＋点線で商品名と価格を整然と並べる、テイクアウト向けの情報整理型メニュー表。',
     sampleUses: 'お持ち帰りメニュー・テイクアウト価格表・弁当メニュー一覧',
@@ -201,6 +205,7 @@ const TEMPLATES: Template[] = [
   },
   {
     id: 'bento-menu',
+    hidden: true, // 後継: yakiniku_bento（参考画像方式）
     name: 'お弁当メニュー（和風・高級感）',
     description: '黒×金×赤茶の和モダン配色で、お弁当を美味しそうに見せる高級感あるテイクアウトメニュー表。',
     sampleUses: '焼肉弁当・宅配弁当・仕出し弁当メニュー',
@@ -212,6 +217,7 @@ const TEMPLATES: Template[] = [
   },
   {
     id: 'line-friend-guide',
+    hidden: true, // 後継: line_guide（参考画像方式）
     name: 'LINE友だち登録案内（操作手順つき）',
     description: 'QRコード・ID検索の登録手順を丁寧に説明する、LINE公式アカウントの友だち追加案内デザイン。',
     sampleUses: 'LINE友だち登録案内・公式アカウント登録手順・お得情報の案内',
@@ -344,6 +350,75 @@ const TEMPLATES: Template[] = [
     productionTags: ['SNS投稿画像', '商品ヒーロー訴求', 'メニュー表紙・ブランド紹介'],
     designTags: ['インパクト', 'SNS映え', 'お任せ'],
   },
+
+  // ══ 参考画像方式6テンプレ（2026-09-02 追加・依頼書）══
+  // 参考画像(Image 1)＋顧客写真(Image 2)をGeminiへ渡し、テイストを保ったまま差し替え生成する。
+  {
+    id: 'spa_open',
+    name: 'スパ&マッサージ OPEN告知',
+    description: '上質な参考デザインをもとに、サロン名・特典・OPEN日を差し替えて開店告知を制作。',
+    sampleUses: 'スパ＆マッサージOPEN・リラクゼーション開店・新規オープン記念',
+    layoutType: 'shop-hero',
+    bgFrom: '#e9c9d4', bgTo: '#d8b8a8',
+    referenceImage: '/templates/tpl-spa-open.jpg',
+    productionTags: ['新規オープン告知', 'イベント告知'],
+    designTags: ['高級感', 'かわいい', 'お任せ'],
+  },
+  {
+    id: 'yakiniku_bento',
+    name: '焼肉弁当メニュー',
+    description: '和の高級感ある参考デザインをもとに、商品名・価格・店舗情報を差し替えて弁当メニューを制作。',
+    sampleUses: '焼肉弁当・宅配弁当・仕出し弁当メニュー',
+    layoutType: 'menu-list',
+    bgFrom: '#1a1a1a', bgTo: '#3d2b1f',
+    referenceImage: '/templates/tpl-yakiniku-bento.jpg',
+    productionTags: ['お持ち帰りメニュー表', '商品ヒーロー訴求'],
+    designTags: ['高級感', 'シンプル', 'お任せ'],
+  },
+  {
+    id: 'takeout_bento',
+    name: 'テイクアウト弁当メニュー',
+    description: '手作り感のある参考デザインをもとに、6品の商品・価格・店舗情報を差し替えて制作。',
+    sampleUses: 'お持ち帰り弁当・惣菜テイクアウト・日替わり弁当',
+    layoutType: 'menu-list',
+    bgFrom: '#f0e6d2', bgTo: '#e2d0b0',
+    referenceImage: '/templates/tpl-takeout-bento.jpg',
+    productionTags: ['お持ち帰りメニュー表', 'グランドメニュー表'],
+    designTags: ['ナチュラル', 'シンプル', 'お任せ'],
+  },
+  {
+    id: 'esthe_pink',
+    name: 'エステ集客（ピンク）',
+    description: '清潔感のあるピンクの参考デザインをもとに、体験コース・特別価格・選ばれる理由を差し替えて制作。',
+    sampleUses: 'フェイシャルエステ体験・初回限定キャンペーン・サロン集客',
+    layoutType: 'color-text',
+    bgFrom: '#f9c9d4', bgTo: '#f4b6c2',
+    referenceImage: '/templates/tpl-esthe-pink.jpg',
+    productionTags: ['キャンペーン・セール告知', 'クーポン告知', '新規オープン告知'],
+    designTags: ['かわいい', '高級感', 'お任せ'],
+  },
+  {
+    id: 'esthe_gold',
+    name: 'エステ集客（ゴールド）',
+    description: '高級感のあるゴールドの参考デザインをもとに、体験コース・3つのコース料金を差し替えて制作。',
+    sampleUses: 'エステ・痩身サロン集客・コース料金案内・体験キャンペーン',
+    layoutType: 'color-text',
+    bgFrom: '#e6d3a3', bgTo: '#c9a86a',
+    referenceImage: '/templates/tpl-esthe-gold.jpg',
+    productionTags: ['キャンペーン・セール告知', 'クーポン告知'],
+    designTags: ['高級感', 'シンプル', 'お任せ'],
+  },
+  {
+    id: 'line_guide',
+    name: 'LINE公式 友だち登録案内',
+    description: '親しみやすい参考デザインをもとに、LINE ID・訴求文・会社名を差し替え、QRコードを差し込んで制作。',
+    sampleUses: 'LINE友だち登録案内・公式アカウント登録手順・お得情報の案内',
+    layoutType: 'steps-3',
+    bgFrom: '#22c55e', bgTo: '#4ade80',
+    referenceImage: '/templates/tpl-line-guide.jpg',
+    productionTags: ['LINE登録促進'],
+    designTags: ['シンプル', 'かわいい', 'お任せ'],
+  },
 ]
 
 // テンプレ別の素材アップロード欄のラベル・説明。未定義なら汎用ラベル。
@@ -377,12 +452,21 @@ const MATERIAL_UPLOAD: Record<string, { label: string; hint: string; needed?: bo
   'db-food-seasonal-shaved-ice':{ label: '商品写真アップロード（推奨）', hint: 'かき氷・和スイーツの写真' },
   'db-food-ingredient-anatomy': { label: '断面が分かる商品写真（推奨・必須級）', hint: '具材の構造が分かる断面・構造写真' },
   'db-food-oversized-photo-type':{ label: '料理・店舗のメイン写真（推奨）', hint: '全面に使う高解像度の写真' },
+  // ── 参考画像方式6テンプレ（依頼書）。顧客画像=Image 2 は差し替えの主役なので必須 ──
+  'spa_open':       { label: 'メイン写真アップロード（必須）', hint: '参考デザインの中央写真と差し替えます（施術・サロン内観など）' },
+  'yakiniku_bento': { label: 'お弁当写真アップロード（必須）', hint: '参考デザインの一番大きい弁当写真と差し替えます' },
+  'takeout_bento':  { label: 'お弁当写真アップロード（必須）', hint: '参考デザインの一番目立つ写真タイルと差し替えます' },
+  'esthe_pink':     { label: '施術イメージ写真アップロード（必須）', hint: '参考デザインのメイン施術写真と差し替えます' },
+  'esthe_gold':     { label: '施術イメージ写真アップロード（必須）', hint: '参考デザインのメイン施術写真と差し替えます' },
+  'line_guide':     { label: 'QRコード画像アップロード（必須）', hint: 'LINE友だち追加用のQRコード画像を1枚。参考デザインのQR部分と差し替えます' },
 }
 
 function getFilteredTemplates(designFilter: string): Template[] {
   // デザインイメージ未選択なら全テンプレ表示。選択時はそのタグを持つテンプレのみに絞る。
-  if (!designFilter) return TEMPLATES
-  return TEMPLATES.filter(t => t.designTags.includes(designFilter))
+  // hidden（後継に置き換えた旧テンプレ）は常に選択画面から除外する。
+  const visible = TEMPLATES.filter(t => !t.hidden)
+  if (!designFilter) return visible
+  return visible.filter(t => t.designTags.includes(designFilter))
 }
 
 export interface RequestFormData {
@@ -614,7 +698,7 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
       const res = await fetch('/api/design/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-        body: JSON.stringify({ prompt, photoDataUrl }),
+        body: JSON.stringify({ prompt, photoDataUrl, templateId: form.template_id }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'デザインの制作に失敗しました')
@@ -1280,7 +1364,7 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
         const res = await fetch('/api/design/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-          body: JSON.stringify({ prompt, photoDataUrl }),
+          body: JSON.stringify({ prompt, photoDataUrl, templateId: pg.id }),
         })
         const data = await res.json()
         if (!res.ok) throw new Error(data.error || `${i + 1}ページ目の制作に失敗しました`)
@@ -1312,7 +1396,7 @@ function BrochureBuilder({ accessToken, onCancel }: { accessToken: string | null
       const res = await fetch('/api/design/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-        body: JSON.stringify({ prompt, photoDataUrl }),
+        body: JSON.stringify({ prompt, photoDataUrl, templateId: pg.id }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || '作り直しに失敗しました')

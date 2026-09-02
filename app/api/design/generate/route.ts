@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase-server'
+import { REFERENCE_IMAGES, SYSTEM_INSTRUCTION } from '@/lib/reference-images'
 
 // AI画像生成（Gemini Nano Banana 2 / gemini-3.1-flash-image）
 // prompt＋（任意で）素材写真を受け取り、生成画像を dataURL で返す。
@@ -22,16 +23,45 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '画像生成の設定が未完了です（GEMINI_API_KEY）' }, { status: 500 })
     }
 
-    const { prompt, photoDataUrl } = await req.json()
+    const { prompt, photoDataUrl, templateId } = await req.json()
     if (!prompt || typeof prompt !== 'string') {
       return NextResponse.json({ error: 'prompt is required' }, { status: 400 })
     }
 
+    // 参考画像方式テンプレ（依頼書6種）は、参考画像=Image 1 を先頭に固定で付与する。
+    // partsの順序は [Image 1(参考), Image 2(顧客写真/QR), プロンプト文]。
+    // 顧客写真を渡すべきモデルに、テキスト説明ではなく画像そのものを渡すのが本対応の核心。
+    const reference = (typeof templateId === 'string' && REFERENCE_IMAGES[templateId]) || null
+
+    // 顧客写真/QR（Image 2）
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const parts: any[] = [{ text: prompt }]
+    let photoPart: any = null
     if (photoDataUrl && typeof photoDataUrl === 'string') {
       const m = /^data:(image\/[\w.+-]+);base64,(.+)$/.exec(photoDataUrl)
-      if (m) parts.push({ inlineData: { mimeType: m[1], data: m[2] } })
+      if (m) photoPart = { inlineData: { mimeType: m[1], data: m[2] } }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let parts: any[]
+    if (reference) {
+      // 参考画像方式: [Image 1(参考), Image 2(顧客), プロンプト]
+      parts = [{ inlineData: { mimeType: reference.mime, data: reference.data } }]
+      if (photoPart) parts.push(photoPart)
+      parts.push({ text: prompt })
+    } else {
+      // 従来テンプレ: [プロンプト, 顧客写真]（既存挙動を維持）
+      parts = [{ text: prompt }]
+      if (photoPart) parts.push(photoPart)
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const body: any = {
+      contents: [{ parts }],
+      generationConfig: { responseModalities: ['IMAGE', 'TEXT'] },
+    }
+    // 参考画像方式のときだけ、共通のデザイナー指示をsystem instructionで付与
+    if (reference) {
+      body.systemInstruction = { parts: [{ text: SYSTEM_INSTRUCTION }] }
     }
 
     // キーはURLに載せず x-goog-api-key ヘッダで送る
@@ -40,10 +70,7 @@ export async function POST(req: NextRequest) {
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-        body: JSON.stringify({
-          contents: [{ parts }],
-          generationConfig: { responseModalities: ['IMAGE', 'TEXT'] },
-        }),
+        body: JSON.stringify(body),
       }
     )
 
