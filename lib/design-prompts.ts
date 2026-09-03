@@ -353,28 +353,37 @@ export const TEMPLATE_FIELDS: Record<string, PromptField[]> = {
   // 生成は buildReferencePrompt。参考画像バイト＋顧客画像(Image 2)を generate API がGeminiへ送る。
   // ※繰り返し項目はtextarea行方式。値に空白を含む項目は「／」区切り（whitespace分割の崩れ防止）。
 
-  // 5-1 スパ&マッサージ OPEN告知
+  // 5-1 スパ&マッサージ OPEN告知（references/01_spa_open.png / Image2=メイン施術写真）
   'spa_open': [
     { key: 'shop_name', label: 'サロン名（右上ロゴバッジ）', placeholder: '例：リラクゼーション凛', required: true, maxLength: 18 },
     { key: 'catch_copy', label: 'キャッチコピー（左上）', placeholder: '例：日常を忘れる、極上の癒やし空間で', maxLength: 30 },
+    { key: 'sub_notice_text', label: '見出し下の説明文', placeholder: '例：厳選オイルとていねいな手技でお疲れをリセット', maxLength: 44 },
+    { key: 'open_label', label: 'OPEN表記の語句', placeholder: 'OPEN', default: 'OPEN', maxLength: 12 },
     { key: 'open_date', label: 'オープン日', placeholder: '例：11.15 SUN', maxLength: 16 },
     { key: 'features', label: '特長バッジ（1行に1つ・3行まで）', type: 'textarea', placeholder: '駅徒歩3分\n完全個室\n国家資格保有', hint: '右側の白い円形バッジ3つに入ります', maxLength: 12, maxLines: 3 },
+    { key: 'reservation_label', label: '予約ボックスの文言', placeholder: 'ご予約専用', default: 'ご予約専用', maxLength: 16 },
     { key: 'campaigns', label: '特典ボックス（1行に「特典名／割引内容／期限」・2行まで）', type: 'textarea', placeholder: '全メニュー／初回限定30%OFF／2026年12月31日\n友だち紹介で／¥500割引／2027年1月31日', hint: '下部の特典ボックス2つ。項目は「／」で区切ってください', maxLength: 60, maxLines: 2 },
   ],
-  // 5-2 焼肉弁当メニュー
+  // 5-2 焼肉弁当メニュー（references/02_yakiniku_bento.png / Image2=一番大きい弁当写真）
   'yakiniku_bento': [
     { key: 'shop_name', label: '店名（左上の毛筆ロゴ）', placeholder: '例：焼肉 和牛亭', required: true, maxLength: 16 },
+    { key: 'tagline_label', label: 'ロゴ下の表記', placeholder: '焼肉弁当', default: '焼肉弁当', maxLength: 12 },
+    { key: 'seasonal_mark_text', label: '飾り印の文字', placeholder: '秋', default: '秋', maxLength: 4 },
     { key: 'items', label: 'お弁当（1行に「商品名／価格／説明」・4行まで）', type: 'textarea', placeholder: '特上カルビ弁当／1200／自家製だれ\n上ロース弁当／980／やわらか', hint: '一番大きい枠が顧客写真に置き換わります。価格は数字のみ', maxLength: 40, maxLines: 4 },
+    { key: 'rice_note', label: 'ご飯に関する注記', placeholder: '例：ご飯大盛り無料', maxLength: 24 },
     { key: 'tel', label: '電話番号', placeholder: '例：03-1234-5678', maxLength: 18 },
     { key: 'reception_hours', label: '受付時間', placeholder: '例：10:00〜19:00', maxLength: 20 },
     { key: 'pickup_hours', label: 'お渡し時間', placeholder: '例：11:00〜20:00', maxLength: 20 },
     { key: 'holiday', label: '定休日', placeholder: '例：毎週水曜', maxLength: 16 },
     { key: 'address', label: '住所', placeholder: '例：東京都〇〇区〇〇1-2-3', maxLength: 30 },
+    { key: 'order_qr_label', label: '注文QRのラベル', placeholder: 'ご注文はこちらから', default: 'ご注文はこちらから', maxLength: 20 },
   ],
-  // 5-3 テイクアウト弁当メニュー
+  // 5-3 テイクアウト弁当メニュー（references/03_takeout_bento.png / Image2=一番目立つ写真タイル）
   'takeout_bento': [
     { key: 'headline', label: '見出しコピー（3行想定）', placeholder: '例：できたて手作り／お弁当／はじめました', required: true, maxLength: 30 },
     { key: 'intro_text', label: '紹介文', placeholder: '例：地元食材にこだわった手作り弁当をお届けします', maxLength: 40 },
+    { key: 'shop_tagline', label: 'ロゴ下のタグライン', placeholder: 'お弁当・お惣菜', default: 'お弁当・お惣菜', maxLength: 16 },
+    { key: 'delivery_badge_text', label: '宅配バッジの文言', placeholder: '1個から宅配承ります', default: '1個から宅配承ります', maxLength: 20 },
     { key: 'items', label: '商品（1行に「商品名／価格」・6行まで）', type: 'textarea', placeholder: '唐揚げ弁当／650\nのり弁当／450', hint: '6品グリッド。価格は数字のみ', maxLength: 30, maxLines: 6 },
     { key: 'features', label: '特徴アイコン（1行に1つ・3行まで）', type: 'textarea', placeholder: 'できたて\n国産食材\n毎日日替わり', maxLength: 16, maxLines: 3 },
     { key: 'shop_name', label: '店名', placeholder: '例：お弁当 和ごはん', maxLength: 18 },
@@ -383,42 +392,59 @@ export const TEMPLATE_FIELDS: Record<string, PromptField[]> = {
     { key: 'holiday', label: '定休日', placeholder: '例：日曜', maxLength: 16 },
     { key: 'tel', label: '電話番号', maxLength: 18 },
     { key: 'fax', label: 'FAX', maxLength: 18 },
+    { key: 'notice_text', label: 'フッターの注意書き', placeholder: '例：前日までのご予約がおすすめです', maxLength: 40 },
+    { key: 'order_qr_label', label: '注文QRのラベル', placeholder: 'WEB注文はこちらから', default: 'WEB注文はこちらから', maxLength: 20 },
   ],
-  // 5-4 エステ集客・ピンク
+  // 5-4 エステ集客・ピンク（references/04_esthe_pink.png / Image2=メイン施術写真）
   'esthe_pink': [
+    { key: 'ribbon_text', label: '上部リボンの文言', placeholder: '大人女性のための', default: '大人女性のための', maxLength: 16 },
     { key: 'headline', label: '見出しコピー', placeholder: '例：エステで叶えるうるおい肌', required: true, maxLength: 26 },
     { key: 'salon_name', label: 'サロン名', placeholder: '例：Beauté Premier', required: true, maxLength: 18 },
+    { key: 'anniversary_badge', label: '周年バッジ（右上）', placeholder: '例：開業5周年', maxLength: 14 },
     { key: 'sub_catch', label: '訴求フレーズ（右上）', placeholder: '例：初めての方限定', maxLength: 20 },
     { key: 'features', label: '特徴アイコン（1行に1つ・3行まで）', type: 'textarea', placeholder: '完全個室\n経験豊富な担当者\nオーダーメイド施術', maxLength: 16, maxLines: 3 },
     { key: 'course_name', label: '体験コース名', placeholder: '例：フェイシャル体験コース', maxLength: 20 },
     { key: 'checks', label: 'コース内容チェック（1行に1つ・5行まで）', type: 'textarea', placeholder: 'カウンセリング\nクレンジング\nフェイシャル\n保湿ケア\nアフターティー', maxLength: 20, maxLines: 5 },
     { key: 'regular_price', label: '通常価格（数字のみ）', placeholder: '例：11000', numeric: true, maxLength: 6 },
     { key: 'special_price', label: '特別価格（数字のみ）', placeholder: '例：3980', numeric: true, maxLength: 6 },
+    { key: 'campaign_notes', label: 'キャンペーン注意書き', placeholder: 'お一人様1回限り／他の割引との併用不可', default: 'お一人様1回限り／他の割引との併用不可', maxLength: 40 },
+    { key: 'reasons_title', label: '「選ばれる理由」の見出し', placeholder: '当サロンが選ばれる理由', default: '当サロンが選ばれる理由', maxLength: 20 },
     { key: 'reasons', label: '選ばれる理由（1行に1つ・5行まで）', type: 'textarea', placeholder: '高い技術力\n丁寧なカウンセリング\n清潔な空間\n続けやすい料金\n駅チカ', maxLength: 24, maxLines: 5 },
+    { key: 'line_promo_text', label: 'LINE友だち登録欄の文言', placeholder: '友だち追加でお得なクーポンをプレゼント!', default: '友だち追加でお得なクーポンをプレゼント!', maxLength: 30 },
     { key: 'tel', label: '電話番号', maxLength: 18 },
     { key: 'hours', label: '受付時間・定休日', placeholder: '例：10:00〜20:00 / 不定休', maxLength: 26 },
     { key: 'address', label: '住所', maxLength: 30 },
     { key: 'access', label: '最寄駅・アクセス', placeholder: '例：〇〇駅 徒歩5分', maxLength: 24 },
   ],
-  // 5-5 エステ集客・ゴールド
+  // 5-5 エステ集客・ゴールド（references/05_esthe_gold.png / Image2=メイン施術写真）
   'esthe_gold': [
     { key: 'headline', label: '見出しコピー', placeholder: '例：エステで叶えるうるおい肌', required: true, maxLength: 26 },
     { key: 'salon_name', label: 'サロン名', placeholder: '例：PREMIÈRE BEAUTÉ', required: true, maxLength: 18 },
     { key: 'sub_catch', label: '訴求フレーズ（右・縦書き）', placeholder: '例：自信あふれる毎日を', maxLength: 20 },
+    { key: 'features', label: '特徴アイコン（1行に1つ・3行まで）', type: 'textarea', placeholder: '完全個室\n経験豊富な担当者\nオーダーメイド施術', maxLength: 16, maxLines: 3 },
     { key: 'course_name', label: '体験コース名', placeholder: '例：フェイシャル体験コース', maxLength: 20 },
     { key: 'checks', label: 'コース内容チェック（1行に1つ・5行まで）', type: 'textarea', placeholder: 'カウンセリング\nクレンジング\nフェイシャル\n保湿ケア\nアフターティー', maxLength: 20, maxLines: 5 },
     { key: 'regular_price', label: '通常価格（数字のみ）', placeholder: '例：13000', numeric: true, maxLength: 6 },
     { key: 'special_price', label: '特別価格（数字のみ）', placeholder: '例：4500', numeric: true, maxLength: 6 },
+    { key: 'campaign_notes', label: 'キャンペーン注意書き', placeholder: 'お一人様1回限り／他の割引との併用不可', default: 'お一人様1回限り／他の割引との併用不可', maxLength: 40 },
+    { key: 'reasons_title', label: '「選ばれる理由」の見出し', placeholder: '当サロンが選ばれる理由', default: '当サロンが選ばれる理由', maxLength: 20 },
     { key: 'reasons', label: '選ばれる理由（1行に1つ・5行まで）', type: 'textarea', placeholder: '高い技術力\n丁寧なカウンセリング\n清潔な空間\n続けやすい料金\n駅チカ', maxLength: 24, maxLines: 5 },
     { key: 'courses', label: 'コース料金3つ（1行に「コース名／時間／説明／価格」・3行）', type: 'textarea', placeholder: 'フェイシャル／60分／毛穴ケア／8000\nボディ／90分／全身ほぐし／12000\n痩身／90分／部分集中／14000', hint: '下部の3つの料金ボックス。項目は「／」で区切る。価格は数字のみ', maxLength: 44, maxLines: 3 },
+    { key: 'line_promo_text', label: 'LINE予約欄の文言', placeholder: 'ご予約はLINEで簡単予約', default: 'ご予約はLINEで簡単予約', maxLength: 30 },
     { key: 'tel', label: '電話番号', maxLength: 18 },
     { key: 'address', label: '住所', maxLength: 30 },
     { key: 'access', label: '最寄駅・アクセス', placeholder: '例：〇〇駅 徒歩3分', maxLength: 24 },
   ],
-  // 5-6 LINE公式アカウント友だち登録案内（Image 2 = 顧客のQRコード画像）
+  // 5-6 LINE公式アカウント友だち登録案内（references/06_line_guide.png / Image2=顧客のQRコード画像）
   'line_guide': [
     { key: 'line_id', label: 'LINE ID', placeholder: '例：@sample_salon', required: true, maxLength: 20 },
     { key: 'promo_text', label: '吹き出しの訴求文言', placeholder: '例：友だち追加でお得なクーポンをGET！', maxLength: 26 },
+    { key: 'headline', label: '大見出し', placeholder: '友だち登録募集中!', default: '友だち登録募集中!', maxLength: 20 },
+    { key: 'method_section_title', label: 'セクションタイトル', placeholder: 'LINE「友だち追加」方法', default: 'LINE「友だち追加」方法', maxLength: 22 },
+    { key: 'method_1_label', label: '方法1のラベル', placeholder: '「QRコード」で登録', default: '「QRコード」で登録', maxLength: 20 },
+    { key: 'method_1_instructions', label: '方法1の説明文', placeholder: '例：カメラでQRコードを読み取ってください', maxLength: 44 },
+    { key: 'method_2_label', label: '方法2のラベル', placeholder: '「ID検索」で登録', default: '「ID検索」で登録', maxLength: 20 },
+    { key: 'method_2_instructions', label: '方法2の説明文', placeholder: '例：IDを検索して友だち追加してください', maxLength: 44 },
     { key: 'company_name', label: '会社名・店舗名（フッター）', placeholder: '例：株式会社〇〇クリエイティブ', maxLength: 24 },
   ],
 }
@@ -566,14 +592,17 @@ function buildReferencePrompt(templateId: string, f: Record<string, string>): st
   if (templateId === 'spa_open') {
     const feats = refRows(f.features)
     const camps = refRows(f.campaigns).map(refCols)
+    const openLabel = f.open_label || 'OPEN'
     return [
       'Image 1の中央メイン写真をImage 2の顧客写真に置き換えてください。切り抜き比率・配置はImage 1に合わせてください。',
       f.shop_name ? `右上の円形ロゴバッジのテキストを「${f.shop_name}」に変更してください。バッジの形状・配色は変更しないでください。` : '',
       f.catch_copy ? `左上のキャッチコピーを「${f.catch_copy}」に変更し、Image 1と同じ書体・配置で表示してください。` : '',
-      f.open_date ? `中央下部の"OPEN"表記の日付部分を「${f.open_date}」に変更してください。` : '',
+      f.sub_notice_text ? `見出し下の説明文を「${f.sub_notice_text}」に変更してください。` : '',
+      f.open_date ? `中央下部の"${openLabel}"表記の日付部分を「${f.open_date}」に変更してください。` : '',
       feats.length ? `右側の白い円形バッジ3つのテキストをそれぞれ${feats.map(x => `「${x}」`).join('')}に変更してください。バッジの形状・並び順は変更しないでください。` : '',
+      f.reservation_label ? `テラコッタ色の予約ボックスの文言を「${f.reservation_label}」に変更してください。QRコード風アイコンはImage 1のまま維持してください。` : '',
       camps.length ? `下部の特典ボックス2つを${camps.map(c => `「${c[0] || ''} ${c[1] || ''}${c[2] ? `(期間限定:${c[2]}まで)` : ''}」`).join('')}に変更してください。ボックスの色・形状は変更しないでください。` : '',
-      A4,
+      NO_ADD, A4,
     ].filter(Boolean).join('\n')
   }
   if (templateId === 'yakiniku_bento') {
@@ -585,10 +614,13 @@ function buildReferencePrompt(templateId: string, f: Record<string, string>): st
     ].filter(Boolean).join('、')
     return [
       f.shop_name ? `左上の毛筆ロゴ部分のテキストを「${f.shop_name}」に変更してください。書体・配色のスタイルはImage 1と同じにしてください。` : '',
-      '4つの弁当写真枠のうち最も大きい枠をImage 2の顧客写真に置き換えてください。残りの枠はImage 1と同じ俯瞰構図・照明・盛り付け感を保ってください。',
+      f.tagline_label ? `ロゴ下の表記を「${f.tagline_label}」に変更してください。` : '',
+      f.seasonal_mark_text ? `左上の飾り印の文字を「${f.seasonal_mark_text}」に変更してください。` : '',
+      '弁当写真枠のうち最も大きい枠をImage 2の顧客写真に置き換えてください。残りの写真枠(グリル・外観夜景・冷蔵庫内など)はImage 1と同じ俯瞰構図・照明・盛り付け感を保ってください。',
       items.length ? `各弁当の商品名・価格・説明を${items.map(c => `「${c[0] || ''} ${c[1] ? c[1] + '円' : ''} ${c[2] || ''}」`).join('')}に変更してください。` : '',
+      f.rice_note ? `ご飯に関する注記を「${f.rice_note}」に変更してください。` : '',
       footer ? `フッターの${footer}に変更してください。` : '',
-      '右上の外観写真、左上のグリル写真はImage 1と同じ雰囲気(夜景/炭火焼きのクローズアップ)を保ったまま生成してください。',
+      f.order_qr_label ? `フッター右下のQRコードのラベルを「${f.order_qr_label}」に変更してください。QRコード自体はImage 1のまま維持してください。` : '',
       NO_ADD, A4,
     ].filter(Boolean).join('\n')
   }
@@ -604,9 +636,13 @@ function buildReferencePrompt(templateId: string, f: Record<string, string>): st
       '上部3枚の写真タイルのうち一番目立つ1枚をImage 2の顧客写真に置き換えてください。他はImage 1と同じ雰囲気の弁当写真として生成してください。',
       f.headline ? `見出しコピーを「${f.headline}」に変更してください(3行構成は維持してください)。` : '',
       f.intro_text ? `中段の紹介文を「${f.intro_text}」に変更してください。` : '',
+      f.shop_tagline ? `ロゴ下のタグラインを「${f.shop_tagline}」に変更してください。` : '',
+      f.delivery_badge_text ? `宅配バッジの文言を「${f.delivery_badge_text}」に変更してください。` : '',
       items.length ? `6品グリッドの商品名・価格を${items.map(c => `「${c[0] || ''} ${c[1] ? c[1] + '円' : ''}」`).join('')}に変更してください。写真はImage 1と同じ構図感で生成してください。` : '',
       feats.length ? `3つの特徴アイコン文言を${feats.map(x => `「${x}」`).join('')}に変更してください。` : '',
       footer ? `フッターの${footer}に変更してください。` : '',
+      f.notice_text ? `フッターの注意書きを「${f.notice_text}」に変更してください。` : '',
+      f.order_qr_label ? `右下のQRコードのラベルを「${f.order_qr_label}」に変更してください。QRコード自体はImage 1のまま維持してください。` : '',
       NO_ADD, A4,
     ].filter(Boolean).join('\n')
   }
@@ -618,44 +654,70 @@ function buildReferencePrompt(templateId: string, f: Record<string, string>): st
       f.tel && `電話番号を「${f.tel}」`, f.hours && `受付時間・定休日を「${f.hours}」`,
       f.address && `住所を「${f.address}」`, f.access && `最寄駅情報を「${f.access}」`,
     ].filter(Boolean).join('、')
+    const courseParts = [
+      f.course_name && `コース名を「${f.course_name}」`,
+      checks.length && `チェックリストを${checks.map(x => `「${x}」`).join('')}`,
+      f.regular_price && `通常価格を「${f.regular_price}円」`,
+      f.special_price && `特別価格を「${f.special_price}円」`,
+      f.campaign_notes && `注意書きを「${f.campaign_notes}」`,
+    ].filter(Boolean).join('、')
     return [
+      f.ribbon_text ? `上部リボンの文言を「${f.ribbon_text}」に変更してください。` : '',
       f.headline ? `見出しコピーを「${f.headline}」に変更してください。` : '',
       f.salon_name ? `サロン名ボックスを「${f.salon_name}」に変更してください。` : '',
-      f.sub_catch ? `右上の訴求フレーズを「${f.sub_catch}」に変更してください。` : '',
-      'メイン施術写真をImage 2の顧客写真に置き換えてください。',
+      f.anniversary_badge ? `右上の周年バッジを「${f.anniversary_badge}」に変更してください。` : '',
+      f.sub_catch ? `周年バッジ下の訴求フレーズを「${f.sub_catch}」に変更してください。` : '',
+      'メイン施術写真をImage 2の顧客写真に置き換えてください。他の写真枠(キャンペーン欄・内観など)はImage 1と同じ雰囲気を保ってください。',
       feats.length ? `3つの特徴アイコンの文言を${feats.map(x => `「${x}」`).join('')}に変更してください。` : '',
-      `体験コースボックスの${f.course_name ? `コース名を「${f.course_name}」、` : ''}${checks.length ? `チェックリストを${checks.map(x => `「${x}」`).join('')}、` : ''}${f.regular_price ? `通常価格を「${f.regular_price}円」、` : ''}${f.special_price ? `特別価格を「${f.special_price}円」` : ''}に変更してください。取り消し線+矢印の見せ方は変更しないでください。`,
-      reasons.length ? `「選ばれる理由」の項目文言を${reasons.map(x => `「${x}」`).join('')}に変更してください。` : '',
-      footer ? `フッターの${footer}に変更してください。` : '',
+      courseParts ? `体験コースボックスの${courseParts}に変更してください。取り消し線+矢印の見せ方は変更しないでください。` : '',
+      reasons.length ? `「${f.reasons_title || '選ばれる理由'}」の項目文言を${reasons.map(x => `「${x}」`).join('')}に変更してください。` : '',
+      f.line_promo_text ? `LINE友だち登録欄の文言を「${f.line_promo_text}」に変更してください。QRコードはImage 1のまま維持してください。` : '',
+      footer ? `フッターの${footer}に変更してください。アクセスマップは簡略図のまま駅名の文字だけ差し替えてください。` : '',
       NO_ADD, A4,
     ].filter(Boolean).join('\n')
   }
   if (templateId === 'esthe_gold') {
+    const feats = refRows(f.features)
     const checks = refRows(f.checks)
     const reasons = refRows(f.reasons)
     const courses = refRows(f.courses).map(refCols)
     const footer = [
       f.tel && `電話番号を「${f.tel}」`, f.address && `住所を「${f.address}」`, f.access && `最寄駅情報を「${f.access}」`,
     ].filter(Boolean).join('、')
+    const courseParts = [
+      f.course_name && `コース名を「${f.course_name}」`,
+      checks.length && `チェックリストを${checks.map(x => `「${x}」`).join('')}`,
+      f.regular_price && `通常価格を「${f.regular_price}円」`,
+      f.special_price && `特別価格を「${f.special_price}円」`,
+      f.campaign_notes && `注意書きを「${f.campaign_notes}」`,
+    ].filter(Boolean).join('、')
     return [
       f.headline ? `見出しコピーを「${f.headline}」に変更してください。` : '',
       f.salon_name ? `サロン名ボックスを「${f.salon_name}」に変更してください。` : '',
       f.sub_catch ? `右サイドの縦書き訴求フレーズを「${f.sub_catch}」に変更してください。` : '',
-      'メイン施術写真をImage 2の顧客写真に置き換えてください。',
-      `体験コースボックスの${f.course_name ? `コース名を「${f.course_name}」、` : ''}${checks.length ? `チェックリストを${checks.map(x => `「${x}」`).join('')}、` : ''}${f.regular_price ? `通常価格を「${f.regular_price}円」、` : ''}${f.special_price ? `特別価格を「${f.special_price}円」` : ''}に変更してください。`,
-      reasons.length ? `「選ばれる理由」の項目文言を${reasons.map(x => `「${x}」`).join('')}に変更してください。` : '',
+      'メイン施術写真をImage 2の顧客写真に置き換えてください。他の写真枠(キャンペーン欄・各コース写真)はImage 1と同じ雰囲気を保ってください。',
+      feats.length ? `3つの特徴アイコンの文言を${feats.map(x => `「${x}」`).join('')}に変更してください。` : '',
+      courseParts ? `体験コースボックスの${courseParts}に変更してください。` : '',
+      reasons.length ? `「${f.reasons_title || '選ばれる理由'}」の項目文言を${reasons.map(x => `「${x}」`).join('')}に変更してください。` : '',
       courses.length ? `下部3つのコース料金ボックスを、${courses.map((c, i) => `${i + 1}つ目「${c[0] || ''} ${c[1] || ''} ${c[2] || ''} ${c[3] ? c[3] + '円' : ''}」`).join('、')}に変更してください。ボックスのデザインは変更しないでください。` : '',
+      f.line_promo_text ? `LINE予約欄の文言を「${f.line_promo_text}」に変更してください。QRコードはImage 1のまま維持してください。` : '',
       footer ? `フッターの${footer}に変更してください。` : '',
       NO_ADD, A4,
     ].filter(Boolean).join('\n')
   }
   if (templateId === 'line_guide') {
+    const m1 = [f.method_1_label && `ラベルを「${f.method_1_label}」`, f.method_1_instructions && `説明文を「${f.method_1_instructions}」`].filter(Boolean).join('、')
+    const m2 = [f.method_2_label && `ラベルを「${f.method_2_label}」`, f.method_2_instructions && `説明文を「${f.method_2_instructions}」`].filter(Boolean).join('、')
     return [
       f.line_id ? `LINE IDの表記を「${f.line_id}」に変更してください(スマホ画面内表示とテキスト内表記の両方)。` : '',
       f.promo_text ? `吹き出しの訴求文言を「${f.promo_text}」に変更してください。` : '',
-      'QRコード部分をImage 2の顧客QRコード画像に置き換えてください。',
+      f.headline ? `大見出しを「${f.headline}」に変更してください。` : '',
+      f.method_section_title ? `セクションタイトルを「${f.method_section_title}」に変更してください。` : '',
+      m1 ? `方法1の${m1}に変更してください。` : '',
+      m2 ? `方法2の${m2}に変更してください。` : '',
+      'スマホ画面内・本文中のQRコードをImage 2の顧客QRコード画像に置き換えてください。',
       f.company_name ? `フッターの会社名・店舗名を「${f.company_name}」に変更してください。` : '',
-      '見出し「友だち登録募集中!」、下部の丘・家・木・電気自動車のイラスト、レイアウト構成は変更しないでください。',
+      '下部の丘・家・木・電気自動車のイラスト、レイアウト構成は変更しないでください。',
       NO_ADD, A4,
     ].filter(Boolean).join('\n')
   }
