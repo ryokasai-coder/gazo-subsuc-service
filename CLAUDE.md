@@ -17,12 +17,14 @@
 - Vercel Cron Jobs（毎朝9時リマインダー）
 - `npm run dev`で起動（port 3001）
 
-## 環境変数（.env.localに定義済み）
+## 環境変数（値は `.env.local` / Vercel に定義。このファイルには**値を書かない**）
 - NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY
 - SUPABASE_SERVICE_ROLE_KEY
 - RESEND_API_KEY
-- ADMIN_EMAIL=ryo.kasai@funrix.co.jp
-- CRON_SECRET=gazo-subsuc-secret-2024
+- ADMIN_EMAIL
+- CRON_SECRET
+
+> ⚠️ 秘密情報（キー・トークン・シークレット）は**リポジトリにコミットしない**。値の受け渡しは Vercel の環境変数（`vercel env pull`）かパスワードマネージャで行う。漏れたら必ず失効（revoke）して再発行する。
 
 ## DBスキーマ（主要テーブル）
 - `users`: id, email, login_id, billing_code, role, is_payment_registered, is_active

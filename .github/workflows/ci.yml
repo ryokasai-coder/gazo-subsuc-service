@@ -1,0 +1,51 @@
+name: CI
+
+# PR時と main への push で、型チェック・ビルド・lint を自動実行する。
+# 目的: 壊れたコードが main にマージ/反映されるのを防ぐ（チーム開発の安全網）。
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    # ビルドを通すためのダミー環境変数（★本番の値ではない）。
+    # 実データが必要になったら GitHub の Settings → Secrets and variables → Actions に登録し、
+    # 各値を ${{ secrets.XXX }} に差し替える。秘密の実値をこのファイルに書かないこと。
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder-anon-key
+      SUPABASE_SERVICE_ROLE_KEY: placeholder-service-role-key
+      RESEND_API_KEY: placeholder
+      ADMIN_EMAIL: ci@example.com
+      CRON_SECRET: placeholder
+      NEXT_TELEMETRY_DISABLED: "1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+
+      # lint は既存の指摘が残っているため、当面は結果表示のみ（マージはブロックしない）。
+      # 既存エラーを解消したら continue-on-error を外して必須チェックに昇格する。
+      - name: Lint (non-blocking)
+        run: npm run lint
+        continue-on-error: true
