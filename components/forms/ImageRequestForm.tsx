@@ -419,6 +419,187 @@ const TEMPLATES: Template[] = [
     productionTags: ['LINE登録促進'],
     designTags: ['シンプル', 'かわいい', 'お任せ'],
   },
+  // ── 参考画像方式 07〜26（2026-09-09 追加）。参考画像=Image 1、顧客写真/QR/ロゴ=Image 2..N ──
+  {
+    id: 'ramen_main', name: 'ラーメン店 メインチラシ',
+    description: 'こだわり・人気メニュー・お客様の声・LINEクーポンまで一枚に。写真5枚＋QRを差し替え。',
+    sampleUses: 'ラーメン店の集客チラシ・新メニュー告知・来店促進',
+    layoutType: 'shop-hero', bgFrom: '#7a1f1f', bgTo: '#3a0f0f',
+    referenceImage: '/templates/tpl-ramen_main.jpg',
+    productionTags: ['商品ヒーロー訴求', 'クーポン告知', '新規オープン告知'],
+    designTags: ['インパクト', '高級感', 'お任せ'],
+  },
+  {
+    id: 'line_benefits', name: 'LINE友だち追加 3特典',
+    description: '3つの特典と3ステップ登録案内でLINE友だちを増やす。QRコードを差し込み。',
+    sampleUses: 'LINE友だち登録促進・クーポン配布・リピート促進',
+    layoutType: 'steps-3', bgFrom: '#22c55e', bgTo: '#16a34a',
+    referenceImage: '/templates/tpl-line_benefits.jpg',
+    productionTags: ['LINE登録促進', 'クーポン告知'],
+    designTags: ['かわいい', 'シンプル', 'お任せ'],
+  },
+  {
+    id: 'sns_annotation', name: '手描き風 料理写真ポスト',
+    description: '料理写真に手描き風の吹き出しコメントを添えたSNS映えデザイン。写真1枚を差し替え。',
+    sampleUses: 'SNS投稿・料理の魅力訴求・メニュー紹介',
+    layoutType: 'photo-overlay', bgFrom: '#d97706', bgTo: '#92400e',
+    referenceImage: '/templates/tpl-sns_annotation.jpg',
+    productionTags: ['商品ヒーロー訴求'],
+    designTags: ['SNS映え', 'かわいい', 'お任せ'],
+  },
+  {
+    id: 'calendar', name: '営業カレンダー',
+    description: '桜モチーフの営業カレンダー。限定メニュー写真と特典タグを差し替え。',
+    sampleUses: '月間営業カレンダー・定休日案内・限定メニュー予告',
+    layoutType: 'calendar', bgFrom: '#f9c9d4', bgTo: '#f4b6c2',
+    referenceImage: '/templates/tpl-calendar.jpg',
+    productionTags: ['イベント告知'],
+    designTags: ['かわいい', 'ナチュラル', 'お任せ'],
+  },
+  {
+    id: 'recommend_menu', name: 'おすすめメニュー（リーフ柄）',
+    description: 'リーフ柄のナチュラルなおすすめメニュー。メイン＋サブ3品の写真を差し替え。',
+    sampleUses: 'おすすめメニュー・季節メニュー・カフェメニュー',
+    layoutType: 'menu-list', bgFrom: '#4d7c4d', bgTo: '#2f5130',
+    referenceImage: '/templates/tpl-recommend_menu.jpg',
+    productionTags: ['グランドメニュー表', '商品ヒーロー訴求'],
+    designTags: ['ナチュラル', 'シンプル', 'お任せ'],
+  },
+  {
+    id: 'spring_sale', name: '春の感謝祭セール',
+    description: '桜柄のセール告知。割引率・期間・対象商品3品を差し替え。',
+    sampleUses: '期間限定セール・割引キャンペーン・周年感謝祭',
+    layoutType: 'color-text', bgFrom: '#f472b6', bgTo: '#db2777',
+    referenceImage: '/templates/tpl-spring_sale.jpg',
+    productionTags: ['キャンペーン・セール告知', 'クーポン告知'],
+    designTags: ['かわいい', 'インパクト', 'お任せ'],
+  },
+  {
+    id: 'single_item_dark', name: '単品広告（黒背景）',
+    description: '黒背景×金の高級感ある単品広告。商品写真1枚と特徴3点を差し替え。',
+    sampleUses: '看板商品の訴求・高級商品の広告・単品プロモーション',
+    layoutType: 'single-product', bgFrom: '#1a1a1a', bgTo: '#2d2416',
+    referenceImage: '/templates/tpl-single_item_dark.jpg',
+    productionTags: ['商品ヒーロー訴求'],
+    designTags: ['高級感', 'インパクト', 'お任せ'],
+  },
+  {
+    id: 'smoothie_single', name: 'スムージー単品訴求',
+    description: '水しぶき演出の映えるスムージー広告。商品写真＋（任意で）ロゴを差し替え。',
+    sampleUses: '新作ドリンク訴求・季節限定スムージー・カフェ新商品',
+    layoutType: 'single-product', bgFrom: '#fbbf24', bgTo: '#f59e0b',
+    referenceImage: '/templates/tpl-smoothie_single.jpg',
+    productionTags: ['商品ヒーロー訴求', 'キャンペーン・セール告知'],
+    designTags: ['SNS映え', 'かわいい', 'お任せ'],
+  },
+  {
+    id: 'smoothie_trio', name: 'スムージー3種展開',
+    description: '3種のスムージーを並べた訴求デザイン。3枚の写真を左から差し替え。',
+    sampleUses: '複数フレーバー訴求・新作3種・ラインナップ紹介',
+    layoutType: 'menu-grid', bgFrom: '#fb923c', bgTo: '#ea580c',
+    referenceImage: '/templates/tpl-smoothie_trio.jpg',
+    productionTags: ['商品ヒーロー訴求', 'グランドメニュー表'],
+    designTags: ['SNS映え', 'かわいい', 'お任せ'],
+  },
+  {
+    id: 'veggie_focaccia_poster', name: 'フォカッチャ英語ポスター',
+    description: '大きな英語見出しと写真を組み合わせた洗練ポスター。商品写真1枚を差し替え。',
+    sampleUses: 'カフェ・ベーカリーの商品ポスター・英語デザイン訴求',
+    layoutType: 'shop-hero', bgFrom: '#0d9488', bgTo: '#115e59',
+    referenceImage: '/templates/tpl-veggie_focaccia_poster.jpg',
+    productionTags: ['商品ヒーロー訴求'],
+    designTags: ['ナチュラル', 'SNS映え', 'シンプル', 'お任せ'],
+  },
+  {
+    id: 'ingredient_diagram_sandwich', name: '具材ラベル図解',
+    description: '断面写真に引き出し線で具材を解説する図解デザイン。断面写真1枚を差し替え。',
+    sampleUses: 'サンドイッチ・バーガー等の具材訴求・こだわり紹介',
+    layoutType: 'single-product', bgFrom: '#fde68a', bgTo: '#f5d76e',
+    referenceImage: '/templates/tpl-ingredient_diagram_sandwich.jpg',
+    productionTags: ['商品ヒーロー訴求'],
+    designTags: ['シンプル', 'SNS映え', 'お任せ'],
+  },
+  {
+    id: 'strawberry_milk_kakigori', name: '苺みるくかき氷',
+    description: '和柄×毛筆の季節スイーツ訴求。商品写真1枚を差し替え。',
+    sampleUses: '季節限定かき氷・和スイーツ・夏メニュー訴求',
+    layoutType: 'single-product', bgFrom: '#f9a8d4', bgTo: '#be185d',
+    referenceImage: '/templates/tpl-strawberry_milk_kakigori.jpg',
+    productionTags: ['商品ヒーロー訴求', 'キャンペーン・セール告知'],
+    designTags: ['かわいい', '高級感', 'お任せ'],
+  },
+  {
+    id: 'strawberry_pistachio_crepe', name: 'ストロベリーピスタチオクレープ',
+    description: '紺色背景の上品なスイーツ訴求。商品写真1枚を差し替え。',
+    sampleUses: 'クレープ・スイーツ新作・季節限定デザート',
+    layoutType: 'single-product', bgFrom: '#1e3a5f', bgTo: '#0f2038',
+    referenceImage: '/templates/tpl-strawberry_pistachio_crepe.jpg',
+    productionTags: ['商品ヒーロー訴求'],
+    designTags: ['高級感', 'SNS映え', 'お任せ'],
+  },
+  {
+    id: 'bakery_opening_day', name: 'ベーカリーOPEN告知（イラスト）',
+    description: '手描き風イラストのOPEN告知。写真は使わず、業種に合わせてイラスト題材と文字を差し替え。',
+    sampleUses: 'ベーカリー・カフェ・洋菓子店などの開店告知',
+    layoutType: 'shop-hero', bgFrom: '#fcd9b6', bgTo: '#f6b98a',
+    referenceImage: '/templates/tpl-bakery_opening_day.jpg',
+    productionTags: ['新規オープン告知', 'イベント告知'],
+    designTags: ['かわいい', 'ナチュラル', 'お任せ'],
+  },
+  {
+    id: 'new_open_690_campaign', name: 'NEW OPEN 690円均一',
+    description: '筆文字風の大きな価格が映える均一キャンペーン。対象商品3枚を差し替え。',
+    sampleUses: '新規オープン記念・均一価格キャンペーン・期間限定フェア',
+    layoutType: 'color-text', bgFrom: '#1e3a5f', bgTo: '#84cc16',
+    referenceImage: '/templates/tpl-new_open_690_campaign.jpg',
+    productionTags: ['新規オープン告知', 'キャンペーン・セール告知'],
+    designTags: ['インパクト', 'かわいい', 'お任せ'],
+  },
+  {
+    id: 'weekend_brunch_plate', name: '週末ブランチ 選べるプレート',
+    description: 'ナチュラルな罫線レイアウトのブランチメニュー。3品の写真を差し替え。',
+    sampleUses: '週末限定メニュー・カフェランチ・選べるプレート',
+    layoutType: 'menu-list', bgFrom: '#e8dcc8', bgTo: '#cdbb9a',
+    referenceImage: '/templates/tpl-weekend_brunch_plate.jpg',
+    productionTags: ['グランドメニュー表', '商品ヒーロー訴求'],
+    designTags: ['ナチュラル', 'シンプル', 'お任せ'],
+  },
+  {
+    id: 'yakitori_menu', name: '炭火串焼き MENU',
+    description: '和風の串焼きメニュー表。集合写真＋各串＋〆物の写真を差し替え。',
+    sampleUses: '焼き鳥・串焼き店のメニュー表・居酒屋メニュー',
+    layoutType: 'menu-list', bgFrom: '#2a2118', bgTo: '#4a3826',
+    referenceImage: '/templates/tpl-yakitori_menu.jpg',
+    productionTags: ['グランドメニュー表'],
+    designTags: ['高級感', 'シンプル', 'お任せ'],
+  },
+  {
+    id: 'colorful_bowl_lunch', name: '選べる彩りボウル',
+    description: 'カラフルな4分割のランチメニュー。4品の写真を差し替え。',
+    sampleUses: 'ランチ限定ボウル・デリ・ヘルシーメニュー訴求',
+    layoutType: 'menu-grid', bgFrom: '#f97316', bgTo: '#e11d48',
+    referenceImage: '/templates/tpl-colorful_bowl_lunch.jpg',
+    productionTags: ['グランドメニュー表', '商品ヒーロー訴求'],
+    designTags: ['SNS映え', 'かわいい', 'お任せ'],
+  },
+  {
+    id: 'teppan_gyoza_menu', name: '鉄板ぎょうざメニュー',
+    description: '餃子の種類・タレ・トッピング・持ち帰りの流れまで網羅。メイン写真1枚を差し替え。',
+    sampleUses: '餃子店メニュー・テイクアウト案内・こだわり訴求',
+    layoutType: 'menu-list', bgFrom: '#166534', bgTo: '#1e3a5f',
+    referenceImage: '/templates/tpl-teppan_gyoza_menu.jpg',
+    productionTags: ['お持ち帰りメニュー表', 'グランドメニュー表'],
+    designTags: ['シンプル', '高級感', 'お任せ'],
+  },
+  {
+    id: 'charcoal_saba_ju', name: '炭火香るさば重',
+    description: '水色背景×筆文字の和の単品訴求。商品写真1枚を差し替え。',
+    sampleUses: '和食の看板商品・季節限定重・ランチ訴求',
+    layoutType: 'single-product', bgFrom: '#a5d8e6', bgTo: '#5b9bb0',
+    referenceImage: '/templates/tpl-charcoal_saba_ju.jpg',
+    productionTags: ['商品ヒーロー訴求', 'キャンペーン・セール告知'],
+    designTags: ['高級感', 'ナチュラル', 'お任せ'],
+  },
 ]
 
 // テンプレ別の素材アップロード欄のラベル・説明。未定義なら汎用ラベル。
@@ -459,6 +640,27 @@ const MATERIAL_UPLOAD: Record<string, { label: string; hint: string; needed?: bo
   'esthe_pink':     { label: '施術イメージ写真アップロード（必須）', hint: '参考デザインのメイン施術写真と差し替えます' },
   'esthe_gold':     { label: '施術イメージ写真アップロード（必須）', hint: '参考デザインのメイン施術写真と差し替えます' },
   'line_guide':     { label: 'QRコード画像アップロード（必須）', hint: 'LINE友だち追加用のQRコード画像を1枚。参考デザインのQR部分と差し替えます' },
+  // ── 参考画像方式 07〜26。撮影/添付は「スロット順」に並べてアップロード（先頭がImage 2）──
+  'ramen_main':      { label: 'メニュー写真（5枚）＋LINEクーポンQR（必須）', hint: '順番に：①中央の丼 ②③④人気メニュー3品 ⑤店舗外観、最後にLINEクーポンQR画像。計6枚をこの順で添付' },
+  'line_benefits':   { label: 'QRコード画像アップロード（必須）', hint: 'LINE友だち追加用のQRコード画像を1枚' },
+  'sns_annotation':  { label: '料理写真アップロード（必須・1枚）', hint: '主役の料理写真を1枚。吹き出しコメントは入力欄で調整' },
+  'calendar':        { label: '限定メニュー写真（任意・1枚）', hint: '左上に載せる限定メニュー写真があれば1枚' },
+  'recommend_menu':  { label: '商品写真（4枚）', hint: '順番に：①メイン ②③④サブ3品。計4枚をこの順で添付' },
+  'spring_sale':     { label: '商品写真（4枚）', hint: '順番に：①メインの大きい写真 ②③④対象商品3品。計4枚をこの順で添付' },
+  'single_item_dark':{ label: '商品写真アップロード（必須・1枚）', hint: '主役の商品写真を1枚' },
+  'smoothie_single': { label: '商品写真（必須・1枚）＋ロゴ（任意）', hint: 'スムージーのカップ写真を1枚。ロゴを使う場合は入力欄で「ロゴ画像を使う=true」にして2枚目にロゴ画像を添付' },
+  'smoothie_trio':   { label: 'スムージー写真（3枚・左から順）', hint: '左・中央・右の順で3枚を添付' },
+  'veggie_focaccia_poster': { label: '商品写真アップロード（必須・1枚）', hint: 'サンドイッチ＋副菜など主役写真を1枚' },
+  'ingredient_diagram_sandwich': { label: '断面が分かる商品写真（必須・1枚）', hint: '具材の重なりが見える断面写真を1枚' },
+  'strawberry_milk_kakigori': { label: '商品写真アップロード（必須・1枚）', hint: 'かき氷の写真を1枚' },
+  'strawberry_pistachio_crepe': { label: '商品写真アップロード（必須・1枚）', hint: 'クレープの写真を1枚' },
+  'bakery_opening_day': { label: '写真は不要（イラストで制作）', hint: 'このテンプレは実写を使いません。業種・イラスト題材・文言は入力欄で指定' },
+  'new_open_690_campaign': { label: '商品写真（3枚・左から順）', hint: '左・中央・右の順で対象商品3枚を添付' },
+  'weekend_brunch_plate': { label: '料理写真（3枚・左から順）', hint: '1品目・2品目・3品目の順で3枚を添付' },
+  'yakitori_menu':   { label: '写真（8枚・スロット順）', hint: '順番に：①串焼き集合 ②もも ③つくね ④ささみ ⑤うずら玉子 ⑥しいたけ ⑦鶏だし茶漬け ⑧焼きおにぎり。計8枚をこの順で添付' },
+  'colorful_bowl_lunch': { label: '料理写真（4枚）', hint: '順番に：①左上 ②右上 ③左下 ④右下。計4枚をこの順で添付' },
+  'teppan_gyoza_menu': { label: 'メイン写真アップロード（必須・1枚）', hint: '鉄板ぎょうざのメイン写真を1枚' },
+  'charcoal_saba_ju': { label: '商品写真アップロード（必須・1枚）', hint: 'さば重の商品写真を1枚' },
 }
 
 function getFilteredTemplates(designFilter: string): Template[] {
@@ -689,16 +891,18 @@ export default function ImageRequestForm({ onSubmit, onCancel, loading }: Props)
       const merged = mergeFieldDefaults(form.template_id, form.template_fields)
       const hasPhoto = form.materialFiles.length > 0
       const prompt = buildPrompt(form.template_id, merged, hasPhoto)
-      // 素材写真は4.5MB制限対策で圧縮してから送る
-      let photoDataUrl: string | undefined
-      if (form.materialFiles[0]) {
-        const raw = await fileToDataUrl(form.materialFiles[0])
-        photoDataUrl = await compressImage(raw, 1200)
+      // 複数画像対応: アップロードされた素材をスロット順に全て圧縮して送る
+      // （4.5MB制限対策で各1100pxに圧縮・最大12枚）。参考画像方式では Image2..N として使われる。
+      const files = form.materialFiles.slice(0, 12)
+      const photoDataUrls: string[] = []
+      for (const f of files) {
+        const raw = await fileToDataUrl(f)
+        photoDataUrls.push(await compressImage(raw, 1100))
       }
       const res = await fetch('/api/design/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-        body: JSON.stringify({ prompt, photoDataUrl, templateId: form.template_id }),
+        body: JSON.stringify({ prompt, photoDataUrls, templateId: form.template_id }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'デザインの制作に失敗しました')

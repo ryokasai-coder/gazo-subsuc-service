@@ -23,35 +23,36 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: '画像生成の設定が未完了です（GEMINI_API_KEY）' }, { status: 500 })
     }
 
-    const { prompt, photoDataUrl, templateId } = await req.json()
+    const { prompt, photoDataUrl, photoDataUrls, templateId } = await req.json()
     if (!prompt || typeof prompt !== 'string') {
       return NextResponse.json({ error: 'prompt is required' }, { status: 400 })
     }
 
-    // 参考画像方式テンプレ（依頼書6種）は、参考画像=Image 1 を先頭に固定で付与する。
-    // partsの順序は [Image 1(参考), Image 2(顧客写真/QR), プロンプト文]。
+    // 参考画像方式テンプレは、参考画像=Image 1 を先頭に固定で付与する。
+    // partsの順序は [Image 1(参考), Image 2..N(顧客写真/QR/ロゴ), プロンプト文]。
     // 顧客写真を渡すべきモデルに、テキスト説明ではなく画像そのものを渡すのが本対応の核心。
     const reference = (typeof templateId === 'string' && REFERENCE_IMAGES[templateId]) || null
 
-    // 顧客写真/QR（Image 2）
+    // 顧客写真/QR/ロゴ（Image 2..N）。複数画像対応: photoDataUrls(配列) を優先し、
+    // 後方互換で photoDataUrl(単数) も受け付ける。スロット順にそのまま並べる。
+    const rawPhotos: string[] = Array.isArray(photoDataUrls)
+      ? photoDataUrls.filter((u: unknown): u is string => typeof u === 'string')
+      : (typeof photoDataUrl === 'string' ? [photoDataUrl] : [])
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let photoPart: any = null
-    if (photoDataUrl && typeof photoDataUrl === 'string') {
-      const m = /^data:(image\/[\w.+-]+);base64,(.+)$/.exec(photoDataUrl)
-      if (m) photoPart = { inlineData: { mimeType: m[1], data: m[2] } }
+    const photoParts: any[] = []
+    for (const url of rawPhotos) {
+      const m = /^data:(image\/[\w.+-]+);base64,(.+)$/.exec(url)
+      if (m) photoParts.push({ inlineData: { mimeType: m[1], data: m[2] } })
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let parts: any[]
     if (reference) {
-      // 参考画像方式: [Image 1(参考), Image 2(顧客), プロンプト]
-      parts = [{ inlineData: { mimeType: reference.mime, data: reference.data } }]
-      if (photoPart) parts.push(photoPart)
-      parts.push({ text: prompt })
+      // 参考画像方式: [Image 1(参考), Image 2..N(顧客), プロンプト]
+      parts = [{ inlineData: { mimeType: reference.mime, data: reference.data } }, ...photoParts, { text: prompt }]
     } else {
-      // 従来テンプレ: [プロンプト, 顧客写真]（既存挙動を維持）
-      parts = [{ text: prompt }]
-      if (photoPart) parts.push(photoPart)
+      // 従来テンプレ: [プロンプト, 顧客写真...]（既存挙動を維持）
+      parts = [{ text: prompt }, ...photoParts]
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

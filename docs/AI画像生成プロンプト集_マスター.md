@@ -359,7 +359,7 @@ Image 1の背景写真をImage 2の顧客写真に置き換えてください。
 
 **画像スロット:** Image2〜5=写真4枚
 
-**必要な入力項目:** heading, tagline, badge_text, hero_item_name, hero_price, hero_desc, sub_item_1_name, sub_price_1, sub_item_2_name, sub_price_2, sub_item_3_name, sub_price_3, extra_menu_intro(既定値"その他のメニューもご用意しております"), extra_menu_tags, banner_text_1, banner_text_2
+**必要な入力項目:** heading, tagline, badge_text, hero_item_name, hero_price, hero_desc, sub_item_1_name, sub_price_1, sub_desc_1, sub_item_2_name, sub_price_2, sub_desc_2, sub_item_3_name, sub_price_3, sub_desc_3, extra_menu_intro(既定値"その他のメニューもご用意しております"), extra_menu_tags, banner_text_1, banner_text_2
 
 **プロンプト**
 
@@ -372,7 +372,7 @@ Image 1の背景写真をImage 2の顧客写真に置き換えてください。
 
 - 見出しを「{heading}」、タグラインを「{tagline}」、右上のバッジを「{badge_text}」に変更してください。
 - メイン商品の名前「{hero_item_name}」、価格「{hero_price}円」、説明「{hero_desc}」に変更してください。
-- サブ3品の名前・価格を「{sub_item_1_name} {sub_price_1}円」「{sub_item_2_name} {sub_price_2}円」「{sub_item_3_name} {sub_price_3}円」に変更してください。
+- サブ3品の名前・価格・説明文を「{sub_item_1_name} {sub_price_1}円 {sub_desc_1}」「{sub_item_2_name} {sub_price_2}円 {sub_desc_2}」「{sub_item_3_name} {sub_price_3}円 {sub_desc_3}」に変更してください。
 - タグ一覧の上にある一言を「{extra_menu_intro}」に変更してください。
 - 下部のタグ一覧を「{extra_menu_tags}」に変更してください。
 - バナー2つを「{banner_text_1}」「{banner_text_2}」に変更してください(バナーの色・形状は変更しないでください)。
@@ -618,7 +618,7 @@ Image 1の背景写真をImage 2の顧客写真に置き換えてください。
 
 **画像スロット:** Image2〜4=写真3枚(左から順)
 
-**必要な入力項目:** top_banner_text(既定値"皆さまのご来店をお待ちしています!"), badge_text(既定値"OPEN記念"), period_label(既定値"7日間限定!"), price(既定値"690"), campaign_period, campaign_conditions, item_1_comment, item_1_name, item_2_comment, item_2_name, item_3_comment, item_3_name, shop_tagline(既定値"美味しい時間を、もっと身近に。"), shop_name, shop_desc, notice_text
+**必要な入力項目:** top_banner_label(既定値"NEW OPEN!"), top_banner_text(既定値"皆さまのご来店をお待ちしています!"), badge_text(既定値"OPEN記念"), period_label(既定値"7日間限定!"), price(既定値"690"), campaign_period, campaign_conditions, item_1_comment, item_1_name, item_2_comment, item_2_name, item_3_comment, item_3_name, shop_tagline(既定値"美味しい時間を、もっと身近に。"), shop_name, shop_desc, notice_text
 
 **プロンプト**
 
@@ -628,7 +628,7 @@ Image 1の背景写真をImage 2の顧客写真に置き換えてください。
 - 中央の商品写真 → Image 3に置き換え
 - 右側の商品写真 → Image 4に置き換え
 
-- 上部の帯を「NEW OPEN!」「{top_banner_text}」に変更してください。
+- 上部の帯を「{top_banner_label}」「{top_banner_text}」に変更してください。
 - 右上の丸バッジを「{badge_text}」に変更してください。
 - 「{period_label}」の表記を変更してください。
 - 中央の大きな価格数字を「{price}」に変更してください。
@@ -783,5 +783,130 @@ Image 1の背景写真をImage 2の顧客写真に置き換えてください。
 - `smoothie_single` のロゴ画像のように「任意」のスロットがあるテンプレートは、`use_logo_image` のようなフラグで画像の有無を判定し、ある場合だけその画像をリストに追加し、プロンプト文中の該当の指示行(【ロゴ画像あり版】/【ロゴ画像なし版】)を出し分けてください。
 - 10番(calendar)は日付グリッドの精度が理由で、AI画像生成だけに頼らずハイブリッド運用(カレンダー部分は別の仕組みで描画)を推奨します。
 - 9番(sns_annotation)は吹き出しコメントの内容が料理の具材に依存するため、顧客写真の内容に合わせて毎回文言を調整してください。
+
+---
+
+## 参考画像の保存先（Google Drive）
+
+26枚の参考画像は、下記のGoogle Driveフォルダから取得する前提。
+
+- フォルダ: https://drive.google.com/drive/folders/1Ga45WomVySjTLED5nuO9ctbAg320EhxB
+  - `references_part1/`（01〜13）
+  - `references_part2/`（14〜26）
+- ※現在は納品時の容量都合で2フォルダに分かれている。運用上は1つの `references` フォルダにまとめ直しても問題なし（まとめてもファイルIDは変わらないので下表はそのまま使える）。
+
+### テンプレートID ⇔ Google DriveファイルID 対応表
+
+| テンプレートID | ファイル名 | Google DriveファイルID |
+|---|---|---|
+| spa_open | 01_spa_open.png | 1st2r2_A2ReQ5rpFn0dZNy3gjd8YSSN91 |
+| yakiniku_bento | 02_yakiniku_bento.png | 1tdW5aTWqBbSxQsXWZWs9HC5GWgL9T-dz |
+| takeout_bento | 03_takeout_bento.png | 1-W6a9tYOwZ3cMCvRDPA2ud-nOZWza5yU |
+| esthe_pink | 04_esthe_pink.png | 1lk8JJDOG8UulnC1ZyMb_WF0LmkcqhAZ4 |
+| esthe_gold | 05_esthe_gold.png | 13PVeIRSuJGUHihWikyOVuwXEvmcDrR39 |
+| line_guide | 06_line_guide.png | 1Ka4aVY4LqTkGG8Ky3Yjk9ZiHFE2QTF8- |
+| ramen_main | 07_ramen_main.png | 16qCLJmOeaZvp3IanjFWyhb9605dPqQ_l |
+| line_benefits | 08_line_benefits.png | 1ev1LJ-WTFgadFe9yhAfMOXXrVWrwHpNq |
+| sns_annotation | 09_sns_annotation.png | 1zPZx_4n5Y5sAzm7_M0X9DAudpEIlL0ue |
+| calendar | 10_calendar.png | 1ogW6hPLFxDQ_IvIaMR0iBAXocp58bmTs |
+| recommend_menu | 11_recommend_menu.png | 1Mb27_0vpFn5-UX7fOh6Zs4m6jjF4GYWf |
+| spring_sale | 12_spring_sale.png | 1NL8Zrt97MTf8rs-0EJt_ofkMkglkJ1xE |
+| single_item_dark | 13_single_item_dark.png | 17RZBogesH8koSox9Nmy0gn-Tjq3mJVYD |
+| smoothie_single | 14_smoothie_single.png | 1s-A_FvVBWQ-qKTlfMYPwq2jwA0z6NUor |
+| smoothie_trio | 15_smoothie_trio.png | 1_tBh0Ir5_wssmkfoRGNcIqWo7aFvNI3w |
+| veggie_focaccia_poster | 16_veggie_focaccia_poster.png | 1iPe2U4p4H7esh5OfUF6Odt7HuosLZgyK |
+| ingredient_diagram_sandwich | 17_ingredient_diagram_sandwich.png | 11-QkP4WNVZlwcVxDSa5TzE1VwqYuo4Pb |
+| strawberry_milk_kakigori | 18_strawberry_milk_kakigori.png | 1k01tv9qWtdtM4I2UYOIEhdvjgwKL1RFy |
+| strawberry_pistachio_crepe | 19_strawberry_pistachio_crepe.png | 1Di1eCMzldPM1kZLJT900z6niZX1rqAkH |
+| bakery_opening_day | 20_bakery_opening_day.png | 1l1tjbWeI827jYdwvuAnMradzW5W6jIYD |
+| new_open_690_campaign | 21_new_open_690_campaign.png | 1kqtjjvjP9WyIz1jb57v7J0CQ44hI0b2i |
+| weekend_brunch_plate | 22_weekend_brunch_plate.png | 17xMDQrdEaX8IN3pr0VxkMhBAtYA_YIWb |
+| yakitori_menu | 23_yakitori_menu.png | 1GT6ZVf6MKHTq8HCS4v5mMo-x_r00LuoU |
+| colorful_bowl_lunch | 24_colorful_bowl_lunch.png | 1ayKrBkyipxQMsoea_c5Ejwvfq2s575Ln |
+| teppan_gyoza_menu | 25_teppan_gyoza_menu.png | 1xFPdW9i-dM_kSt1Sl6XPMjCRBS4wipZY |
+| charcoal_saba_ju | 26_charcoal_saba_ju.png | 1sQFTeZtPJ6bK7yz6Gmk1msH_PTP8M9Uj |
+
+### Google Driveから参考画像を取得するPython実装例（参考）
+
+> ⚠️ これは仕様提示用の**Python参考例**。本番コード（このリポジトリ）は Next.js/TypeScript なので、実装時はTSへ移植する。現行の `lib/reference-images.ts` は base64同梱方式。Drive取得方式に切り替えるかは要判断（下の「運用上の注意」参照）。
+>
+> 事前準備: Google Cloud でサービスアカウントを作成し、そのメールアドレスに上記Driveフォルダの「閲覧者」権限を共有しておくこと（個人Drive内のフォルダは明示共有しないとサービスアカウントから読めない）。
+
+```python
+import io
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseDownload
+from google import genai
+from google.genai import types
+
+DRIVE_SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
+DRIVE_CREDENTIALS_PATH = "service_account.json"  # サービスアカウントの鍵ファイル
+
+TEMPLATES = {
+    "spa_open": {"drive_file_id": "1st2r2_A2ReQ5rpFn0dZNy3gjd8YSSN91", "photo_slot_count": 1, "prompt_template": "..."},
+    "yakiniku_bento": {"drive_file_id": "1tdW5aTWqBbSxQsXWZWs9HC5GWgL9T-dz", "photo_slot_count": 7, "prompt_template": "..."},
+    # ... 以下、上の対応表の26テンプレート分をすべて登録
+}
+
+_drive_service = None
+
+def get_drive_service():
+    global _drive_service
+    if _drive_service is None:
+        creds = service_account.Credentials.from_service_account_file(
+            DRIVE_CREDENTIALS_PATH, scopes=DRIVE_SCOPES
+        )
+        _drive_service = build("drive", "v3", credentials=creds)
+    return _drive_service
+
+_reference_cache = {}  # {template_id: 画像バイト列}
+
+def get_reference_image_bytes(template_id: str) -> bytes:
+    """指定テンプレートの参考画像をGoogle Driveから取得。一度取得したらキャッシュし再アクセスしない。"""
+    if template_id in _reference_cache:
+        return _reference_cache[template_id]
+    file_id = TEMPLATES[template_id]["drive_file_id"]
+    service = get_drive_service()
+    request = service.files().get_media(fileId=file_id)
+    buf = io.BytesIO()
+    downloader = MediaIoBaseDownload(buf, request)
+    done = False
+    while not done:
+        _, done = downloader.next_chunk()
+    data = buf.getvalue()
+    _reference_cache[template_id] = data
+    return data
+
+def generate_image(template_id, customer_photos, fields):
+    """
+    customer_photos: [(画像バイト列, mime_type), ...] を画像スロットの順番通りに並べたリスト
+    fields: プロンプト内の{変数名}を埋めるための辞書
+    """
+    template = TEMPLATES[template_id]
+    reference_bytes = get_reference_image_bytes(template_id)
+    parts = [types.Part.from_bytes(data=reference_bytes, mime_type="image/png")]
+    for photo_bytes, mime_type in customer_photos:
+        parts.append(types.Part.from_bytes(data=photo_bytes, mime_type=mime_type))
+    prompt_text = template["prompt_template"].format(**fields)
+    parts.append(prompt_text)
+    client = genai.Client()
+    response = client.models.generate_content(
+        model="gemini-2.5-flash-image",  # 実際に使うモデルIDは事前に要確認
+        contents=parts,
+        config=types.GenerateContentConfig(system_instruction=SYSTEM_INSTRUCTION),
+    )
+    for part in response.candidates[0].content.parts:
+        if part.inline_data is not None:
+            return part.inline_data.data
+    return None
+```
+
+### 運用上の注意
+
+- 起動のたびに26枚全てをDriveから取得する必要はない。`_reference_cache` のようにメモリ（またはローカルディスク）へ一度キャッシュすれば、2回目以降はDrive APIを呼ばずに済み、生成のたびのネットワーク往復レイテンシも避けられる。参考画像を差し替えた時だけキャッシュをクリアする。
+- サービスアカウントに対象フォルダの共有権限が無いと403エラー。フォルダ（または個々のファイル）を該当サービスアカウントのメールアドレスと共有すること。
+- 新テンプレを追加する際は、参考画像をこのDriveフォルダにアップロードし、そのファイルIDを上の対応表と `TEMPLATES` 辞書の両方に追記する。
+- ※本番はサーバーレス（Vercel）。ローカルパス直読みは不可（[[lesson-local-filepath-fails-on-serverless]]）。Drive取得方式にする場合はサービスアカウント鍵を環境変数化し、base64同梱方式にする場合は画像を縮小してリポジトリ内に持つ。
 
 **今後の運用:** 新しい参考画像を追加する際は、この文書に「27. ○○」という形で追記していきます（別ファイルには分散させない）。
