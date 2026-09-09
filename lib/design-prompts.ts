@@ -1219,8 +1219,21 @@ function fillReferenceTemplate(templateId: string, tpl: string, f: Record<string
       .join('\n')
       .replace(/【ロゴ画像(?:あり|なし)版】/g, '')
   }
-  // {key} を実値で置換（未指定は空文字）。fはmergeFieldDefaults済みを想定。
-  return out.replace(/\{(\w+)\}/g, (_m, k: string) => (f[k] ?? '').toString())
+  // 空欄のみの指示行はドロップ（"「」に変更" という無意味な指示を送らない）。
+  // プレースホルダを含まない行（写真スロット・注意書き・出力指定など）は常に残す。
+  out = out
+    .split('\n')
+    .filter(line => {
+      const keys = [...line.matchAll(/\{(\w+)\}/g)].map(m => m[1])
+      if (keys.length === 0) return true
+      return keys.some(k => (f[k] ?? '').toString().trim() !== '')
+    })
+    .join('\n')
+  // {key} を実値で置換（残った行の空プレースホルダは空文字）。fはmergeFieldDefaults済みを想定。
+  out = out.replace(/\{(\w+)\}/g, (_m, k: string) => (f[k] ?? '').toString())
+  // 見本の元テキスト残り・部分置換・未指定要素へのサンプル文言残存を防ぐ共通の後処理指示。
+  out += '\n\n■重要：上で置き換える文字は、見本の元の文字を残さず完全に差し替えてください（複数行の見出しは全行を置き換える）。上の指示で触れていない文字要素は、見本のサンプル文言（店名・商品名・価格・キャッチ等）をそのまま残さず、空欄にするか自然に削除してください。装飾・イラスト・配色・レイアウトは維持してください。'
+  return out
 }
 
 // textareaを行→列に分解するヘルパー（列区切りは全角／・半角/の両対応）
