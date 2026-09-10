@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase-server'
-import { REFERENCE_IMAGES, SYSTEM_INSTRUCTION } from '@/lib/reference-images'
+import { SYSTEM_INSTRUCTION } from '@/lib/reference-images'
+import { getReferenceImage } from '@/lib/reference-images-drive'
 
 // AI画像生成（Gemini Nano Banana 2 / gemini-3.1-flash-image）
 // prompt＋（任意で）素材写真を受け取り、生成画像を dataURL で返す。
@@ -31,7 +32,10 @@ export async function POST(req: NextRequest) {
     // 参考画像方式テンプレは、参考画像=Image 1 を先頭に固定で付与する。
     // partsの順序は [Image 1(参考), Image 2..N(顧客写真/QR/ロゴ), プロンプト文]。
     // 顧客写真を渡すべきモデルに、テキスト説明ではなく画像そのものを渡すのが本対応の核心。
-    const reference = (typeof templateId === 'string' && REFERENCE_IMAGES[templateId]) || null
+    // 参考画像の出所は getReferenceImage が判定する:
+    //   USE_DRIVE_REFERENCES=true → Google Drive から取得（失敗時 base64 フォールバック）
+    //   既定 → 従来の base64 同梱(lib/reference-images.ts)
+    const reference = typeof templateId === 'string' ? await getReferenceImage(templateId) : null
 
     // 顧客写真/QR/ロゴ（Image 2..N）。複数画像対応: photoDataUrls(配列) を優先し、
     // 後方互換で photoDataUrl(単数) も受け付ける。スロット順にそのまま並べる。

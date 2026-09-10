@@ -6,10 +6,12 @@
 >
 > 参考画像ファイルの番号は 01〜15（以降 16〜26 も同様）の通し番号に整理し直しています。
 >
-> 実装対応状況（2026-09-03 時点）:
-> - **01〜06**: コード実装済み（`lib/design-prompts.ts` の `buildReferencePrompt` / `TEMPLATE_FIELDS`、参考画像は `lib/reference-images.ts`）。※現行は顧客画像1枚（Image 2）のみ対応。
-> - **07〜26**: 未実装（参考画像 `references/07_*.png`〜`references/26_*.png` が未入手）。
-> - ⚠️【要確認】複数画像スロット（Image3〜N・QR/ロゴを別画像として渡す）は現行API未対応。フル実装には `app/api/design/generate/route.ts` と依頼フォームの複数アップロード対応が必要。
+> 実装対応状況（2026-09-10 時点）:
+> - **01〜26 全26テンプレ 実装済み・本番稼働中**（`lib/design-prompts.ts` の `buildReferencePrompt` / `REFERENCE_PROMPT_TEMPLATES` / `TEMPLATE_FIELDS`、選択UIは `components/forms/ImageRequestForm.tsx`）。選択画面は参考画像方式26種のみ（旧テンプレ・パンフレット機能は撤去済み）。
+> - **複数画像スロット対応済み**: `app/api/design/generate/route.ts` が `photoDataUrls`（配列）を受領し、Geminiへ `[参考画像(Image1), 顧客画像1..N, prompt]` の順で送信（`photoDataUrl` 単数も後方互換）。依頼フォームは素材を最大12枚・スロット順で送信。
+> - **参考画像の渡し方（現行）**: `lib/reference-images.ts` に26枚を **base64 同梱**（幅1024・JPEG、ファイル約8MB）。`SYSTEM_INSTRUCTION` も同ファイル。
+> - ⚠️【要確認】base64 同梱によりリポジトリ/バンドルが重い（push時に接続リセットが起きるため `git config http.postBuffer` 増で対処中）。→ 本文書「参考画像の保存先（Google Drive）」の**Drive取得方式へ移行検討中**（要: サービスアカウント作成＋対象フォルダ共有＋env設定）。
+> - ⚠️【要確認】実生成テスト（Gemini実叩き=有料）での文字崩れ・位置ズレの最終目視は本番フォームから要実施。崩れる場合は文字を Canva/CSS で後載せするハイブリッドを検討。
 
 ---
 
