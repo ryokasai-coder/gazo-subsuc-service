@@ -827,7 +827,7 @@ function fillReferenceTemplate(templateId: string, tpl: string, f: Record<string
   // {key} を実値で置換（残った行の空プレースホルダは空文字）。fはmergeFieldDefaults済みを想定。
   out = out.replace(/\{(\w+)\}/g, (_m, k: string) => (f[k] ?? '').toString())
   // 見本の元テキスト残り・部分置換・未指定要素へのサンプル文言残存を防ぐ共通の後処理指示。
-  out += '\n\n■重要：上で置き換える文字は、見本の元の文字を残さず完全に差し替えてください（複数行の見出しは全行を置き換える）。上の指示で触れていない文字要素は、見本のサンプル文言（店名・商品名・価格・キャッチ等）をそのまま残さず、空欄にするか自然に削除してください。装飾・イラスト・配色・レイアウトは維持してください。'
+  out += '\n\n' + REF_POST
   return out
 }
 
@@ -840,6 +840,8 @@ function refCols(line: string): string[] {
 }
 const A4 = '出力はA4縦相当のアスペクト比、高解像度でお願いします。'
 const NO_ADD = 'Image 1にない装飾・ロゴ・文字は追加しないでください。'
+// 見本の元テキスト残り・部分置換・未指定要素へのサンプル文言残存を防ぐ共通の後処理指示（07〜26と01〜06で共用）。
+const REF_POST = '■重要：上で置き換える文字は、見本の元の文字を残さず完全に差し替えてください（複数行の見出しは全行を置き換える）。上の指示で触れていない文字要素は、見本のサンプル文言（店名・商品名・価格・キャッチ等）をそのまま残さず、空欄にするか自然に削除してください。装飾・イラスト・配色・レイアウトは維持してください。'
 
 function buildReferencePrompt(templateId: string, f: Record<string, string>): string {
   const tpl = REFERENCE_PROMPT_TEMPLATES[templateId]
@@ -857,7 +859,7 @@ function buildReferencePrompt(templateId: string, f: Record<string, string>): st
       feats.length ? `右側の白い円形バッジ3つのテキストをそれぞれ${feats.map(x => `「${x}」`).join('')}に変更してください。バッジの形状・並び順は変更しないでください。` : '',
       f.reservation_label ? `テラコッタ色の予約ボックスの文言を「${f.reservation_label}」に変更してください。QRコード風アイコンはImage 1のまま維持してください。` : '',
       camps.length ? `下部の特典ボックス2つを${camps.map(c => `「${c[0] || ''} ${c[1] || ''}${c[2] ? `(期間限定:${c[2]}まで)` : ''}」`).join('')}に変更してください。ボックスの色・形状は変更しないでください。` : '',
-      NO_ADD, A4,
+      NO_ADD, A4, REF_POST,
     ].filter(Boolean).join('\n')
   }
   if (templateId === 'yakiniku_bento') {
@@ -876,7 +878,7 @@ function buildReferencePrompt(templateId: string, f: Record<string, string>): st
       f.rice_note ? `ご飯に関する注記を「${f.rice_note}」に変更してください。` : '',
       footer ? `フッターの${footer}に変更してください。` : '',
       f.order_qr_label ? `フッター右下のQRコードのラベルを「${f.order_qr_label}」に変更してください。QRコード自体はImage 1のまま維持してください。` : '',
-      NO_ADD, A4,
+      NO_ADD, A4, REF_POST,
     ].filter(Boolean).join('\n')
   }
   if (templateId === 'takeout_bento') {
@@ -898,7 +900,7 @@ function buildReferencePrompt(templateId: string, f: Record<string, string>): st
       footer ? `フッターの${footer}に変更してください。` : '',
       f.notice_text ? `フッターの注意書きを「${f.notice_text}」に変更してください。` : '',
       f.order_qr_label ? `右下のQRコードのラベルを「${f.order_qr_label}」に変更してください。QRコード自体はImage 1のまま維持してください。` : '',
-      NO_ADD, A4,
+      NO_ADD, A4, REF_POST,
     ].filter(Boolean).join('\n')
   }
   if (templateId === 'esthe_pink') {
@@ -928,7 +930,7 @@ function buildReferencePrompt(templateId: string, f: Record<string, string>): st
       reasons.length ? `「${f.reasons_title || '選ばれる理由'}」の項目文言を${reasons.map(x => `「${x}」`).join('')}に変更してください。` : '',
       f.line_promo_text ? `LINE友だち登録欄の文言を「${f.line_promo_text}」に変更してください。QRコードはImage 1のまま維持してください。` : '',
       footer ? `フッターの${footer}に変更してください。アクセスマップは簡略図のまま駅名の文字だけ差し替えてください。` : '',
-      NO_ADD, A4,
+      NO_ADD, A4, REF_POST,
     ].filter(Boolean).join('\n')
   }
   if (templateId === 'esthe_gold') {
@@ -957,7 +959,7 @@ function buildReferencePrompt(templateId: string, f: Record<string, string>): st
       courses.length ? `下部3つのコース料金ボックスを、${courses.map((c, i) => `${i + 1}つ目「${c[0] || ''} ${c[1] || ''} ${c[2] || ''} ${c[3] ? c[3] + '円' : ''}」`).join('、')}に変更してください。ボックスのデザインは変更しないでください。` : '',
       f.line_promo_text ? `LINE予約欄の文言を「${f.line_promo_text}」に変更してください。QRコードはImage 1のまま維持してください。` : '',
       footer ? `フッターの${footer}に変更してください。` : '',
-      NO_ADD, A4,
+      NO_ADD, A4, REF_POST,
     ].filter(Boolean).join('\n')
   }
   if (templateId === 'line_guide') {
@@ -973,7 +975,7 @@ function buildReferencePrompt(templateId: string, f: Record<string, string>): st
       'スマホ画面内・本文中のQRコードをImage 2の顧客QRコード画像に置き換えてください。',
       f.company_name ? `フッターの会社名・店舗名を「${f.company_name}」に変更してください。` : '',
       '下部の丘・家・木・電気自動車のイラスト、レイアウト構成は変更しないでください。',
-      NO_ADD, A4,
+      NO_ADD, A4, REF_POST,
     ].filter(Boolean).join('\n')
   }
   return ''
