@@ -10,10 +10,10 @@
 // 前提: 対象の参考画像フォルダを、そのサービスアカウントのメール(client_email)に
 //       「閲覧者」で共有しておくこと。共有が無いと 403。
 //
-// 有効化: 環境変数 USE_DRIVE_REFERENCES=true のときだけ Drive を使う。
-//         それ以外（既定）は従来の base64 同梱(REFERENCE_IMAGES)にフォールバックする。
-//         → 本番を壊さず段階移行できる。Drive で問題ないことを確認したら
-//           reference-images.ts の base64 本体を削除して軽量化する（Phase 2b）。
+// 方式: 参考画像は常に Google Drive から取得する（Phase 2b で base64 同梱を廃止＝軽量化）。
+//       SA鍵(GOOGLE_SERVICE_ACCOUNT_KEY_BASE64)があれば Drive を叩く。取得できない場合は
+//       reference-images.ts の REFERENCE_IMAGES（現在は空マップ）にフォールバック＝null。
+//       ※旧 USE_DRIVE_REFERENCES フラグは不要になった（設定は残っていても無害）。
 
 import { google } from 'googleapis'
 import { REFERENCE_IMAGES, type ReferenceImage } from './reference-images'
@@ -93,19 +93,17 @@ async function fetchFromDrive(templateId: string): Promise<ReferenceImage | null
  * - どちらにも無ければ null（参考画像方式でないテンプレ）
  */
 export async function getReferenceImage(templateId: string): Promise<ReferenceImage | null> {
-  const useDrive =
-    process.env.USE_DRIVE_REFERENCES === 'true' &&
-    !!process.env.GOOGLE_SERVICE_ACCOUNT_KEY_BASE64 &&
-    !!DRIVE_FILE_IDS[templateId]
-
-  if (useDrive) {
+  // 参考画像は Google Drive から取得する（base64 同梱は Phase 2b で廃止＝軽量化）。
+  // SA鍵と対応IDがあれば Drive を叩く。失敗しても生成は止めない（reference=null で
+  // 参考画像なし生成に落ちる。ハードクラッシュはしない）。
+  if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY_BASE64 && DRIVE_FILE_IDS[templateId]) {
     try {
       const ref = await fetchFromDrive(templateId)
       if (ref) return ref
     } catch (e) {
-      // Drive取得に失敗しても生成を止めない: base64 同梱にフォールバック
-      console.error('[reference-images] Drive取得に失敗、base64にフォールバック:', templateId, e)
+      console.error('[reference-images] Drive取得に失敗:', templateId, e)
     }
   }
+  // base64 同梱は廃止したため通常は null（REFERENCE_IMAGES は空マップ）。
   return REFERENCE_IMAGES[templateId] || null
 }

@@ -32,9 +32,8 @@ export async function POST(req: NextRequest) {
     // 参考画像方式テンプレは、参考画像=Image 1 を先頭に固定で付与する。
     // partsの順序は [Image 1(参考), Image 2..N(顧客写真/QR/ロゴ), プロンプト文]。
     // 顧客写真を渡すべきモデルに、テキスト説明ではなく画像そのものを渡すのが本対応の核心。
-    // 参考画像の出所は getReferenceImage が判定する:
-    //   USE_DRIVE_REFERENCES=true → Google Drive から取得（失敗時 base64 フォールバック）
-    //   既定 → 従来の base64 同梱(lib/reference-images.ts)
+    // 参考画像(Image 1)は getReferenceImage が Google Drive から取得する（base64同梱は廃止）。
+    // 取得できない場合は null＝参考画像なし生成に落ちる（ハードクラッシュはしない）。
     const reference = typeof templateId === 'string' ? await getReferenceImage(templateId) : null
 
     // 顧客写真/QR/ロゴ（Image 2..N）。複数画像対応: photoDataUrls(配列) を優先し、
